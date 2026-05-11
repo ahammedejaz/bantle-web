@@ -1,3 +1,5 @@
+import { Home, MessageCircle, Plus, Tag, User } from "lucide-react";
+import type { ReactNode } from "react";
 import { ComingSoonBadges } from "@/components/ComingSoonBadges";
 
 export function HeroSection() {
@@ -55,15 +57,41 @@ function AppPreviewMock() {
           <MockListing platform="YouTube Premium" colour="#FF0000" price="₹60" />
           <MockListing platform="Apple One" colour="#000000" price="₹125" />
         </div>
-        <div className="mt-auto border-t border-line px-5 py-3 flex justify-between text-[11px] text-ink-muted">
-          <span>Home</span>
-          <span>Deals</span>
-          <span>+</span>
-          <span>Chat</span>
-          <span>Profile</span>
+        <div className="mt-auto border-t border-line px-4 py-3 flex items-center justify-between">
+          <MockNavItem icon={<Home className="h-4 w-4" />} label="Home" active />
+          <MockNavItem icon={<Tag className="h-4 w-4" />} label="Deals" />
+          <span
+            aria-hidden="true"
+            className="h-8 w-8 rounded-full bg-teal-900 text-cream flex items-center justify-center"
+          >
+            <Plus className="h-4 w-4" />
+          </span>
+          <MockNavItem icon={<MessageCircle className="h-4 w-4" />} label="Chat" />
+          <MockNavItem icon={<User className="h-4 w-4" />} label="Profile" />
         </div>
       </div>
     </div>
+  );
+}
+
+function MockNavItem({
+  icon,
+  label,
+  active = false,
+}: {
+  icon: ReactNode;
+  label: string;
+  active?: boolean;
+}) {
+  return (
+    <span
+      className={`flex flex-col items-center gap-1 ${
+        active ? "text-teal-900" : "text-ink-muted"
+      }`}
+    >
+      {icon}
+      <span className="text-[10px]">{label}</span>
+    </span>
   );
 }
 
