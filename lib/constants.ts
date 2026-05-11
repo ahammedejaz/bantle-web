@@ -1,0 +1,33 @@
+export const BRAND_NAME = "Bantle";
+export const TAGLINE = "Share subscription costs.";
+export const SITE_URL = "https://bantle.in";
+export const SITE_DESCRIPTION =
+  "Bantle helps Indians find trusted partners to split family subscription plans for Spotify, YouTube Premium, Apple One, Microsoft 365 and more. Discovery and chat only — payments stay between you, via UPI.";
+
+export const CONTACT_EMAIL = "support@bantle.in";
+export const FEEDBACK_EMAIL = "feedback@bantle.in";
+export const PRIVACY_EMAIL = "privacy@bantle.in";
+export const LEGAL_EMAIL = "legal@bantle.in";
+export const GRIEVANCE_EMAIL = "grievance@bantle.in";
+
+export const COMPANY_PLACEHOLDER = "{{COMPANY_NAME}}";
+export const JURISDICTION_PLACEHOLDER = "{{CITY}}";
+export const GRIEVANCE_OFFICER_PLACEHOLDER = "{{GRIEVANCE_OFFICER_NAME}}";
+export const POSTAL_ADDRESS_PLACEHOLDER = "{{POSTAL_ADDRESS}}";
+
+export const NAV_LINKS = [
+  { href: "/about", label: "About" },
+  { href: "/how-it-works", label: "How it works" },
+  { href: "/safety", label: "Safety" },
+  { href: "/faq", label: "FAQ" },
+  { href: "/support", label: "Support" },
+];
+
+export const LEGAL_LINKS = [
+  { href: "/privacy", label: "Privacy policy" },
+  { href: "/terms", label: "Terms of service" },
+  { href: "/refund-policy", label: "Refund policy" },
+  { href: "/community-guidelines", label: "Community guidelines" },
+];
+
+export const POLICY_EFFECTIVE_DATE = "11 May 2026";
