@@ -10,10 +10,10 @@ export const PRIVACY_EMAIL = "privacy@bantle.in";
 export const LEGAL_EMAIL = "legal@bantle.in";
 export const GRIEVANCE_EMAIL = "grievance@bantle.in";
 
-export const COMPANY_PLACEHOLDER = "{{COMPANY_NAME}}";
-export const JURISDICTION_PLACEHOLDER = "{{CITY}}";
-export const GRIEVANCE_OFFICER_PLACEHOLDER = "{{GRIEVANCE_OFFICER_NAME}}";
-export const POSTAL_ADDRESS_PLACEHOLDER = "{{POSTAL_ADDRESS}}";
+export const COMPANY_NAME = "Syed Ejaz Ahammed";
+export const JURISDICTION_CITY = "Bengaluru";
+export const GRIEVANCE_OFFICER_NAME = "Syed Ejaz Ahammed";
+export const POSTAL_ADDRESS = "Bengaluru, Karnataka, India";
 
 export const NAV_LINKS = [
   { href: "/about", label: "About" },

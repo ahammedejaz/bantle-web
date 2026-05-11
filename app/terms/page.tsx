@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { PageHeader } from "@/components/PageHeader";
 import {
-  COMPANY_PLACEHOLDER,
-  JURISDICTION_PLACEHOLDER,
+  COMPANY_NAME,
+  JURISDICTION_CITY,
   LEGAL_EMAIL,
   POLICY_EFFECTIVE_DATE,
 } from "@/lib/constants";
@@ -259,13 +259,13 @@ export default function TermsPage() {
             Subject to the optional arbitration clause below, any disputes
             arising out of or in connection with these Terms or your use of
             the App will be subject to the exclusive jurisdiction of the
-            courts at {JURISDICTION_PLACEHOLDER}, India.
+            courts at {JURISDICTION_CITY}, India.
           </p>
           <p>
             At Bantle&apos;s sole option, disputes may instead be resolved
             by binding arbitration conducted under the Arbitration and
             Conciliation Act, 1996, by a sole arbitrator appointed by
-            Bantle and seated in {JURISDICTION_PLACEHOLDER}, India.
+            Bantle and seated in {JURISDICTION_CITY}, India.
             Proceedings will be conducted in English.
           </p>
         </section>
@@ -285,7 +285,7 @@ export default function TermsPage() {
           <p>
             For legal matters, write to{" "}
             <a href={`mailto:${LEGAL_EMAIL}`}>{LEGAL_EMAIL}</a>. The Bantle
-            App is operated by {COMPANY_PLACEHOLDER}.
+            App is operated by {COMPANY_NAME}.
           </p>
         </section>
       </article>

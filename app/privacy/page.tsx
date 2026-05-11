@@ -1,12 +1,12 @@
 import Link from "next/link";
 import { PageHeader } from "@/components/PageHeader";
 import {
-  COMPANY_PLACEHOLDER,
+  COMPANY_NAME,
   CONTACT_EMAIL,
   GRIEVANCE_EMAIL,
-  GRIEVANCE_OFFICER_PLACEHOLDER,
+  GRIEVANCE_OFFICER_NAME,
   POLICY_EFFECTIVE_DATE,
-  POSTAL_ADDRESS_PLACEHOLDER,
+  POSTAL_ADDRESS,
   PRIVACY_EMAIL,
 } from "@/lib/constants";
 
@@ -40,7 +40,7 @@ export default function PrivacyPage() {
         <section>
           <h2>1. Who we are</h2>
           <p>
-            Bantle is operated by {COMPANY_PLACEHOLDER} (&ldquo;Bantle&rdquo;,
+            Bantle is operated by {COMPANY_NAME} (&ldquo;Bantle&rdquo;,
             &ldquo;we&rdquo;, &ldquo;our&rdquo;, &ldquo;us&rdquo;), a company
             based in India. For privacy questions you can reach us at{" "}
             <a href={`mailto:${PRIVACY_EMAIL}`}>{PRIVACY_EMAIL}</a> or{" "}
@@ -229,7 +229,7 @@ export default function PrivacyPage() {
             <li>The right to grievance redressal.</li>
           </ul>
           <p>
-            Our grievance officer is {GRIEVANCE_OFFICER_PLACEHOLDER},
+            Our grievance officer is {GRIEVANCE_OFFICER_NAME},
             reachable at{" "}
             <a href={`mailto:${GRIEVANCE_EMAIL}`}>{GRIEVANCE_EMAIL}</a>. We
             acknowledge grievances within 7 days and respond fully within
@@ -296,7 +296,7 @@ export default function PrivacyPage() {
             <a href={`mailto:${PRIVACY_EMAIL}`}>{PRIVACY_EMAIL}</a>. For
             grievance redressal, write to{" "}
             <a href={`mailto:${GRIEVANCE_EMAIL}`}>{GRIEVANCE_EMAIL}</a>.
-            For postal contact: {POSTAL_ADDRESS_PLACEHOLDER}.
+            For postal contact: {POSTAL_ADDRESS}.
           </p>
         </section>
       </article>

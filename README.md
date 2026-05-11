@@ -129,22 +129,22 @@ The site is built to drop into Vercel with no custom config beyond what
 
 ---
 
-## Placeholders to fill in before launch
+## Legal identity values
 
-A few legal documents include placeholders that need real values before
-this site is publicly linked from the app:
+The legal pages reference the operator's identity, jurisdiction, and
+grievance contact. These live in `lib/constants.ts` and currently read:
 
-| Placeholder                       | Where it appears                              | What to replace it with                                    |
-| --------------------------------- | --------------------------------------------- | ---------------------------------------------------------- |
-| `{{COMPANY_NAME}}`                | `/privacy`, `/terms`                          | Registered company name (e.g., "Bantle Technologies Pvt Ltd"). |
-| `{{CITY}}`                        | `/terms` (jurisdiction)                       | City where the company is registered (e.g., "Hyderabad").  |
-| `{{GRIEVANCE_OFFICER_NAME}}`      | `/privacy`                                    | Name of the appointed grievance officer.                   |
-| `{{POSTAL_ADDRESS}}`              | `/privacy`                                    | Full registered postal address.                            |
+| Constant                | Value                            | Used in                     |
+| ----------------------- | -------------------------------- | --------------------------- |
+| `COMPANY_NAME`          | Syed Ejaz Ahammed                | `/privacy`, `/terms`        |
+| `JURISDICTION_CITY`     | Bengaluru                        | `/terms` (jurisdiction)     |
+| `GRIEVANCE_OFFICER_NAME`| Syed Ejaz Ahammed                | `/privacy`                  |
+| `POSTAL_ADDRESS`        | Bengaluru, Karnataka, India      | `/privacy`                  |
 
-All placeholders are defined in `lib/constants.ts`. Update them there and
-the values propagate to every page.
+Edit `lib/constants.ts` to change any of these — the values propagate
+to every page automatically.
 
-Other content placeholders:
+Other content to revisit later:
 
 - **Landing hero phone mock** — `components/HeroSection.tsx` currently
   ships an inline ASCII-like preview. Replace with a real mobile-app
