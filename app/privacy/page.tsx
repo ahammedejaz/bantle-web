@@ -41,8 +41,8 @@ export default function PrivacyPage() {
           <h2>1. Who we are</h2>
           <p>
             Bantle is operated by {COMPANY_NAME} (&ldquo;Bantle&rdquo;,
-            &ldquo;we&rdquo;, &ldquo;our&rdquo;, &ldquo;us&rdquo;), a company
-            based in India. For privacy questions you can reach us at{" "}
+            &ldquo;we&rdquo;, &ldquo;our&rdquo;, &ldquo;us&rdquo;), an
+            individual based in India. For privacy questions you can reach us at{" "}
             <a href={`mailto:${PRIVACY_EMAIL}`}>{PRIVACY_EMAIL}</a> or{" "}
             <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.
           </p>
