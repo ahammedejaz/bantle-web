@@ -256,12 +256,10 @@ export function ResetPasswordClient() {
               have been signed out. Open the Bantle app and sign in
               with your new password to continue.
             </p>
-            <a
-              href="bantle://"
-              className="inline-block bg-teal-900 text-cream font-medium text-base px-6 py-3 rounded-card hover:bg-teal-700 transition-colors"
-            >
-              Open Bantle
-            </a>
+            <p className="text-[14px] leading-7 text-ink-muted">
+              Open the Bantle app on your phone and sign in with your new
+              password to continue.
+            </p>
           </section>
         </article>
       </>

@@ -271,6 +271,8 @@ Chronological session log. Dates are absolute (ISO-style).
   - `/privacy` §1 — "a company based in India" → "an individual based in India" (Syed operates Bantle as a sole proprietor, not a registered company)
   - New `/verify` route — smart state detection for post-email-verification UX. Server-component page with `noindex` metadata, Suspense-wrapped `VerifyClient.tsx` that reads URL params + hash. Two render states (Verified vs Neutral). Reusable for future Supabase Auth flows (password reset, magic link, invite, email change).
   - This `BANTLE_WEB_PROJECT_DUMP.md`.
+- **2026-05-13 (web-based password reset)** — `lib/supabase.ts` browser-anon-key factory + `/reset-password` route (server component `page.tsx` + client form `ResetPasswordClient.tsx`) + `@supabase/supabase-js` dependency added; `/verify` `RecoveryState` branch removed since recovery URLs now redirect straight to `/reset-password`. Commit `7162c26`. See `~/Documents/GitHub/bantle/project_context_dump.md` §2 "Phase 11 — Web-based password reset" for full design context.
+- **2026-05-13 (this commit)** — Removed the `bantle://` "Open Bantle" deep-link button from `/reset-password`'s success state in `ResetPasswordClient.tsx`. Replaced with plain instructional text matching the Instagram / LinkedIn pattern. Motivated by mobile app freezing on splash when launched via the browser deep link. After this change, `/verify` is once again the only page on this site that links into the mobile app via `bantle://`.
 
 ---
 
