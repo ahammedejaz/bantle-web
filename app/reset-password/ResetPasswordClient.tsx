@@ -163,7 +163,29 @@ export function ResetPasswordClient() {
       });
 
       if (error) {
-        setPhase("error");
+        const msg = error.message?.toLowerCase() ?? "";
+        // Token-related errors → generic error state (OWASP no-info-leak).
+        // The user's recovery session is no longer valid in these cases,
+        // so they need a new reset link.
+        if (
+          msg.includes("token") ||
+          msg.includes("expired") ||
+          msg.includes("invalid") ||
+          msg.includes("not found") ||
+          msg.includes("jwt")
+        ) {
+          setPhase("error");
+          return;
+        }
+        // Anything else is a password policy issue (reuse, weakness,
+        // length, etc). Show inline so the user can try a different
+        // password without requesting a new link. The user is already
+        // authenticated via the recovery session at this point, so
+        // showing the Supabase message doesn't leak token state info.
+        setPasswordError(
+          error.message || "Couldn't update password. Try a different one.",
+        );
+        setPhase("ready");
         return;
       }
 
