@@ -115,13 +115,14 @@ function NeutralState() {
             What is Bantle?
           </p>
           <h2 className="font-serif italic text-2xl md:text-3xl text-teal-900 mb-3">
-            Share subscription costs with people you trust.
+            Coordinate your household&apos;s subscriptions.
           </h2>
           <p className="text-[15px] leading-7 text-ink-muted mb-4">
-            Bantle helps Indians find trusted partners to split family
-            subscription plans for Spotify, YouTube Premium, Apple One,
-            Microsoft 365 and more. Discovery and chat only — payments stay
-            between you, via UPI.
+            Bantle helps roommates, family and partners split the cost of
+            family-plan subscriptions they already share &mdash; Spotify,
+            YouTube Premium, Apple One, Microsoft 365 and more. Built for
+            the people you already live with. Payments stay between you,
+            via UPI.
           </p>
           <Link
             href="/"

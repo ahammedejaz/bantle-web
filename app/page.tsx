@@ -13,7 +13,7 @@ import { ComingSoonBadges } from "@/components/ComingSoonBadges";
 import { BRAND_NAME, SITE_DESCRIPTION } from "@/lib/constants";
 
 export const metadata = {
-  title: `${BRAND_NAME} — share subscription costs. Keep your savings.`,
+  title: `${BRAND_NAME} — coordinate your household's subscriptions.`,
   description: SITE_DESCRIPTION,
 };
 
@@ -38,24 +38,24 @@ function WhyBantle() {
             Why Bantle
           </p>
           <h2 className="font-serif text-3xl md:text-4xl text-teal-900 leading-tight tracking-tightish text-balance">
-            Real savings. Real people. No middleman taking a cut.
+            Built for the people who already share your fridge.
           </h2>
         </div>
         <div className="grid gap-6 md:grid-cols-3">
           <FeatureCard
             icon={HandCoins}
             title="Save real money"
-            body="A family Spotify plan in India costs around ₹179 a month. Split between six people, that's under ₹30 each. Now repeat that for YouTube Premium, Apple One and Microsoft 365. The maths adds up to thousands a year."
+            body="A family Spotify plan in India costs around ₹179 a month. Split across six household members, that's under ₹30 each. Repeat for YouTube Premium, Apple One and Microsoft 365. The maths quietly adds up to thousands a year."
           />
           <FeatureCard
             icon={HeartHandshake}
-            title="Find trusted partners"
-            body="Every member signs in with a verified phone number. Profiles build a star rating over time through Day 30, 60 and 90 check-ins. Talk before you share — coordinate over chat first, commit second."
+            title="Coordinate, don't negotiate"
+            body="Bantle is for households that already share a roof — roommates, family, partners. No stranger search, no marketplace. Just a calm place to track who pays for what and when the next renewal lands."
           />
           <FeatureCard
             icon={ShieldCheck}
             title="Stay in control"
-            body="Bantle never touches your money. You and your sharing partner settle in rupees on whatever UPI app you already use. No wallets to top up, no balances to chase, no fees to anyone."
+            body="Bantle never touches your money. You and your housemates settle in rupees on whatever UPI app you already use. No wallets to top up, no balances to chase, no fees to anyone."
           />
         </div>
       </div>
@@ -67,18 +67,18 @@ function HowItWorks() {
   const steps = [
     {
       icon: ListChecks,
-      title: "Post or browse a plan",
-      body: "Open the home feed to see listings around you, or post your own family plan. Listings show the platform, how many slots are open, the monthly price per person, and how long the host plans to keep the plan running.",
+      title: "Add the family plan you already share",
+      body: "Pick the plan you're hosting for the household — Spotify Family, YouTube Premium Family, Apple One, Microsoft 365 Family, and so on. Bantle remembers the slots, the per-person cost, and the renewal date so nobody has to.",
     },
     {
       icon: MessageCircle,
-      title: "Chat with a potential partner",
-      body: "Tap a listing and start a conversation. Ask the questions you would ask any flatmate-style arrangement — how payments work, whether everyone uses the plan within the same household, what happens if access changes.",
+      title: "Invite your household",
+      body: "Send your roommates, family or partner an invite from the app. Each member confirms their slot, agrees on what they'll pay, and signs in with email — quick, no SMS, no phone hassle.",
     },
     {
       icon: Wallet,
-      title: "Settle outside the app via UPI",
-      body: "Agree on terms, accept the deal in-app, and exchange UPI handles. From there it's a normal UPI payment between two people. Bantle stays out of the money flow, which is faster, cheaper and safer for everyone.",
+      title: "Split each month over UPI",
+      body: "When the bill lands, Bantle reminds everyone what they owe. Settlement happens directly between you on PhonePe, Google Pay or any UPI app. Bantle never holds money, never takes a cut.",
     },
   ];
 
@@ -90,7 +90,7 @@ function HowItWorks() {
             How it works
           </p>
           <h2 className="font-serif text-3xl md:text-4xl text-teal-900 leading-tight tracking-tightish text-balance">
-            Three simple steps from listing to your first split.
+            Three steps from one bill to a cleanly split household.
           </h2>
         </div>
         <ol className="grid gap-10 md:grid-cols-3">
@@ -139,24 +139,25 @@ function TrustSection() {
           </div>
           <div className="space-y-5">
             <p className="text-[16px] leading-8 text-ink">
-              Subscription sharing already happens — between siblings,
-              flatmates, and college groups — but everywhere outside Bantle
-              it&apos;s informal, awkward and easy to forget. We built Bantle to
-              make that pattern dependable, with the kind of trust signals
-              that help an honest stranger feel like a familiar neighbour.
+              Subscription sharing already happens in every Indian household
+              &mdash; between siblings, flatmates, parents and partners
+              &mdash; but everywhere outside Bantle it&apos;s a WhatsApp
+              thread that nobody updates and a payment somebody always
+              forgets. We built Bantle to make that pattern reliable for
+              the people who already live with each other.
             </p>
             <p className="text-[16px] leading-8 text-ink">
-              That means phone verification on every account, a ratings
-              system that rewards people who actually pay on time, and a
-              clear separation between discovery and money. We host the
-              conversation. You do the splitting.
+              That means email verification on every account, gentle
+              monthly reminders, and a clear separation between coordination
+              and money. We host the structure. Your household does the
+              splitting.
             </p>
             <ul className="grid gap-3 mt-6">
               {[
-                "Phone-verified members on every listing",
-                "Star ratings after the 30, 60 and 90-day marks",
+                "Email-verified members on every plan",
+                "Built for household members who already know each other",
                 "Free to use — Bantle doesn't earn from your splits",
-                "No payment handling — UPI directly between users",
+                "No payment handling — UPI directly between members",
               ].map((line) => (
                 <li
                   key={line}
@@ -185,8 +186,8 @@ function ComingSoonCTA() {
           Be the first to know when we launch.
         </h2>
         <p className="mt-5 text-lg leading-8 text-cream/80 max-w-2xl mx-auto">
-          Bantle is opening up to Indian users in early access. Drop us a
-          line if you&apos;d like to be one of the first invites, or
+          Bantle is opening up to Indian households in early access. Drop
+          us a line if you&apos;d like to be one of the first invites, or
           bookmark the store badges below.
         </p>
         <div className="mt-10">

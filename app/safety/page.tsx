@@ -5,7 +5,7 @@ import { CONTACT_EMAIL } from "@/lib/constants";
 export const metadata = {
   title: "Safety",
   description:
-    "How Bantle helps you spot good-faith sharers, control your account, and report issues. Bantle is a discovery and chat app — money flows happen outside it.",
+    "How Bantle helps you keep your household's subscription coordination tidy, your account in your control, and any misuse easy to report. Bantle is a coordination tool — money flows happen outside it.",
 };
 
 export default function SafetyPage() {
@@ -14,18 +14,24 @@ export default function SafetyPage() {
       <PageHeader
         eyebrow="Trust &amp; safety"
         title="A quiet, layered approach to keeping Bantle safe."
-        intro="No identity layer eliminates risk on the open internet, but together — phone verification, ratings, blocks and reports — they make bad-faith behaviour expensive and obvious."
+        intro="Bantle's strongest safety signal isn't a verification badge — it's the fact that everyone on a plan already lives with each other. Email verification, blocks, reports and ratings handle the edge cases."
       />
       <article className="container-x py-12 md:py-16 prose-bantle max-w-3xl">
         <section>
-          <h2>How we keep Bantle safe</h2>
+          <h2>Trust starts with your household</h2>
           <p>
-            Bantle is a peer-to-peer space, which means most of the safety
-            work happens at the edges: making it hard to sign up
-            anonymously, making it easy to walk away from a bad
-            conversation, and making it normal to leave a record after a
-            deal. We don&apos;t intervene in the middle of a chat unless
-            something is reported. We do listen carefully when it is.
+            Bantle is designed for the people you already live with —
+            roommates, family, partners. The single most important safety
+            principle on Bantle is that you should not be coordinating a
+            subscription with somebody you wouldn&apos;t hand a spare key
+            to. Most subscription providers also require it, and the entire
+            structure of the app assumes it.
+          </p>
+          <p>
+            That means we don&apos;t lean on heavy identity checks the way
+            a stranger-marketplace would have to. Instead we focus on
+            keeping each household&apos;s data tidy, each member&apos;s
+            account in their own control, and any misuse easy to surface.
           </p>
         </section>
 
@@ -33,23 +39,26 @@ export default function SafetyPage() {
           <h2>Verification layers</h2>
           <ul>
             <li>
-              <strong>Phone OTP.</strong> Every account is bound to a
-              working Indian mobile number, verified via SMS through MSG91
-              at sign-up.
-            </li>
-            <li>
-              <strong>Email verification.</strong> A confirmed email is
-              required before posting a listing or proposing a deal — it
-              gives both sides a backup channel if push notifications fail.
+              <strong>Email verification.</strong> Every account is
+              confirmed via a verification email at sign-up. The same email
+              becomes your sign-in method and your backup channel if push
+              notifications fail.
             </li>
             <li>
               <strong>Google sign-in.</strong> An optional second identity
-              signal for members who prefer it.
+              signal for members who prefer it — useful if you tend to lose
+              passwords.
             </li>
             <li>
-              <strong>Ratings over time.</strong> The most powerful trust
-              signal on Bantle is months-old. A host with twelve consistent
-              ratings has done the work that no badge can simulate.
+              <strong>Household-only invites.</strong> Members join a plan
+              only when the host explicitly invites them by email. There
+              is no public feed of plans for strangers to browse and join.
+            </li>
+            <li>
+              <strong>Ratings over time.</strong> If a household member
+              repeatedly fails to settle on time, the rating they build up
+              becomes a useful internal signal for the next time you
+              consider adding them to a new plan.
             </li>
           </ul>
         </section>
@@ -58,59 +67,61 @@ export default function SafetyPage() {
           <h2>What you control</h2>
           <ul>
             <li>
-              <strong>Block.</strong> Block any user from any chat. Blocked
-              members can&apos;t see your listings, send you messages, or
-              propose deals.
+              <strong>Block.</strong> Block any member you no longer want
+              involved with your plans or chats. Blocked members can&apos;t
+              see your plans, send you messages, or request to be added.
             </li>
             <li>
               <strong>Report.</strong> A single in-app report puts the
-              other member&apos;s account in front of our moderation queue.
-              Reports are private — the reported member is never told who
-              filed it.
+              other member&apos;s account in front of our moderation
+              queue. Reports are private — the reported member is never
+              told who filed it.
             </li>
             <li>
-              <strong>Hide listings.</strong> Pause or hide your own
-              listings whenever you don&apos;t want new chats coming in.
+              <strong>Hide or pause your plans.</strong> Pause invitations
+              into your plan, or hide it from the rest of the household
+              while you sort something out.
             </li>
             <li>
-              <strong>Privacy.</strong> Toggle online presence, last-seen,
-              and read receipts in Settings.
+              <strong>Privacy.</strong> Toggle online presence, last-seen
+              and read receipts in Settings — the same way you would on
+              any modern messenger.
             </li>
           </ul>
         </section>
 
         <section>
-          <h2>Red flags to watch for</h2>
+          <h2>Red flags inside a household plan</h2>
           <p>
-            The vast majority of Bantle conversations end with two people
-            quietly sharing a plan and forgetting about us. A small number
-            don&apos;t. Here&apos;s what to watch for before you commit:
+            Most Bantle plans quietly settle every month and never need
+            our attention. A small number turn awkward. Here&apos;s what
+            to watch for, especially when a household composition is in
+            flux:
           </p>
           <ul>
             <li>
-              A rush to send the first month&apos;s payment within minutes
-              of opening the chat. Honest hosts let you ask questions
-              first.
+              A member of the plan asks you to add somebody outside the
+              household. Bantle is not designed for that; the underlying
+              subscription provider typically isn&apos;t either.
             </li>
             <li>
-              Pressure to move the conversation to WhatsApp or another
-              platform before any agreement is reached.
+              Someone wants to move the conversation off Bantle to settle
+              outside the agreed split — usually a sign that the
+              arithmetic is about to get fuzzy.
             </li>
             <li>
-              Requests for payment to multiple UPI handles, or a different
-              UPI handle than the one shared earlier in the chat.
+              Requests for payment to a UPI handle that doesn&apos;t match
+              the one shared earlier in the plan.
             </li>
             <li>
-              Vague or contradictory answers about who runs the master
-              account, how access is shared, or what happens at renewal.
+              Pressure to share OTPs, account passwords, or your primary
+              email password — never required for any normal household
+              split.
             </li>
             <li>
-              Any pressure to share OTPs, account passwords, or your
-              primary email password — never required for a normal split.
-            </li>
-            <li>
-              A profile with no ratings and a listing far below market
-              price. Not always a scam, but always worth a slower chat.
+              A member who has stopped using the actual subscription but
+              keeps occupying a slot. Talk it through; close the slot if
+              they&apos;ve effectively moved on.
             </li>
           </ul>
         </section>
@@ -119,20 +130,21 @@ export default function SafetyPage() {
           <h2>If something goes wrong</h2>
           <ol>
             <li>
-              <strong>Stop the share if you can.</strong> If the deal is
-              still pending and money hasn&apos;t moved, decline the deal
-              and block the user.
+              <strong>Pause the plan.</strong> If somebody on your plan is
+              behaving badly, pause the plan or remove the slot before
+              more money moves.
             </li>
             <li>
-              <strong>File a report.</strong> Open the chat, tap the menu,
-              choose Report. Pick the category that fits and include any
-              detail you have. Reports go to our queue and most are
-              actioned within 24 hours.
+              <strong>File a report.</strong> Open the chat or plan, tap
+              the menu, choose Report. Pick the category that fits and
+              include any detail you have. Reports go to our queue and
+              most are actioned within 24 hours.
             </li>
             <li>
-              <strong>Leave an honest rating.</strong> If the deal already
-              progressed, your rating becomes a real-time signal for the
-              next person who considers sharing with the same host.
+              <strong>Leave an honest rating.</strong> If the issue
+              already played out, your rating becomes a useful signal the
+              next time anyone in your household considers adding the
+              same person to a plan.
             </li>
             <li>
               <strong>Email us if it&apos;s serious.</strong> Write to{" "}
@@ -143,22 +155,23 @@ export default function SafetyPage() {
         </section>
 
         <section>
-          <h2>Important: Bantle is discovery and chat only</h2>
+          <h2>Important: Bantle is coordination only</h2>
           <p>
-            Bantle does not hold, route, or insure your payments. Every
-            rupee that changes hands moves directly between you and your
-            sharing partner on UPI. If a payment dispute occurs — wrong
-            amount sent, duplicate transfer, refund needed — those are
-            resolved inside your UPI app&apos;s own dispute process, with
-            your bank, or directly between the two of you.
+            Bantle does not hold, route or insure your payments. Every
+            rupee that changes hands moves directly between household
+            members on UPI. If a payment dispute occurs — wrong amount
+            sent, duplicate transfer, refund needed — those are resolved
+            inside your UPI app&apos;s own dispute process, with your
+            bank, or directly between the members involved.
           </p>
           <p>
             What we can do: act on behavioural issues, suspend or remove
             accounts that violate our{" "}
             <Link href="/community-guidelines">community guidelines</Link>,
             and make sure repeat offenders don&apos;t get a second chance.
-            What we can&apos;t do: reverse a UPI transfer, refund your money,
-            or guarantee the outcome of any specific deal.
+            What we can&apos;t do: reverse a UPI transfer, refund your
+            money, or guarantee the outcome of any specific household
+            arrangement.
           </p>
         </section>
       </article>

@@ -12,12 +12,13 @@ export function HeroSection() {
               Coming soon · Made in India
             </p>
             <h1 className="font-serif italic text-4xl sm:text-5xl md:text-6xl text-teal-900 leading-[1.05] tracking-tightish text-balance">
-              Share subscription costs. Keep your savings.
+              Coordinate your household&rsquo;s subscriptions.
             </h1>
             <p className="mt-6 text-lg leading-8 text-ink-muted max-w-xl">
-              Bantle helps you find trusted neighbours to split family plans
-              for Spotify, YouTube Premium, Apple One, and more. Save
-              thousands a year. No middleman.
+              Bantle helps roommates, family and partners split the cost of
+              the family plans you already share &mdash; Spotify, YouTube
+              Premium, Apple One and more. Keep the savings. Skip the
+              awkward maths.
             </p>
             <div className="mt-8">
               <ComingSoonBadges />

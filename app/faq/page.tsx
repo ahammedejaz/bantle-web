@@ -5,7 +5,7 @@ import { CONTACT_EMAIL } from "@/lib/constants";
 export const metadata = {
   title: "Frequently asked questions",
   description:
-    "Common questions about Bantle: what it is, how subscription sharing works, what we do about trust and safety, account management, and supported devices.",
+    "Common questions about Bantle: what it is, how household subscription coordination works, what we do about trust and safety, account management, and supported devices.",
 };
 
 interface QA {
@@ -26,13 +26,13 @@ const sections: Section[] = [
         q: "What is Bantle?",
         a: (
           <p>
-            Bantle is an Indian mobile app that helps you find trusted
-            partners to share family subscription plans like Spotify,
-            YouTube Premium, Apple One and Microsoft 365. Listings are
-            organised by platform and price, and a built-in chat lets you
-            talk to a potential sharer before committing. Bantle handles
-            discovery and conversation only — money moves between users
-            directly on UPI.
+            Bantle is an Indian mobile app that helps your household
+            coordinate the family-plan subscriptions you already share —
+            Spotify Family, YouTube Premium Family, Apple One, Microsoft
+            365 Family, and the like. The host adds the plan, invites the
+            members of the household onto it, and Bantle handles the
+            monthly reminders and the split. Money moves directly between
+            members on UPI.
           </p>
         ),
       },
@@ -40,51 +40,81 @@ const sections: Section[] = [
         q: "Is Bantle free to use?",
         a: (
           <p>
-            Yes. Posting and browsing listings, chatting with hosts, and
-            running deals through their full lifecycle are all free. Bantle
-            doesn&apos;t charge a transaction fee, doesn&apos;t take a
-            percentage of your split, and doesn&apos;t show ads.
+            Yes. Adding plans, inviting your household, running monthly
+            settlements and the full lifecycle of a household plan are all
+            free. Bantle doesn&apos;t charge a transaction fee, doesn&apos;t
+            take a percentage of your split, and doesn&apos;t show ads.
           </p>
         ),
       },
       {
-        q: "Do I need a phone number to use Bantle?",
+        q: "How do I sign in?",
         a: (
           <p>
-            Yes. A working Indian mobile number is required to sign up. We
-            send a one-time code via SMS to verify the number, which becomes
-            the primary identifier for your account. This single step is the
-            backbone of how Bantle keeps the community honest.
+            Bantle uses email-based sign-in. You enter your email, we send
+            a verification message, you confirm, and you&apos;re in.
+            Optionally you can link Google sign-in for one-tap access.
+            No SMS step is involved.
           </p>
         ),
       },
       {
-        q: "Can I sign in with email instead of phone?",
+        q: "Do I need to give Bantle my phone number?",
         a: (
           <p>
-            You can also link Google sign-in or an email address as a second
-            sign-in method, but a verified phone number is required as the
-            primary identity. This is non-negotiable for now — we may
-            revisit it once the network is larger.
+            No. Bantle does not collect phone numbers. Your email is the
+            single identifier we use, and it&apos;s also how the people in
+            your household send each other invites to a plan.
           </p>
         ),
       },
     ],
   },
   {
-    heading: "How sharing works",
+    heading: "How household coordination works",
     items: [
       {
-        q: "Which subscriptions can I share on Bantle?",
+        q: "Which subscriptions can I coordinate on Bantle?",
         a: (
           <p>
-            Any subscription that legally supports a family or shared plan
-            and that you have the right to offer to others. Common ones
-            today include Spotify Family, YouTube Premium Family, Apple
-            One, Microsoft 365 Family, Netflix family plans (where the
-            provider permits), JioCinema/Hotstar bundles and similar
-            services. Bantle does not verify provider compliance — read the
-            provider&apos;s terms before posting.
+            Any family or household plan that you have the right to
+            coordinate among the members of your own household. Common
+            ones today include Spotify Family, YouTube Premium Family,
+            Apple One, Microsoft 365 Family, Amazon Prime, JioCinema
+            Premium, Disney+ Hotstar Super, YouTube Music Family,
+            SonyLIV Premium, Zee5 Premium and Audible Family. Bantle does
+            not verify provider compliance — read the provider&apos;s
+            terms before you add a plan.
+          </p>
+        ),
+      },
+      {
+        q: "Why is Bantle household-only?",
+        a: (
+          <p>
+            Almost every &ldquo;family&rdquo; or &ldquo;household&rdquo;
+            subscription tier was designed for people living at the same
+            address. Providers verify this in different ways &mdash;
+            Spotify and YouTube Premium do address checks, Apple One
+            requires Family Sharing, and so on. A stranger marketplace
+            for these plans tends to violate provider terms, end with
+            forced sign-outs, and put both sides in an awkward position.
+            Bantle is built for the case the providers intend.
+          </p>
+        ),
+      },
+      {
+        q: "Can I share with friends who don't live with me?",
+        a: (
+          <p>
+            Honest answer: most providers say no, and they enforce it more
+            seriously every year. Bantle won&apos;t stop you from inviting
+            someone outside your household, but it&apos;s the wrong tool
+            for that case — you&apos;d be responsible for any
+            consequences from the provider, and we won&apos;t coordinate
+            it the way we coordinate household members. We strongly
+            recommend keeping your Bantle plans to the people you actually
+            live with.
           </p>
         ),
       },
@@ -92,34 +122,36 @@ const sections: Section[] = [
         q: "How do payments work?",
         a: (
           <p>
-            Bantle never holds money. Once a deal is accepted in-app, you
-            and your sharing partner exchange UPI handles in the chat and
-            pay each other directly each month, the same way you would pay
-            anyone else on PhonePe, Google Pay or Paytm.
+            Bantle never holds money. When the subscription bills the
+            host, Bantle reminds every other member of what they owe and
+            who to pay. Settlement happens directly on PhonePe, Google
+            Pay, Paytm or any UPI app you already use — the same way
+            you&apos;d send anyone else money.
           </p>
         ),
       },
       {
-        q: "What if my partner stops paying mid-deal?",
+        q: "What happens if my household composition changes?",
         a: (
           <p>
-            The host can revoke access at any time, end the deal early and
-            file a rating that reflects what happened. Bantle can act on
-            behavioural reports, suspend the offending account, and prevent
-            them from joining new deals. Bantle cannot recover a UPI
-            payment — that&apos;s handled via your UPI app&apos;s dispute
-            mechanism or directly between the two of you.
+            People move, families shift, partners come and go. From inside
+            any plan you can remove the member who&apos;s leaving,
+            reassign their slot, add a new household member, or close the
+            plan entirely. Past settlement history stays intact so
+            nobody has to remember whether September was settled.
           </p>
         ),
       },
       {
-        q: "How long is a typical deal?",
+        q: "What if a household member stops paying?",
         a: (
           <p>
-            Hosts pick the duration when they post a listing. Common
-            choices are 1 month (trial), 3 months, 6 months and 12 months.
-            Twelve-month deals get the most renewals because they line up
-            with how many providers bill family plans annually.
+            The host can remove the slot at any time and rebalance the
+            split across the remaining members. Bantle can also act on
+            behavioural reports if there&apos;s a pattern across multiple
+            plans. Bantle cannot recover a UPI payment — that&apos;s
+            handled via your UPI app&apos;s dispute mechanism or directly
+            between the members involved.
           </p>
         ),
       },
@@ -129,25 +161,26 @@ const sections: Section[] = [
     heading: "Trust and safety",
     items: [
       {
-        q: "How do I know other users are real?",
+        q: "How does Bantle keep things safe?",
         a: (
           <p>
-            Every account is tied to a verified Indian phone number, and
-            most active accounts also have a verified email and Google
-            sign-in linked. The strongest trust signal, though, is the
-            ratings history: hosts and sharers who have been on the platform
-            for a few months carry a public track record that is much
-            harder to fake than any badge.
+            The strongest safety signal on Bantle is that everyone on a
+            plan already lives with each other — trust is built into the
+            household, not bolted on with a badge. On top of that, every
+            account is email-verified, every plan is private to the
+            members invited to it, and any member can report or block at
+            any time.
           </p>
         ),
       },
       {
-        q: "What if someone is rude or scammy?",
+        q: "What if someone in my plan is rude or behaves badly?",
         a: (
           <p>
-            Open the chat, tap the menu, and report. Reports are private,
-            actioned by our moderation queue, and usually resolved within
-            24 hours. For anything urgent or unclear, you can also email{" "}
+            Open the chat or plan, tap the menu, and report. Reports are
+            private, actioned by our moderation queue, and usually
+            resolved within 24 hours. For anything urgent or unclear, you
+            can also email{" "}
             <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.
           </p>
         ),
@@ -157,21 +190,20 @@ const sections: Section[] = [
         a: (
           <p>
             Yes. Open their profile or your chat with them, tap the menu,
-            and block. A blocked member can&apos;t see your listings, send
-            you messages or propose deals. You can unblock at any time.
+            and block. A blocked member can&apos;t see your plans, send
+            you messages or request to join. You can unblock at any time.
           </p>
         ),
       },
       {
-        q: "Does Bantle moderate listings and ratings?",
+        q: "Does Bantle moderate content?",
         a: (
           <p>
-            We don&apos;t moderate listings before they go live, but every
-            listing is subject to our{" "}
-            <Link href="/community-guidelines">community guidelines</Link>{" "}
-            and can be removed if reported. We only intervene in ratings if
-            they are clearly abusive — ratings are designed to be honest
-            signals, not curated reviews.
+            Bantle plans are private by design, so there isn&apos;t much
+            public content to moderate in the first place. What we do
+            moderate, on report, is behaviour inside chats and plans
+            that violates our{" "}
+            <Link href="/community-guidelines">community guidelines</Link>.
           </p>
         ),
       },
@@ -187,8 +219,8 @@ const sections: Section[] = [
             Go to Settings → Account → Delete account. You&apos;ll see a
             7-day grace window before everything is permanently removed —
             this is to protect you in case you tap delete by accident or
-            change your mind. After 7 days, your profile, listings, deals
-            history and chat content are deleted from active databases.
+            change your mind. After 7 days, your profile, plans, history
+            and chat content are deleted from active databases.
           </p>
         ),
       },
@@ -206,14 +238,13 @@ const sections: Section[] = [
         ),
       },
       {
-        q: "Can I change my phone number?",
+        q: "How do I change my email address?",
         a: (
           <p>
-            Yes. From Settings → Edit profile → Phone, you can start a
-            number change. We verify the new number via OTP and migrate your
-            account, ratings and chat history to it. We strongly recommend
-            doing this from a stable network and with both SIMs handy in
-            case you need to fall back.
+            From Settings → Edit profile → Email, start an email change.
+            We send a verification message to the new address, and once
+            you confirm it your account migrates over with all your
+            plans, history and chats intact.
           </p>
         ),
       },
@@ -227,9 +258,10 @@ const sections: Section[] = [
         a: (
           <p>
             We&apos;re launching on Android first, with iOS to follow
-            shortly after. Android 9 (Pie) and above is supported. There is
-            no Bantle website experience for end users beyond this marketing
-            site — listings, chat, and deals all live in the mobile app.
+            shortly after. Android 9 (Pie) and above is supported. There
+            is no Bantle website experience for end users beyond this
+            marketing site — plans, chat and settlement all live in the
+            mobile app.
           </p>
         ),
       },
@@ -237,11 +269,11 @@ const sections: Section[] = [
         q: "Why am I not getting verification emails?",
         a: (
           <p>
-            Check your spam, promotions or junk folder first — transactional
-            emails from new domains sometimes land there until you mark them
-            as not spam. If you still don&apos;t see anything after a few
-            minutes, request the email again from the app. If the second
-            attempt also fails, write to{" "}
+            Check your spam, promotions or junk folder first &mdash;
+            transactional emails from new domains sometimes land there
+            until you mark them as not spam. If you still don&apos;t see
+            anything after a few minutes, request the email again from
+            the app. If the second attempt also fails, write to{" "}
             <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a> and
             we&apos;ll resend manually.
           </p>
@@ -251,12 +283,12 @@ const sections: Section[] = [
         q: "I can't sign in — what should I do?",
         a: (
           <p>
-            The most common cause is a network issue while the OTP is being
-            delivered. Force-quit the app, switch from Wi-Fi to mobile data
-            (or vice versa), and try again. If the OTP itself never arrives,
-            tap &quot;resend&quot;. If your number recently changed
-            providers (MNP), the SMS route can take 24-48 hours to stabilise
-            — Google sign-in is a good fallback in the meantime.
+            Email-based sign-in failures usually trace back to one of
+            three things: the verification email landed in spam, the
+            email address has a typo, or the device is offline. Check
+            spam, retype the address carefully, and switch networks if
+            needed. If you&apos;ve linked Google sign-in earlier, that
+            route is a quick fallback.
           </p>
         ),
       },

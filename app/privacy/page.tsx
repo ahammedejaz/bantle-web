@@ -28,12 +28,13 @@ export default function PrivacyPage() {
         <section>
           <h2>In short</h2>
           <p>
-            Bantle is a discovery and chat app. We collect the minimum data
-            needed to verify you, run the app, and protect the community.
-            We do not sell your data to anybody, ever. We do not handle
-            payments, so we don&apos;t hold any financial information about
-            you. The rest of this page is the long, careful version of
-            that.
+            Bantle is a household-coordination app for splitting family-plan
+            subscriptions. We collect the minimum data needed to verify
+            you, run the app, and protect each household&apos;s
+            information. We do not collect phone numbers. We do not sell
+            your data to anybody, ever. We do not handle payments, so we
+            don&apos;t hold any financial information about you. The rest
+            of this page is the long, careful version of that.
           </p>
         </section>
 
@@ -52,28 +53,27 @@ export default function PrivacyPage() {
           <h2>2. Data we collect</h2>
           <h3>Identity data</h3>
           <ul>
-            <li>Indian mobile phone number (required for sign-up via OTP).</li>
-            <li>Email address (required to use most features).</li>
+            <li>Email address (required for sign-up and the main way we verify you).</li>
             <li>Optional: display name, short bio, profile photo (avatar).</li>
           </ul>
 
           <h3>Auth data</h3>
           <ul>
             <li>Google OAuth profile (only if you choose to link Google sign-in).</li>
-            <li>OTP verification records associated with your phone and email, retained briefly for fraud prevention.</li>
+            <li>Email verification records, retained briefly for fraud prevention and audit.</li>
           </ul>
 
           <h3>Profile data</h3>
           <ul>
-            <li>Subscription platforms you express interest in.</li>
+            <li>Subscription plans you host or are invited to as a household member.</li>
             <li>Approximate city-level location (never precise GPS).</li>
-            <li>Ratings you receive and give, with associated deal IDs.</li>
+            <li>Ratings you receive and give, with associated plan IDs.</li>
           </ul>
 
           <h3>Communication data</h3>
           <ul>
             <li>Messages you send inside Bantle&apos;s chat.</li>
-            <li>Deal proposals, acceptances and milestone check-ins.</li>
+            <li>Plan invites, member confirmations, monthly settlement records.</li>
             <li>Reports you file about other users, and reports filed about you.</li>
           </ul>
 
@@ -85,11 +85,13 @@ export default function PrivacyPage() {
 
           <h3>Usage data</h3>
           <ul>
-            <li>Which screens you visit and when, collected anonymously through PostHog once we enable analytics. We do not link this to your identity inside the analytics tool.</li>
+            <li>Which screens you visit and when, collected anonymously through PostHog. We do not link this to your identity inside the analytics tool.</li>
+            <li>Crash and error events captured via Bugsnag for stability diagnostics. These never contain message content.</li>
           </ul>
 
           <h3>Data we do not collect</h3>
           <ul>
+            <li>Phone numbers. Bantle does not use SMS for verification or as an identifier.</li>
             <li>Payment information of any kind. Bantle does not process payments.</li>
             <li>Precise GPS or background location.</li>
             <li>Your contacts list, SMS messages or call logs.</li>
@@ -100,11 +102,11 @@ export default function PrivacyPage() {
         <section>
           <h2>3. How we use your data</h2>
           <ul>
-            <li>To run the service: matching hosts with potential sharers, supporting chat and deal flows.</li>
-            <li>To verify identity through phone OTP and email confirmation.</li>
-            <li>To send transactional emails like verification codes, password resets and deal updates.</li>
+            <li>To run the service: coordinating plans across household members, supporting chat and monthly settlement flows.</li>
+            <li>To verify identity through email confirmation.</li>
+            <li>To send transactional emails like verification messages, password resets and plan updates.</li>
             <li>To deliver in-app and push notifications.</li>
-            <li>To improve Bantle, in aggregate, through anonymised analytics.</li>
+            <li>To improve Bantle, in aggregate, through anonymised analytics and crash reporting.</li>
             <li>To investigate reports, enforce our{" "}
               <Link href="/community-guidelines">community guidelines</Link>{" "}
               and protect the integrity of the community.
@@ -128,11 +130,7 @@ export default function PrivacyPage() {
             </li>
             <li>
               <strong>Resend</strong> — transactional email delivery
-              (sign-up verifications, deal updates).
-            </li>
-            <li>
-              <strong>MSG91</strong> — SMS OTP delivery for Indian mobile
-              numbers.
+              (sign-up verifications, password resets, plan updates).
             </li>
             <li>
               <strong>Firebase Cloud Messaging</strong> — push notification
@@ -143,12 +141,14 @@ export default function PrivacyPage() {
               who choose it.
             </li>
             <li>
-              <strong>Sentry</strong> — anonymised crash and error
-              reporting, planned for a future release.
+              <strong>Bugsnag</strong> — anonymised crash and error
+              reporting from the mobile app. Stack traces only; no message
+              content.
             </li>
             <li>
-              <strong>PostHog</strong> — anonymised in-app analytics,
-              planned for a future release.
+              <strong>PostHog</strong> — anonymised in-app analytics
+              (screen views and feature usage). We do not link analytics
+              events to your identity.
             </li>
           </ul>
         </section>
@@ -161,20 +161,22 @@ export default function PrivacyPage() {
           </p>
           <ul>
             <li>
-              <strong>With users you talk to.</strong> Your name, avatar,
-              public ratings and live listings are visible to people you
-              chat with — that visibility is the entire point of the app.
+              <strong>With members of plans you join.</strong> Your name,
+              avatar and public ratings are visible to the other members
+              of any plan you host or join — that visibility is what makes
+              household coordination work.
             </li>
             <li>
-              <strong>With service providers above.</strong> Limited to the
-              data each provider needs to operate their narrow function
-              (e.g., MSG91 only sees the phone number it sends the OTP to).
+              <strong>With service providers above.</strong> Limited to
+              the data each provider needs to operate their narrow
+              function (e.g., Resend only sees the email address it&apos;s
+              delivering a transactional message to).
             </li>
             <li>
               <strong>With law enforcement.</strong> Only when we are
               compelled by a valid legal request narrowly scoped to a
-              specific user or incident, and only to the extent required by
-              Indian law.
+              specific user or incident, and only to the extent required
+              by Indian law.
             </li>
           </ul>
         </section>
@@ -254,8 +256,7 @@ export default function PrivacyPage() {
           <ul>
             <li>Data is encrypted in transit (TLS) and at rest.</li>
             <li>
-              Two-factor identity through phone OTP and email confirmation
-              is available for sensitive actions.
+              Sensitive actions require email re-verification.
             </li>
             <li>
               We review our access controls and dependencies periodically.
