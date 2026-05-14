@@ -243,10 +243,11 @@ export default function PrivacyPage() {
           <h2>8. Children&apos;s privacy</h2>
           <p>
             Bantle is for adults only — you must be 18 or older to use it.
-            We do not knowingly collect personal data from anyone under 18.
-            If we discover that an account belongs to a minor, we delete
-            its data and disable the account. If you believe a minor has
-            created an account, write to{" "}
+            We capture this confirmation at signup as an attestation in
+            your profile. We do not knowingly collect personal data from
+            anyone under 18. If we discover that an account belongs to a
+            minor, we delete its data and disable the account. If you
+            believe a minor has created an account, write to{" "}
             <a href={`mailto:${PRIVACY_EMAIL}`}>{PRIVACY_EMAIL}</a>.
           </p>
         </section>
