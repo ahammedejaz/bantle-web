@@ -85,7 +85,7 @@ export default function PrivacyPage() {
 
           <h3>Usage data</h3>
           <ul>
-            <li>Which screens you visit and when, collected anonymously through PostHog. We do not link this to your identity inside the analytics tool.</li>
+            <li>Which screens you visit and when, collected anonymously through PostHog. We do not link this to your identity inside the analytics tool. You can turn this off any time from Settings → Privacy &amp; Safety → Usage analytics.</li>
             <li>Crash and error events captured via Bugsnag for stability diagnostics. These never contain message content.</li>
           </ul>
 
