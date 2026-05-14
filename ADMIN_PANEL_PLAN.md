@@ -352,6 +352,35 @@ Recommended order matches the list below — it prioritizes operationally urgent
 
 ---
 
+### Phase 1.1 — Closeout: logout, mobile responsive, identity
+
+**Status**: SHIPPED
+
+**Goal**: Address gaps surfaced during Phase 1 smoke testing — the missing logout button (which blocked tests 1, 4, 5), the lack of mobile responsiveness, and the missing admin identity indicator in nav.
+
+**bantle-web changes**:
+- New: `app/admin/api/logout/route.ts` — server-side sign-out endpoint
+- New: `components/admin/LogoutConfirmDialog.tsx` — confirm before signOut
+- New: `components/admin/AdminMobileHeader.tsx` — hamburger drawer for small screens, opens a Radix Dialog containing the existing AdminNav
+- Modified: `components/admin/AdminNav.tsx` — adds admin identity block at the bottom (name + email + sign out button), accepts an optional `onItemClick` prop so the mobile drawer can close itself on navigation
+- Modified: `app/admin/layout.tsx` — fetches admin identity once at the layout level via service role, passes name + email to nav components, shows desktop sidebar OR mobile header based on viewport (md breakpoint)
+- Modified: `app/admin/page.tsx` + 3 placeholders — responsive padding and heading sizes
+
+**Smoke tests** (user runs):
+1. Desktop view: sidebar visible on left, admin identity at bottom, logout button works → confirms logout works
+2. Resize browser to ~400px wide: sidebar disappears, hamburger appears at top right
+3. Tap hamburger: drawer slides in from left with same nav + identity
+4. Tap a nav item from inside drawer: drawer closes AND navigates
+5. Logout confirmation dialog: tap "Sign out" button → dialog appears
+6. Cancel dialog: returns to current page without signing out
+7. Confirm sign out: redirects to /admin/login, session cleared, visiting /admin while signed out redirects back to /admin/login
+8. After sign out, visit /admin as a non-admin user: redirected to /
+9. Sign back in as admin: visit /admin/login while signed in → bounces to /admin (Phase 1 smoke test #5 — now testable)
+
+**Out of scope**: design tweaks to data tables/forms (none exist yet — those come per-phase starting with Phase 2 Reports).
+
+---
+
 ### Phase 2 — Reports queue
 
 **Status**: NOT STARTED
