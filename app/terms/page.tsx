@@ -5,11 +5,7 @@ import {
   JURISDICTION_CITY,
   LEGAL_EMAIL,
 } from "@/lib/constants";
-import {
-  CHANGES_FROM_PREVIOUS,
-  CURRENT_VERSION,
-  EFFECTIVE_DATE_DISPLAY,
-} from "@/lib/tos";
+import { CURRENT_VERSION, EFFECTIVE_DATE_DISPLAY } from "@/lib/tos";
 
 export const metadata = {
   title: "Terms of service",
@@ -26,28 +22,6 @@ export default function TermsPage() {
         intro={`Version ${CURRENT_VERSION}. Effective ${EFFECTIVE_DATE_DISPLAY}. By using Bantle you agree to these terms.`}
       />
       <article className="container-x py-12 md:py-16 prose-bantle max-w-3xl">
-        <section className="not-prose bg-teal-100 border border-line rounded-card p-6 mb-12">
-          <p className="text-xs uppercase tracking-[0.14em] text-teal-600 mb-3">
-            What changed in v{CURRENT_VERSION}
-          </p>
-          <p className="text-[15px] leading-7 text-teal-900 mb-4">
-            We have substantially rewritten these Terms to reflect what
-            Bantle actually is: a coordination tool for household
-            subscription splitting, not a marketplace for strangers. The
-            most material changes are:
-          </p>
-          <ul className="space-y-2 text-[15px] leading-7 text-teal-900 list-disc pl-5">
-            {CHANGES_FROM_PREVIOUS.map((change) => (
-              <li key={change}>{change}</li>
-            ))}
-          </ul>
-          <p className="text-[14px] leading-7 text-teal-900 mt-4">
-            If you used Bantle under a previous version of these Terms,
-            the mobile app will prompt you to re-accept v{CURRENT_VERSION}{" "}
-            the next time you open it.
-          </p>
-        </section>
-
         <section>
           <h2>1. Acceptance and eligibility</h2>
           <p>
