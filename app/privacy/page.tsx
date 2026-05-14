@@ -167,6 +167,15 @@ export default function PrivacyPage() {
               household coordination work.
             </li>
             <li>
+              <strong>In data exports.</strong> When you download your
+              data, the export may include the display names (not emails
+              or other identifiers) of users you&apos;ve interacted with —
+              the same names already visible to you in the app at the
+              time of those interactions. We do not include reports filed
+              against you in your export, to protect the people who
+              reported and to prevent retaliation.
+            </li>
+            <li>
               <strong>With service providers above.</strong> Limited to
               the data each provider needs to operate their narrow
               function (e.g., Resend only sees the email address it&apos;s
@@ -217,7 +226,12 @@ export default function PrivacyPage() {
             Specifically, you have:
           </p>
           <ul>
-            <li>The right to access the personal data we have about you.</li>
+            <li>
+              The right to access the personal data we have about you.
+              You can download a JSON export of your data anytime from
+              Settings → Your data → Download my data (one export per
+              24 hours).
+            </li>
             <li>The right to correct inaccurate personal data.</li>
             <li>
               The right to delete your account and personal data using
