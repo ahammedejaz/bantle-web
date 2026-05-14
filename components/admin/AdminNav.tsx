@@ -1,9 +1,11 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Flag, Users, Layers, Home } from "lucide-react";
+import { Flag, Users, Layers, Home, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { LogoutConfirmDialog } from "./LogoutConfirmDialog";
 
 const NAV_ITEMS = [
   { href: "/admin", label: "Dashboard", icon: Home },
@@ -12,41 +14,78 @@ const NAV_ITEMS = [
   { href: "/admin/platforms", label: "Platforms", icon: Layers },
 ];
 
-export function AdminNav() {
+interface AdminNavProps {
+  adminName: string;
+  adminEmail: string;
+  // Optional close handler invoked when a nav item is tapped while
+  // inside the mobile drawer — lets the parent close the drawer.
+  onItemClick?: () => void;
+}
+
+export function AdminNav({ adminName, adminEmail, onItemClick }: AdminNavProps) {
   const pathname = usePathname();
+  const [logoutOpen, setLogoutOpen] = useState(false);
 
   return (
-    <nav className="w-56 border-r border-line bg-cream-card min-h-screen">
-      <div className="px-4 py-6">
-        <p className="text-xs uppercase tracking-[0.14em] text-teal-600 font-medium">
-          Bantle admin
-        </p>
-      </div>
-      <ul className="px-2 space-y-1">
-        {NAV_ITEMS.map((item) => {
-          const active =
-            pathname === item.href ||
-            (item.href !== "/admin" && pathname.startsWith(item.href));
-          const Icon = item.icon;
-          return (
-            <li key={item.href}>
-              <Link
-                href={item.href}
-                className={cn(
-                  "flex items-center gap-3 px-3 py-2 rounded-button",
-                  "text-sm font-medium transition-colors",
-                  active
-                    ? "bg-teal-900 text-cream"
-                    : "text-ink hover:bg-teal-50",
-                )}
-              >
-                <Icon size={16} />
-                {item.label}
-              </Link>
-            </li>
-          );
-        })}
-      </ul>
-    </nav>
+    <>
+      <nav className="w-full md:w-56 md:border-r md:border-line bg-cream-card flex flex-col h-full">
+        <div className="px-4 py-6 border-b border-line">
+          <p className="text-xs uppercase tracking-[0.14em] text-teal-600 font-medium">
+            Bantle admin
+          </p>
+        </div>
+        <ul className="px-2 py-3 space-y-1 flex-1 overflow-y-auto">
+          {NAV_ITEMS.map((item) => {
+            const active =
+              pathname === item.href ||
+              (item.href !== "/admin" && pathname.startsWith(item.href));
+            const Icon = item.icon;
+            return (
+              <li key={item.href}>
+                <Link
+                  href={item.href}
+                  onClick={onItemClick}
+                  className={cn(
+                    "flex items-center gap-3 px-3 py-2.5 rounded-button",
+                    "text-sm font-medium transition-colors",
+                    active
+                      ? "bg-teal-900 text-cream"
+                      : "text-ink hover:bg-teal-50",
+                  )}
+                >
+                  <Icon size={16} />
+                  {item.label}
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+        <div className="border-t border-line p-3">
+          <div className="px-3 py-2 mb-1">
+            <p className="text-sm font-medium text-ink truncate">
+              {adminName}
+            </p>
+            <p className="text-xs text-ink-muted truncate">{adminEmail}</p>
+          </div>
+          <button
+            type="button"
+            onClick={() => setLogoutOpen(true)}
+            className={cn(
+              "w-full flex items-center gap-3 px-3 py-2 rounded-button",
+              "text-sm font-medium text-ink",
+              "hover:bg-red-50 hover:text-red-900",
+              "transition-colors",
+            )}
+          >
+            <LogOut size={16} />
+            Sign out
+          </button>
+        </div>
+      </nav>
+      <LogoutConfirmDialog
+        open={logoutOpen}
+        onOpenChange={setLogoutOpen}
+      />
+    </>
   );
 }
