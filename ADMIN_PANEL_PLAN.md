@@ -276,7 +276,7 @@ Recommended order matches the list below — it prioritizes operationally urgent
 
 ### Phase 1 — Foundation: schema, auth, middleware, admin shell
 
-**Status**: NOT STARTED
+**Status**: SHIPPED
 
 **Goal**: Admin can sign in and navigate the admin shell. No actions work yet — every sub-page is a placeholder.
 
@@ -313,6 +313,42 @@ Recommended order matches the list below — it prioritizes operationally urgent
 6. Visit `/admin` while signed in as non-admin → redirected to `/` immediately. ✅/❌
 
 **Out of scope**: any functional admin actions. They come in Phases 2–8.
+
+**Commit SHAs**:
+- `944682f` (bantle) — feat(db): admin panel foundation — is_admin + admin_actions
+- `0981ab3` (bantle) — chore(types): regenerate after admin_actions + is_admin
+- `ecfc123` (bantle-web) — chore(deps): add @supabase/ssr for admin session persistence
+- `49e5031` (bantle-web) — feat(admin): foundation — middleware, auth, service-role client
+- `a952c7a` (bantle-web) — feat(admin): shell — nav, layout, toast system, dashboard
+- `0482c8a` (bantle-web) — feat(admin): sign-in page and placeholder routes
+- `0` (bantle-web) — docs(admin): phase 1 shipped (this commit)
+
+**Files modified**:
+- bantle: `supabase/migrations/20260514165354_admin_panel_foundation.sql` (new)
+- bantle: `supabase/migrations/rollback_admin_panel_foundation.sql` (new)
+- bantle: `types/database.ts` (regenerated)
+- bantle-web: `middleware.ts` (new)
+- bantle-web: `lib/admin-supabase-server.ts` (new)
+- bantle-web: `lib/admin-supabase-browser.ts` (new)
+- bantle-web: `lib/admin-supabase-route.ts` (new)
+- bantle-web: `lib/admin-auth.ts` (new)
+- bantle-web: `lib/admin-actions.ts` (new)
+- bantle-web: `components/admin/AdminNav.tsx` (new)
+- bantle-web: `components/admin/AdminToast.tsx` (new)
+- bantle-web: `components/admin/AdminToastProvider.tsx` (new)
+- bantle-web: `app/admin/layout.tsx` (new)
+- bantle-web: `app/admin/page.tsx` (new)
+- bantle-web: `app/admin/login/page.tsx` (new)
+- bantle-web: `app/admin/login/LoginClient.tsx` (new)
+- bantle-web: `app/admin/reports/page.tsx` (new — placeholder)
+- bantle-web: `app/admin/users/page.tsx` (new — placeholder)
+- bantle-web: `app/admin/platforms/page.tsx` (new — placeholder)
+- bantle-web: `package.json` + `package-lock.json` (added @supabase/ssr ^0.10.3)
+- bantle-web: `ADMIN_PANEL_PLAN.md` (status update)
+
+**Known issues**: none.
+
+**Manual step required before smoke testing**: set `SUPABASE_SERVICE_ROLE_KEY` in Vercel as a private (non-public) environment variable, no `NEXT_PUBLIC_` prefix. The variable is read by `lib/admin-supabase-server.ts` and is the only thing standing between a deployed admin route and a working admin panel.
 
 ---
 
