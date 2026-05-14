@@ -321,7 +321,7 @@ Recommended order matches the list below — it prioritizes operationally urgent
 - `49e5031` (bantle-web) — feat(admin): foundation — middleware, auth, service-role client
 - `a952c7a` (bantle-web) — feat(admin): shell — nav, layout, toast system, dashboard
 - `0482c8a` (bantle-web) — feat(admin): sign-in page and placeholder routes
-- `0` (bantle-web) — docs(admin): phase 1 shipped (this commit)
+- `4c881bc` (bantle-web) — docs(admin): phase 1 shipped
 
 **Files modified**:
 - bantle: `supabase/migrations/20260514165354_admin_panel_foundation.sql` (new)
