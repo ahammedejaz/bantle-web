@@ -381,6 +381,31 @@ Recommended order matches the list below — it prioritizes operationally urgent
 
 ---
 
+### Phase 1.2 — Route group restructure (marketing layout isolation)
+
+**Status**: SHIPPED
+
+**Goal**: Fix admin pages rendering inside the marketing site's layout chrome. Surfaced during Phase 1.1 mobile smoke testing — admin pages showed the marketing Header at top AND admin's own header below, plus the marketing Footer. Root cause: Next.js App Router layouts compose by nesting, so admin/layout.tsx rendered inside layout.tsx (which contained Header + Footer).
+
+**bantle-web changes**:
+- Created `app/(marketing)/` route group containing every existing marketing route (about, community-guidelines, faq, how-it-works, privacy, refund-policy, reset-password, safety, support, terms, verify) plus the homepage (page.tsx, opengraph-image.tsx)
+- New: `app/(marketing)/layout.tsx` — holds Header + Footer + skip-to-content link + the min-h-screen flex-col wrapper exclusively for marketing pages
+- Modified: `app/layout.tsx` — stripped to bare html/body/fonts/globals/site-wide metadata. No Header/Footer rendered here. Every route now lives under one of two layouts (marketing OR admin), never both
+- All marketing URLs unchanged (route group parentheses are excluded from URLs by Next.js)
+- Admin layout untouched
+
+**Smoke tests** (user runs):
+1. Visit https://bantle.in/ → still works, looks unchanged
+2. Visit https://bantle.in/about → still works, header + footer intact
+3. Visit https://bantle.in/faq → still works
+4. Visit https://bantle.in/admin (signed in) → renders ONLY the admin shell, no marketing Header, no marketing Footer
+5. Resize admin to mobile width → ONLY one hamburger menu visible (the admin one); no marketing hamburger above it
+6. Visit https://bantle.in/admin/login (signed out) → renders ONLY the login form; no marketing Header above
+
+**Out of scope**: Re-running Phase 1.1's smoke tests — those will now succeed because the layout pollution is gone.
+
+---
+
 ### Phase 2 — Reports queue
 
 **Status**: NOT STARTED
