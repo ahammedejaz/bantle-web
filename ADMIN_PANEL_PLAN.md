@@ -469,6 +469,48 @@ Recommended order matches the list below — it prioritizes operationally urgent
 
 **Known issues**: none. The expo-router typed-routes generator will catch up with the new mobile `/(auth)/banned` screen on the next dev/build cycle; the `_layout.tsx` call site casts through `Parameters<typeof router.replace>[0]` to keep typecheck green ahead of the regen.
 
+**Schema clarification**: During Phase 2 smoke testing, it was discovered that `user_reports.status` had already existed in the production schema with a different enum than what this plan originally specified. The actual schema is `('pending', 'reviewed', 'actioned', 'dismissed')` — 4 values, not 3. Phase 2's `IF NOT EXISTS` column add was a no-op for the status column. Phase 2.1 (below) aligns the admin panel with the existing 4-value schema, which is a richer model than originally planned.
+
+---
+
+### Phase 2.1 — Reports queue schema alignment + action buttons fix
+
+**Status**: SHIPPED
+
+**Goal**: Align Phase 2 admin code with the actual production `user_reports.status` schema (4 values instead of the 3 assumed in the original Phase 2 prompt). Also fix the missing action buttons on the detail page (they were gated on the never-true `status === 'open'` check).
+
+**Status semantics** (canonical for admin panel):
+- `pending` — new, untriaged (default for all new reports)
+- `reviewed` — admin looked, no action needed
+- `actioned` — admin took action (warned, banned_temp, banned_perm)
+- `dismissed` — report was bad-faith or invalid
+
+**Action → status mapping**:
+- Click "Resolve" → status='reviewed', resolution_action='none'
+- Click "Dismiss" → status='dismissed', resolution_action='dismissed'
+- Click "Warn" → status='actioned', resolution_action='warned'
+- Click "Ban 7 days" → status='actioned', resolution_action='banned_temp'
+- Click "Ban permanent" → status='actioned', resolution_action='banned_perm'
+
+**bantle-web changes**:
+- New: `components/admin/reportStatus.ts` — shared status constants, display helpers, filter options, validation set, `isStatusOpen()` predicate
+- Modified: `app/admin/api/reports/route.ts` — default filter changes from `'open'` to `'pending'`, validates against the 4 real status values
+- Modified: `app/admin/api/reports/[id]/route.ts` — "other reports" subquery now selects `status` + `resolution_action`
+- Modified: `app/admin/api/reports/[id]/resolve/route.ts` — writes the correct status value per action per the mapping above; "already resolved" check now compares against `pending` and returns "Report already triaged"
+- Modified: `app/admin/reports/ReportsListClient.tsx` — default filter, filter dropdown imports `STATUS_FILTER_OPTIONS`
+- Modified: `components/admin/ReportRow.tsx` — uses `getStatusDisplay`; local status-icon function removed
+- Modified: `app/admin/reports/[id]/ReportDetailClient.tsx` — uses `getStatusDisplay` for main badge + other-reports badges, `getResolutionLabel` for the resolved-action text, CRITICAL FIX: action buttons now render when `isStatusOpen(status)` is true (i.e. `status === 'pending'`), "Already triaged" notice shown when status is anything else; 409 from API now refreshes the page so the action buttons disappear and reflect new state
+
+**Smoke tests** (user runs):
+1. ⏳ /admin/reports default view → shows pending reports with proper "Pending" badges (not "Dismissed")
+2. ⏳ Filter dropdown → 5 options (All / Pending / Reviewed / Actioned / Dismissed)
+3. ⏳ Filter by "Actioned" → empty list if no actions taken yet
+4. ⏳ Click a pending report → detail page shows 5 action buttons at the bottom
+5. ⏳ "Other reports against this user" shows proper badges (not raw "pending" text)
+6. ⏳ Click "Resolve" → modal appears, confirm, report status updates to "reviewed", redirected to list. Re-open the report → action buttons gone, "Already triaged" notice visible.
+
+**Out of scope**: actual ban enforcement end-to-end test (still deferred from Phase 2). Push notification delivery (still deferred from Phase 2). These need a second test user device.
+
 ---
 
 ### Phase 3 — Users management
