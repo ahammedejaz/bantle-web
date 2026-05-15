@@ -109,11 +109,24 @@ export async function POST(
         }
         // Insert in-app notification row so the user can see the
         // record after the OS push fades. Phase 2.2.
-        await supabase.from("notifications").insert({
-          user_id: reportedId,
-          kind: "moderation_warning",
-          payload: { reason },
-        });
+        const { error: notifError } = await supabase
+          .from("notifications")
+          .insert({
+            user_id: reportedId,
+            kind: "moderation_warning",
+            payload: { reason },
+          });
+        if (notifError) {
+          console.error(
+            "[admin warn] notifications insert failed:",
+            notifError.code,
+            notifError.message,
+            notifError.details,
+          );
+          // Don't fail the admin action — the moderation action
+          // itself succeeded; the missing inbox entry is degraded
+          // UX, not a blocker.
+        }
       }
       resolutionAction = "warned";
       auditActionType = "user_warned";
@@ -154,14 +167,25 @@ export async function POST(
         },
       });
       // Insert in-app notification row. Phase 2.2.
-      await supabase.from("notifications").insert({
-        user_id: reportedId,
-        kind: "moderation_ban_temp",
-        payload: {
-          reason,
-          banned_until: bannedUntil.toISOString(),
-        },
-      });
+      const { error: notifError } = await supabase
+        .from("notifications")
+        .insert({
+          user_id: reportedId,
+          kind: "moderation_ban_temp",
+          payload: {
+            reason,
+            banned_until: bannedUntil.toISOString(),
+          },
+        });
+      if (notifError) {
+        console.error(
+          "[admin ban_temp] notifications insert failed:",
+          notifError.code,
+          notifError.message,
+          notifError.details,
+        );
+        // Don't fail the admin action.
+      }
       resolutionAction = "banned_temp";
       auditActionType = "user_banned";
       break;
@@ -203,11 +227,22 @@ export async function POST(
         data: { type: "ban_perm" },
       });
       // Insert in-app notification row. Phase 2.2.
-      await supabase.from("notifications").insert({
-        user_id: reportedId,
-        kind: "moderation_ban_perm",
-        payload: { reason },
-      });
+      const { error: notifError } = await supabase
+        .from("notifications")
+        .insert({
+          user_id: reportedId,
+          kind: "moderation_ban_perm",
+          payload: { reason },
+        });
+      if (notifError) {
+        console.error(
+          "[admin ban_perm] notifications insert failed:",
+          notifError.code,
+          notifError.message,
+          notifError.details,
+        );
+        // Don't fail the admin action.
+      }
       resolutionAction = "banned_perm";
       auditActionType = "user_soft_deleted";
       break;
