@@ -642,7 +642,7 @@ Recommended order matches the list below — it prioritizes operationally urgent
 
 ### Phase 4 — Platforms management
 
-**Status**: NOT STARTED
+**Status**: SHIPPED
 
 **Goal**: Admin can CRUD the platform catalog without writing SQL.
 
@@ -663,6 +663,35 @@ Recommended order matches the list below — it prioritizes operationally urgent
 2. Edit the platform → changes persist.
 3. Soft-delete → platform marked deleted but still visible in admin list with "Deleted" badge.
 4. Check mobile app → deleted platform no longer appears in the platform picker.
+
+**Schema clarification (Phase 4 recon, 2026-05-15)**: `platforms.id` is `text` (slug), not uuid — admin supplies the slug at create time. `platforms.category` is CHECK-constrained to `'music' | 'video' | 'cloud' | 'work'`; adding a category requires a separate migration. **No FK from `listings.platform` → `platforms.id`** — admin must not be exposed to a "hard delete" path for platforms since it would silently orphan listings. The catalog model is therefore soft-delete only (`is_active` toggle). No migration was added in this phase; `platforms.updated_at` is still absent but the `admin_actions` audit log captures every change, which covers the operational need.
+
+**Implementation note**: zero migrations, zero mobile changes. The mobile `usePlatformsStore` already reads the catalog on auth init and caches it for the session. A new platform appears on each user's next sign-in / app cold-start. **Mobile devices already signed in won't see new platforms until they re-init the store** — flagged as a polish item: a future change could expose a manual "refresh catalog" affordance, or extend the store with a TTL.
+
+**bantle-web changes**:
+- New: `app/admin/api/platforms/route.ts` — GET (list with per-platform listing counts) + POST (create with full client+server validation, 409 on duplicate slug)
+- New: `app/admin/api/platforms/[id]/route.ts` — PATCH (partial update, every field re-validated, audit log captures the change set; slug is immutable)
+- Modified: `app/admin/platforms/page.tsx` — rewritten from Phase 1 placeholder to a functional page
+- New: `app/admin/platforms/PlatformsListClient.tsx` — fetches GET, groups by category (4 sections), renders rows, wires the editor dialog for create + edit + activate/deactivate toggle
+- New: `components/admin/PlatformRow.tsx` — brand tile + label + slug + active pill + price + listing count + display order + Edit / Activate-or-Deactivate buttons (inactive rows render at 60% opacity)
+- New: `components/admin/PlatformEditorDialog.tsx` — single Radix Dialog handling create AND edit; slug auto-suggestion from label in create mode (admin can override; auto-suggest disables after manual edit); slug disabled in edit mode; live preview tile updates as you type; client-side validation mirrors server-side regexes; 409 from POST surfaces inline on the slug field
+
+**Smoke tests** (user runs):
+1. ⏳ Visit `/admin/platforms` → existing platforms render grouped under Music / Video / Cloud / Work
+2. ⏳ Each row shows listing count, price, active pill, and Edit + Deactivate buttons
+3. ⏳ Click "Add platform" → editor dialog opens in create mode with empty fields
+4. ⏳ Type "Spotify Family" in the Label field → slug auto-fills to `spotify_family`, initials auto-fill to `SP`
+5. ⏳ Manually edit the slug → auto-suggestion stops; further label edits don't override the slug
+6. ⏳ Submit with an existing slug (e.g., `spotify`) → 409 error surfaces inline on the slug field, not as a toast
+7. ⏳ Submit with all valid fields → row appears in the appropriate category section, "Active" pill
+8. ⏳ Click Edit on an existing platform → dialog opens, slug field is shown but disabled; other fields are editable
+9. ⏳ Change the label and save → row updates with the new label
+10. ⏳ Click "Deactivate" on an active platform → status flips to "Inactive", row dims; row stays in the list (not hidden)
+11. ⏳ Click "Activate" on the deactivated platform → flips back
+12. ⏳ Sign in on the mobile app → platform picker reflects the catalog (newly activated platforms appear, deactivated ones disappear)
+13. ⏳ Edge: try invalid hex color (e.g., `#xyz`) → inline error, submit disabled
+
+**Out of scope**: hard delete (would silently orphan listings since there's no FK); category management (requires a CHECK-constraint migration); reordering by drag (display_order is a number field for now — drag-and-drop is a future polish item); mobile force-refresh of the cached platforms store.
 
 ---
 
