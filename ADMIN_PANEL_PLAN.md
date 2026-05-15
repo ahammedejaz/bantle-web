@@ -695,6 +695,67 @@ Recommended order matches the list below — it prioritizes operationally urgent
 
 ---
 
+### Phase 4.1 — PlatformTile fallback for deactivated platforms (3-step rollout)
+
+**Status**: SHIPPED
+
+**Goal**: When admin deactivates a platform, existing listings of that
+platform should continue rendering with their real brand tile, not a
+blank gray fallback. Architectural fix at three layers (RLS, store,
+component) for defense in depth.
+
+**Rolled out across three sub-phases** with checkpoints between each
+(safe step-by-step execution):
+
+- 4.1a — RLS policy update on platforms (no app code)
+  - DROP `platforms_select_active`, CREATE `platforms_select_all`
+  - Authenticated users can SELECT all rows; admin writes still go
+    through service role
+  - Migration: `phase_4_1a_platforms_rls.sql` + rollback
+
+- 4.1b — Mobile store + types (no APK rebuild)
+  - `lib/platforms.ts` — PlatformDef gains isActive field
+  - `stores/platforms.ts` — fetch drops .eq('is_active', true) filter;
+    rowToDef includes isActive (defaults to true for null)
+  - `app/(tabs)/post-listing.tsx` — picker filters to active-only
+  - `app/listing/edit/[id].tsx` — picker filters to active-only
+  - typecheck clean
+
+- 4.1c — Picker selector hardening + PlatformTile fallback + APK
+  - post-listing and edit-listing pickers wrap selectors in useShallow
+    (Zustand canonical pattern; prevents fresh-array-every-render)
+  - `components/ui/PlatformTile.tsx` — improved fallback renders a
+    deterministic hash-derived color + slug initials instead of a
+    blank gray box (defense in depth for typos / legacy / hard-deleted
+    slugs)
+  - APK rebuilt and verified via dumpsys lastUpdateTime
+
+**Admin panel changes**: none (Phase 4 admin CRUD was correct).
+
+**Smoke tests** (user runs):
+1. Deactivate Netflix from /admin/platforms → existing Netflix listings
+   on mobile homepage STILL render with red Netflix tile (architectural
+   fix at work)
+2. Open post-listing picker on mobile → Netflix does NOT appear in the
+   active picker
+3. Reactivate Netflix → still works in new listings; picker shows it
+   again
+4. Optional: temporarily mutate a listing's platform to a typo slug
+   (e.g., "netflx_typo") in DB → mobile renders the listing with a
+   deterministic color + initials "N", NOT a blank gray box. Restore
+   slug afterward.
+
+**Notes for future phases**:
+- The PlatformTile fallback is now defensive — Phase 4 admin (or
+  future Phase 5+) can introduce hard-delete behavior on platforms
+  without visually breaking historical listings.
+- The useShallow pattern on picker selectors is the canonical Zustand
+  approach for derived state. Other Zustand selectors in the codebase
+  using inline .filter() should be audited at some point (out of
+  scope here).
+
+---
+
 ### Phase 5 — Listings management
 
 **Status**: NOT STARTED
