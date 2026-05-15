@@ -408,7 +408,7 @@ Recommended order matches the list below — it prioritizes operationally urgent
 
 ### Phase 2 — Reports queue
 
-**Status**: NOT STARTED
+**Status**: SHIPPED
 
 **Goal**: Admin can view all reports filed by users and take action on each.
 
@@ -433,6 +433,41 @@ Recommended order matches the list below — it prioritizes operationally urgent
 3. Click "Resolve" → toast confirms, report disappears from default view.
 4. Click "Ban 7 days" on a different report → reported user gets `banned_until = now() + 7 days`, audit log entry created.
 5. Check `admin_actions` in Supabase → entries match the actions taken.
+
+**Commit SHAs**:
+- `8cedceb` (bantle) — feat(db): phase 2 — user_reports status + tracking columns
+- `d645bb7` (bantle) — feat(db): phase 2 — user ban fields on profiles
+- `42ed3b3` (bantle) — chore(types): regenerate after phase 2 migrations
+- `918d974` (bantle) — feat(auth): enforce temporary bans via banned_until check
+- `525da03` (bantle-web) — feat(admin): push notification helper for moderation actions
+- `1ed7cb2` (bantle-web) — feat(admin): reports API routes (list, detail, resolve)
+- `c5e5382` (bantle-web) — feat(admin): reports list page with filters and pagination
+- `3f42048` (bantle-web) — feat(admin): report detail page with action modals
+- docs commit follows this entry
+
+**Files modified**:
+- bantle: `supabase/migrations/20260515050833_phase_2_reports_status.sql` (new)
+- bantle: `supabase/migrations/rollback_phase_2_reports_status.sql` (new)
+- bantle: `supabase/migrations/20260515050834_phase_2_user_bans.sql` (new)
+- bantle: `supabase/migrations/rollback_phase_2_user_bans.sql` (new)
+- bantle: `types/database.ts` (regenerated)
+- bantle: `stores/auth.ts` — refreshProfile() + AppState resume hook
+- bantle: `app/_layout.tsx` — banned gate + /(auth)/banned target
+- bantle: `app/(auth)/banned.tsx` — new screen
+- bantle: `lib/push.ts` — moderation Android notification channel
+- bantle-web: `lib/admin-push.ts` (new)
+- bantle-web: `app/admin/api/reports/route.ts` (new)
+- bantle-web: `app/admin/api/reports/[id]/route.ts` (new)
+- bantle-web: `app/admin/api/reports/[id]/resolve/route.ts` (new)
+- bantle-web: `app/admin/reports/page.tsx` (rewrote placeholder)
+- bantle-web: `app/admin/reports/ReportsListClient.tsx` (new)
+- bantle-web: `app/admin/reports/[id]/page.tsx` (new)
+- bantle-web: `app/admin/reports/[id]/ReportDetailClient.tsx` (new)
+- bantle-web: `components/admin/ReportRow.tsx` (new)
+- bantle-web: `components/admin/ReportActionModal.tsx` (new)
+- bantle-web: `ADMIN_PANEL_PLAN.md` (status + open-questions update)
+
+**Known issues**: none. The expo-router typed-routes generator will catch up with the new mobile `/(auth)/banned` screen on the next dev/build cycle; the `_layout.tsx` call site casts through `Parameters<typeof router.replace>[0]` to keep typecheck green ahead of the regen.
 
 ---
 
@@ -612,11 +647,11 @@ When working on this admin panel in any future session, follow these rules:
 
 These must be answered before the listed phase starts:
 
-### Before Phase 2 (Reports)
-- Does `user_reports` have `status`, `resolved_at`, `resolved_by`, `resolution_action`? If not, the Phase 2 migration adds them. Check schema first.
+### Before Phase 2 (Reports) [RESOLVED]
+- Does `user_reports` have `status`, `resolved_at`, `resolved_by`, `resolution_action`? **Resolved 2026-05-15**: did not exist; Phase 2 migration `20260515050833_phase_2_reports_status.sql` added them.
 
-### Before Phase 3 (Users)
-- Does `profiles` have `banned_until timestamptz`? If not, Phase 3 migration adds it.
+### Before Phase 3 (Users) [RESOLVED IN PHASE 2]
+- Does `profiles` have `banned_until timestamptz`? **Resolved 2026-05-15**: did not exist; Phase 2's second migration `20260515050834_phase_2_user_bans.sql` added `banned_until`, `banned_reason`, `banned_by`. Phase 3 will use these existing columns directly.
 
 ### Before Phase 5 (Listings)
 - Does `listings` have `closed_reason`, `closed_by`? If not, Phase 5 migration adds them.
