@@ -572,7 +572,7 @@ Recommended order matches the list below — it prioritizes operationally urgent
 
 ### Phase 3 — Users management
 
-**Status**: NOT STARTED
+**Status**: SHIPPED
 
 **Goal**: Admin can search users and take account-level actions.
 
@@ -595,6 +595,48 @@ Recommended order matches the list below — it prioritizes operationally urgent
 2. Click profile → detail shows all user's listings, deals, reports.
 3. Soft-delete a test user → user has `deleted_at` set, scheduled for hard delete in 7 days.
 4. Restore the same user before 7 days → `deleted_at` cleared, user can sign in again.
+
+**Schema clarification (Phase 3 recon, 2026-05-15)**: `profiles` has no CHECK constraints. `listings.status` has no CHECK constraint (could be any text — defensive rendering required). `deals.host_id` and `buyer_id` are `ON DELETE SET NULL` (deals survive a profile hard-delete with null counterparties). `profiles.display_name` is nullable and 2/10 sample profiles have NULL — every render must use the `getUserDisplayName()` fallback. Recorded in `PHASE_3_RECON.md`.
+
+**Implementation note**: Phase 3's user ban / restore actions reuse the Phase 2 ban_temp / ban_perm / restore semantics (banned_until + permanently_banned columns). No schema migration needed for this phase; all required columns were added in Phase 2 + 2.2. The new admin API endpoints just expose the same actions outside the report-resolution flow.
+
+**bantle-web changes**:
+- New: `components/admin/userStatus.ts` — shared status constants (active / temp_banned / perm_banned / self_deleted / admin), `getUserDisplayName` null-safe helper, ban-state derivation, badge styling
+- New: `app/admin/api/users/route.ts` — search list (email substring, display_name substring, UUID exact match), paginated 20/page
+- New: `app/admin/api/users/[id]/route.ts` — user profile + 6 activity counts (parallel queries)
+- New: `app/admin/api/users/[id]/listings/route.ts` — paginated owned listings
+- New: `app/admin/api/users/[id]/deals/route.ts` — host OR buyer deals with counterparty display_name
+- New: `app/admin/api/users/[id]/reports/route.ts` — filed + received reports
+- New: `app/admin/api/users/[id]/audit/route.ts` — admin_actions targeting this user
+- New: `app/admin/api/users/[id]/ban/route.ts` — POST with `type: 'temp'|'permanent'`, requires reason, defense-in-depth rejects self-ban and admin targets
+- New: `app/admin/api/users/[id]/restore/route.ts` — POST with `type: 'ban'|'self_delete'`, optional reason
+- Modified: `app/admin/users/page.tsx` — rewritten from Phase 1 placeholder to functional search page
+- New: `app/admin/users/UsersListClient.tsx` — debounced search input, pagination, empty state
+- New: `app/admin/users/[id]/page.tsx` — server component with Suspense wrapper
+- New: `app/admin/users/[id]/UserDetailClient.tsx` — identity block, 6 count tiles, ban / self-delete context boxes, action panel, tabbed activity
+- New: `components/admin/UserRow.tsx` — list row with name, status badge, verified pill, email, joined date, rating
+- New: `components/admin/UserActionPanel.tsx` — state-aware action buttons (active → 2 ban buttons; banned → restore; self-deleted → restore; admin → notice, no buttons)
+- New: `components/admin/UserActionModal.tsx` — parameterized Radix Dialog handling all 4 actions (ban_temp / ban_perm / restore_ban / restore_self_delete)
+- New: `components/admin/UserDetailTabs.tsx` — 4-tab nav with count badges
+- New: `components/admin/UserListingsTab.tsx` — table view with status badges, paginated
+- New: `components/admin/UserDealsTab.tsx` — card list, role indicator (Host/Buyer), counterparty display name, status badge
+- New: `components/admin/UserReportsTab.tsx` — filed + received lists, links to /admin/reports/[id]
+- New: `components/admin/UserAuditTab.tsx` — chronological action log with expandable payload JSON
+
+**Smoke tests** (user runs):
+1. ⏳ Visit `/admin/users` → list of recent users renders with proper status badges (no "Dismissed" everywhere)
+2. ⏳ Search "yaazfashions" → Syed appears with "Admin" badge
+3. ⏳ Search a UUID → exact-match user appears
+4. ⏳ Click a non-admin user → detail page renders with all 6 count tiles populated correctly
+5. ⏳ Click each tab (Listings / Deals / Reports / Audit) → each lazily loads its content
+6. ⏳ Reports tab: rows link to `/admin/reports/[id]` correctly
+7. ⏳ Audit tab: existing admin_actions rows show with reason + expandable payload
+8. ⏳ Click Ban 7 days → modal opens, requires reason, on confirm the user's `banned_until` updates and they get pushed/notified
+9. ⏳ Re-open the same user → status is now "Temp banned", action panel shows "Restore from ban"
+10. ⏳ Restore from ban → `banned_until` and `permanently_banned` clear; status returns to "Active"
+11. ⏳ Edge: visit a user with `display_name = null` → renders "Unnamed user (uuid prefix)" instead of crashing
+12. ⏳ Edge: visit Syed (admin) → action panel shows "Cannot action other admins" notice, no buttons; API rejects manual POST with 400 even if the UI were bypassed
+13. ⏳ Edge: user with self-deleted state → shows self-delete context box + "Restore from self-deletion" button
 
 ---
 
