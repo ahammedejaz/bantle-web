@@ -513,6 +513,40 @@ Recommended order matches the list below — it prioritizes operationally urgent
 
 ---
 
+### Phase 2.2 — Persistent moderation notifications + permaban-restore fix
+
+**Status**: SHIPPED
+
+**Bugs fixed**:
+1. **Persistent moderation notifications**: warn / ban_temp / ban_perm now insert rows into `public.notifications` (mobile inbox renders them via three new `NotificationKind` values). Previously the OS push was the only signal, and the record was lost once the push faded.
+2. **Permaban-restore bypass (CRITICAL)**: admin permanent bans were reversible — Phase 2's `ban_perm` set `profiles.deleted_at`, which routed the user through the self-delete `account-recovery` screen with a "Restore my account" button. A banned user could simply tap Restore and clear `deleted_at`, undoing the ban. Phase 2.2 introduces `profiles.permanently_banned` (boolean, no self-clear) which is what `ban_perm` now sets instead.
+
+**Schema change**:
+- `profiles.permanently_banned boolean NOT NULL DEFAULT false` — admin-imposed permanent ban. No self-restore path. Distinct from `deleted_at` (user self-delete with 7-day grace).
+- Partial index `idx_profiles_permanently_banned` on `WHERE permanently_banned = true`.
+
+**bantle-web changes**:
+- Modified: `app/admin/api/reports/[id]/resolve/route.ts` — `ban_perm` now sets `permanently_banned=true` (not `deleted_at`); all three actioned variants (warn / ban_temp / ban_perm) insert a `public.notifications` row AFTER the primary action succeeds.
+
+**bantle changes**:
+- New: `supabase/migrations/20260515143524_phase_2_2_perm_ban.sql` + rollback
+- Modified: `types/database.ts` (regenerated)
+- Modified: `stores/notifications.ts` — `NotificationKind` extended with `moderation_warning | moderation_ban_temp | moderation_ban_perm`
+- Modified: `app/notifications.tsx` — three new `renderVisual` / `renderCopy` / `handleNotificationPress` cases (mark-read only, no navigation)
+- Modified: `app/_layout.tsx` — `isBanned` now considers both `banned_until` (temp) and `permanently_banned` (perma); both route to `/(auth)/banned`
+- Modified: `app/(auth)/banned.tsx` — top-level `isPermanent` branch renders different copy (no expiry date, "permanently removed", final-decision wording) and a different sign-out confirmation
+- Modified: `app/(auth)/account-recovery.tsx` — defensive guard on `handleRestore` that bails out if `permanently_banned=true` (shouldn't reach this screen for permabans after the routing fix, but the guard prevents any future flow from accidentally clearing `deleted_at` for a permaban'd user)
+
+**Smoke tests** (user runs after APK install):
+1. ⏳ Warn a test user → user receives push AND a row appears in their in-app notifications inbox with "Account warning" + reason
+2. ⏳ Temp-ban a test user → user receives push AND a row appears with "Account suspended until <date>" + reason
+3. ⏳ Perma-ban a test user → user receives push, row appears with "Account permanently removed" + reason, AND on next app open they see the banned.tsx perma variant with NO restore button (sign-out only)
+4. ⏳ Same user as test 3: verify in Supabase that `permanently_banned=true` and `deleted_at IS NULL` (NOT both set)
+
+**Build verification (new requirement going forward)**: the APK is actually rebuilt with `npx expo run:android --variant release` and the device's `lastUpdateTime` confirmed via `adb shell dumpsys package in.bantle.app | grep lastUpdateTime` to prove this session's code is on the device. Phase 2 shipped without this verification — flagged in retro.
+
+---
+
 ### Phase 3 — Users management
 
 **Status**: NOT STARTED
