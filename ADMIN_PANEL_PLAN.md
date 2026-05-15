@@ -547,6 +547,29 @@ Recommended order matches the list below — it prioritizes operationally urgent
 
 ---
 
+### Phase 2.3 — Notifications kind constraint fix + defensive logging
+
+**Status**: SHIPPED
+
+**Goal**: Fix the silent failure of Phase 2.2's moderation notifications. The `notifications.kind` column had a CHECK constraint restricting kind to 7 transactional values. The three new `moderation_*` kinds introduced in Phase 2.2 violated the constraint, so INSERTs were rejected. The admin API didn't check the INSERT error, so the failure was invisible. Push notifications still delivered (separate code path via Expo), but inbox entries never landed.
+
+**Mobile repo migration**:
+- `supabase/migrations/20260515154214_phase_2_3_notifications_kind.sql` (+ rollback) drops and recreates `notifications_kind_check` with the three new values added: `moderation_warning`, `moderation_ban_temp`, `moderation_ban_perm`.
+- Total kinds allowed: **10** (7 existing + 3 moderation).
+
+**Web admin change**:
+- The three notification INSERT calls in `app/admin/api/reports/[id]/resolve/route.ts` now capture the returned error and log via `console.error` with greppable prefixes (`[admin warn] notifications insert failed:`, `[admin ban_temp]`, `[admin ban_perm]`). Logs include `.code`, `.message`, and `.details` so any future failure (constraint violation, RLS denial, network error) is diagnosable from Vercel logs without another patch cycle.
+- Insert failures are logged but **do not** fail the admin action — the moderation primary action and the notification row are independent. Degraded UX (missing inbox row) is preferable to a false-failed admin action that already updated the report status and audit log.
+
+**Smoke tests** (user runs):
+1. ⏳ Warn a test user → user receives push AND a row appears in `public.notifications` with `kind = 'moderation_warning'` (verifies the constraint fix)
+2. ⏳ On the test user's device, in-app notifications inbox shows the warning entry with "Account warning" + reason
+3. ⏳ `SELECT * FROM notifications WHERE kind LIKE 'moderation_%'` returns rows after warn / temp-ban / perma-ban tests
+
+**Lessons recorded**: anytime a column governed by a CHECK constraint on an enum-like set needs new values, the constraint must be ALTERed in the same phase that introduces the new values. Phase 2.2 missed this check; Phase 2.3 adds it. **Going forward**: when designing a new column or schema action with enum-like values, explicitly query `information_schema.check_constraints` for any CHECK definitions on the column FIRST.
+
+---
+
 ### Phase 3 — Users management
 
 **Status**: NOT STARTED
