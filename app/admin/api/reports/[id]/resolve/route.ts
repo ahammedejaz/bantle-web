@@ -107,6 +107,13 @@ export async function POST(
         if (!pushResult.sent) {
           console.warn("[admin warn] push failed:", pushResult.reason);
         }
+        // Insert in-app notification row so the user can see the
+        // record after the OS push fades. Phase 2.2.
+        await supabase.from("notifications").insert({
+          user_id: reportedId,
+          kind: "moderation_warning",
+          payload: { reason },
+        });
       }
       resolutionAction = "warned";
       auditActionType = "user_warned";
@@ -146,6 +153,15 @@ export async function POST(
           banned_until: bannedUntil.toISOString(),
         },
       });
+      // Insert in-app notification row. Phase 2.2.
+      await supabase.from("notifications").insert({
+        user_id: reportedId,
+        kind: "moderation_ban_temp",
+        payload: {
+          reason,
+          banned_until: bannedUntil.toISOString(),
+        },
+      });
       resolutionAction = "banned_temp";
       auditActionType = "user_banned";
       break;
@@ -158,26 +174,39 @@ export async function POST(
           { status: 400 },
         );
       }
-      const { error: deleteError } = await supabase
+      // Phase 2.2 — set permanently_banned instead of deleted_at.
+      // Using deleted_at (the Phase 2 implementation) routed the
+      // user through the self-delete recovery flow, where they
+      // could click "Restore" and clear the deleted_at column —
+      // reversing the admin's permanent ban. permanently_banned
+      // has no self-restore path; banned.tsx renders the perma
+      // variant and only allows sign-out.
+      const { error: banError } = await supabase
         .from("profiles")
         .update({
-          deleted_at: new Date().toISOString(),
+          permanently_banned: true,
           banned_reason: reason,
           banned_by: admin.id,
         })
         .eq("id", reportedId);
-      if (deleteError) {
+      if (banError) {
         return NextResponse.json(
-          { error: `Soft-delete failed: ${deleteError.message}` },
+          { error: `Permaban failed: ${banError.message}` },
           { status: 500 },
         );
       }
       await sendAdminPush({
         supabase,
         recipientUserId: reportedId,
-        title: "Account removed",
-        body: "Your Bantle account has been removed due to a community guidelines violation.",
+        title: "Account permanently removed",
+        body: "Your Bantle account has been permanently removed due to a community guidelines violation.",
         data: { type: "ban_perm" },
+      });
+      // Insert in-app notification row. Phase 2.2.
+      await supabase.from("notifications").insert({
+        user_id: reportedId,
+        kind: "moderation_ban_perm",
+        payload: { reason },
       });
       resolutionAction = "banned_perm";
       auditActionType = "user_soft_deleted";
