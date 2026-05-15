@@ -8,6 +8,7 @@
 
 import { type NextRequest, NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/admin-auth";
+import { VALID_STATUS_FILTERS } from "@/components/admin/reportStatus";
 
 const PAGE_SIZE = 20;
 
@@ -17,9 +18,16 @@ export async function GET(request: NextRequest) {
   const { supabase } = auth;
 
   const params = request.nextUrl.searchParams;
-  const status = params.get("status") ?? "open";
+  const status = params.get("status") ?? "pending";
   const category = params.get("category") ?? "all";
   const page = Math.max(1, parseInt(params.get("page") ?? "1", 10));
+
+  if (!VALID_STATUS_FILTERS.has(status)) {
+    return NextResponse.json(
+      { error: "Invalid status filter" },
+      { status: 400 },
+    );
+  }
 
   let query = supabase
     .from("user_reports")

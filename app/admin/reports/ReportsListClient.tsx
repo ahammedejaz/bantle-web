@@ -4,14 +4,8 @@ import { useCallback, useEffect, useState } from "react";
 import { ChevronLeft, ChevronRight, Filter } from "lucide-react";
 import { useAdminToast } from "@/components/admin/AdminToastProvider";
 import { ReportRow, type ReportListItem } from "@/components/admin/ReportRow";
+import { STATUS_FILTER_OPTIONS } from "@/components/admin/reportStatus";
 import { cn } from "@/lib/utils";
-
-const STATUS_OPTIONS = [
-  { value: "open", label: "Open" },
-  { value: "resolved", label: "Resolved" },
-  { value: "dismissed", label: "Dismissed" },
-  { value: "all", label: "All" },
-];
 
 const CATEGORY_OPTIONS = [
   { value: "all", label: "All categories" },
@@ -24,7 +18,7 @@ const CATEGORY_OPTIONS = [
 
 export function ReportsListClient() {
   const toast = useAdminToast();
-  const [status, setStatus] = useState("open");
+  const [status, setStatus] = useState("pending");
   const [category, setCategory] = useState("all");
   const [page, setPage] = useState(1);
   const [reports, setReports] = useState<ReportListItem[]>([]);
@@ -84,7 +78,7 @@ export function ReportsListClient() {
           onChange={(e) => setStatus(e.target.value)}
           className="text-sm bg-cream-card border border-line rounded-button px-3 py-1.5 text-ink focus:outline-none focus:ring-2 focus:ring-teal-900"
         >
-          {STATUS_OPTIONS.map((opt) => (
+          {STATUS_FILTER_OPTIONS.map((opt) => (
             <option key={opt.value} value={opt.value}>
               {opt.label}
             </option>

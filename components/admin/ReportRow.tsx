@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { Clock, AlertCircle, CheckCircle, XCircle } from "lucide-react";
+import { Clock } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { getStatusDisplay } from "./reportStatus";
 
 export interface ReportListItem {
   id: string;
@@ -62,28 +63,6 @@ function categoryColor(c: string): string {
   }
 }
 
-function statusBadge(status: string) {
-  if (status === "open") {
-    return {
-      label: "Open",
-      className: "bg-amber-100 text-amber-900",
-      Icon: AlertCircle,
-    };
-  }
-  if (status === "resolved") {
-    return {
-      label: "Resolved",
-      className: "bg-teal-100 text-teal-900",
-      Icon: CheckCircle,
-    };
-  }
-  return {
-    label: "Dismissed",
-    className: "bg-gray-100 text-gray-700",
-    Icon: XCircle,
-  };
-}
-
 function timeAgo(iso: string): string {
   const ms = Date.now() - new Date(iso).getTime();
   const s = Math.floor(ms / 1000);
@@ -97,8 +76,7 @@ function timeAgo(iso: string): string {
 }
 
 export function ReportRow({ report }: ReportRowProps) {
-  const status = statusBadge(report.status);
-  const StatusIcon = status.Icon;
+  const statusDisplay = getStatusDisplay(report.status);
   const reportedBanned =
     report.reported?.banned_until &&
     new Date(report.reported.banned_until).getTime() > Date.now();
@@ -120,12 +98,11 @@ export function ReportRow({ report }: ReportRowProps) {
         </span>
         <span
           className={cn(
-            "inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs",
-            status.className,
+            "inline-flex items-center px-2 py-0.5 rounded-full text-xs border",
+            statusDisplay.className,
           )}
         >
-          <StatusIcon size={12} />
-          {status.label}
+          {statusDisplay.label}
         </span>
         <span className="inline-flex items-center gap-1 text-xs text-ink-muted ml-auto">
           <Clock size={12} />

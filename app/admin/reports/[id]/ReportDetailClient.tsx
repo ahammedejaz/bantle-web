@@ -2,19 +2,16 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import {
-  AlertCircle,
-  CheckCircle,
-  XCircle,
-  ShieldAlert,
-  ShieldX,
-  ShieldCheck,
-} from "lucide-react";
 import { useAdminToast } from "@/components/admin/AdminToastProvider";
 import {
   ReportActionModal,
   type ReportAction,
 } from "@/components/admin/ReportActionModal";
+import {
+  getResolutionLabel,
+  getStatusDisplay,
+  isStatusOpen,
+} from "@/components/admin/reportStatus";
 import { cn } from "@/lib/utils";
 
 interface ReportDetailUser {
@@ -40,6 +37,7 @@ interface OtherReport {
   id: string;
   category: string;
   status: string;
+  resolution_action: string | null;
   created_at: string;
 }
 
@@ -76,28 +74,6 @@ function fmtDate(iso: string | null | undefined): string {
     hour: "2-digit",
     minute: "2-digit",
   });
-}
-
-function statusBadgeProps(status: string) {
-  if (status === "open") {
-    return {
-      label: "Open",
-      className: "bg-amber-100 text-amber-900",
-      Icon: AlertCircle,
-    };
-  }
-  if (status === "resolved") {
-    return {
-      label: "Resolved",
-      className: "bg-teal-100 text-teal-900",
-      Icon: CheckCircle,
-    };
-  }
-  return {
-    label: "Dismissed",
-    className: "bg-gray-100 text-gray-700",
-    Icon: XCircle,
-  };
 }
 
 export function ReportDetailClient({ reportId }: ReportDetailClientProps) {
@@ -145,13 +121,13 @@ export function ReportDetailClient({ reportId }: ReportDetailClientProps) {
   if (!data) return null;
 
   const { report, conversation_messages: messages, other_reports_against_reported: others } = data;
-  const status = statusBadgeProps(report.status);
-  const StatusIcon = status.Icon;
+  const statusDisplay = getStatusDisplay(report.status);
+  const resolutionLabel = getResolutionLabel(report.resolution_action);
   const reportedBanned =
     report.reported?.banned_until &&
     new Date(report.reported.banned_until).getTime() > Date.now();
   const reportedDeleted = !!report.reported?.deleted_at;
-  const isOpen = report.status === "open";
+  const isOpen = isStatusOpen(report.status);
 
   const handleSuccess = (message: string) => {
     toast.show(message, "success");
@@ -162,6 +138,13 @@ export function ReportDetailClient({ reportId }: ReportDetailClientProps) {
 
   const handleError = (message: string) => {
     toast.show(message, "error");
+    // If the report was already triaged (409 from API), pull fresh
+    // state so the action buttons disappear and the "Already
+    // triaged" notice replaces them.
+    if (message.toLowerCase().includes("already triaged")) {
+      setActiveAction(null);
+      void fetchDetail();
+    }
   };
 
   return (
@@ -170,12 +153,11 @@ export function ReportDetailClient({ reportId }: ReportDetailClientProps) {
       <div className="flex flex-wrap items-center gap-2 mb-2">
         <span
           className={cn(
-            "inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs",
-            status.className,
+            "inline-flex items-center px-2 py-0.5 rounded-full text-xs border",
+            statusDisplay.className,
           )}
         >
-          <StatusIcon size={12} />
-          {status.label}
+          {statusDisplay.label}
         </span>
         <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs bg-teal-50 text-teal-900 border border-teal-200">
           {report.category}
@@ -185,8 +167,8 @@ export function ReportDetailClient({ reportId }: ReportDetailClientProps) {
         </span>
         {report.resolved_at ? (
           <span className="text-xs text-ink-muted ml-2">
-            · resolved {fmtDate(report.resolved_at)}{" "}
-            {report.resolution_action ? `(${report.resolution_action})` : ""}
+            · resolved {fmtDate(report.resolved_at)}
+            {resolutionLabel ? ` (${resolutionLabel})` : ""}
           </span>
         ) : null}
       </div>
@@ -257,15 +239,25 @@ export function ReportDetailClient({ reportId }: ReportDetailClientProps) {
             Other reports against this user ({others.length})
           </p>
           <ul className="text-sm divide-y divide-line">
-            {others.map((o) => (
-              <li key={o.id} className="py-2 flex items-center gap-3">
-                <span className="text-xs text-ink-muted w-24 shrink-0">
-                  {fmtDate(o.created_at)}
-                </span>
-                <span className="text-ink truncate flex-1">{o.category}</span>
-                <span className="text-xs text-ink-muted">{o.status}</span>
-              </li>
-            ))}
+            {others.map((o) => {
+              const otherDisplay = getStatusDisplay(o.status);
+              return (
+                <li key={o.id} className="py-2 flex items-center gap-3">
+                  <span className="text-xs text-ink-muted w-32 shrink-0">
+                    {fmtDate(o.created_at)}
+                  </span>
+                  <span className="text-ink truncate flex-1">{o.category}</span>
+                  <span
+                    className={cn(
+                      "inline-flex items-center px-2 py-0.5 rounded-button border text-xs font-medium",
+                      otherDisplay.className,
+                    )}
+                  >
+                    {otherDisplay.label}
+                  </span>
+                </li>
+              );
+            })}
           </ul>
         </section>
       ) : null}
@@ -310,62 +302,78 @@ export function ReportDetailClient({ reportId }: ReportDetailClientProps) {
       ) : null}
 
       {/* Action panel */}
-      {isOpen ? (
-        <section className="mt-8 bg-cream-card border border-line rounded-card p-4">
-          <p className="text-xs uppercase tracking-[0.14em] text-teal-600 mb-3">
-            Action
-          </p>
-          <div className="flex flex-wrap gap-2">
-            <button
-              type="button"
-              onClick={() => setActiveAction("resolve")}
-              className="inline-flex items-center gap-2 px-3 py-2 rounded-button border border-line bg-white text-sm font-medium text-ink hover:bg-cream"
-            >
-              <ShieldCheck size={14} />
-              Resolve
-            </button>
-            <button
-              type="button"
-              onClick={() => setActiveAction("dismiss")}
-              className="inline-flex items-center gap-2 px-3 py-2 rounded-button border border-line bg-white text-sm font-medium text-ink hover:bg-cream"
-            >
-              <XCircle size={14} />
-              Dismiss
-            </button>
-            <button
-              type="button"
-              onClick={() => setActiveAction("warn")}
-              className="inline-flex items-center gap-2 px-3 py-2 rounded-button bg-amber-100 text-amber-900 text-sm font-medium hover:bg-amber-200"
-            >
-              <AlertCircle size={14} />
-              Warn
-            </button>
-            <button
-              type="button"
-              onClick={() => setActiveAction("ban_temp")}
-              disabled={reportedDeleted}
-              className="inline-flex items-center gap-2 px-3 py-2 rounded-button bg-red-100 text-red-900 text-sm font-medium hover:bg-red-200 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <ShieldAlert size={14} />
-              Ban 7 days
-            </button>
-            <button
-              type="button"
-              onClick={() => setActiveAction("ban_perm")}
-              disabled={reportedDeleted}
-              className="inline-flex items-center gap-2 px-3 py-2 rounded-button bg-red-700 text-cream text-sm font-medium hover:bg-red-800 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <ShieldX size={14} />
-              Ban permanently
-            </button>
-          </div>
-          {reportedDeleted ? (
-            <p className="text-xs text-ink-muted mt-3">
-              Ban actions are disabled because the reported user&apos;s account is already soft-deleted.
+      <section className="mt-8 pt-8 border-t border-line">
+        <h2 className="text-xs uppercase tracking-[0.14em] text-teal-600 mb-4">
+          Actions
+        </h2>
+
+        {isOpen ? (
+          <div className="space-y-3">
+            <p className="text-sm text-ink-muted mb-4">
+              Choose one action below. Warn and Ban require a reason.
+              Resolve and Dismiss are silent &mdash; the reporter is not
+              notified.
             </p>
-          ) : null}
-        </section>
-      ) : null}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <button
+                type="button"
+                onClick={() => setActiveAction("resolve")}
+                className="px-4 py-3 rounded-button border border-line bg-white hover:bg-cream text-sm font-medium text-ink transition-colors"
+              >
+                Resolve (no action)
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveAction("dismiss")}
+                className="px-4 py-3 rounded-button border border-line bg-white hover:bg-cream text-sm font-medium text-ink transition-colors"
+              >
+                Dismiss (bad-faith report)
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveAction("warn")}
+                className="px-4 py-3 rounded-button bg-amber-50 border border-amber-200 hover:bg-amber-100 text-sm font-medium text-amber-900 transition-colors"
+              >
+                Warn user
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveAction("ban_temp")}
+                disabled={reportedDeleted}
+                className="px-4 py-3 rounded-button bg-red-50 border border-red-200 hover:bg-red-100 text-sm font-medium text-red-900 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Ban 7 days
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveAction("ban_perm")}
+                disabled={reportedDeleted}
+                className="px-4 py-3 rounded-button bg-red-900 hover:bg-red-800 text-sm font-medium text-cream transition-colors disabled:opacity-50 disabled:cursor-not-allowed sm:col-span-2"
+              >
+                Ban permanently
+              </button>
+            </div>
+            {reportedDeleted ? (
+              <p className="text-xs text-ink-muted mt-2">
+                Ban actions are disabled because the reported user&apos;s account is already soft-deleted.
+              </p>
+            ) : null}
+          </div>
+        ) : (
+          <div className="px-4 py-3 rounded-card border border-line bg-cream-card">
+            <p className="text-sm font-medium text-ink">Already triaged</p>
+            <p className="text-xs text-ink-muted mt-1">
+              Status: {statusDisplay.label}
+              {resolutionLabel ? ` • ${resolutionLabel}` : ""}
+            </p>
+            {report.resolved_at ? (
+              <p className="text-xs text-ink-muted mt-0.5">
+                Resolved {fmtDate(report.resolved_at)}
+              </p>
+            ) : null}
+          </div>
+        )}
+      </section>
 
       <ReportActionModal
         reportId={reportId}

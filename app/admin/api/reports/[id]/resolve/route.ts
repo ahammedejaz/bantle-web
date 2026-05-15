@@ -73,9 +73,9 @@ export async function POST(
     return NextResponse.json({ error: "Report not found" }, { status: 404 });
   }
 
-  if (report.status !== "open") {
+  if (report.status !== "pending") {
     return NextResponse.json(
-      { error: "Report already resolved" },
+      { error: "Report already triaged" },
       { status: 409 },
     );
   }
@@ -188,10 +188,29 @@ export async function POST(
       return NextResponse.json({ error: "Invalid action" }, { status: 400 });
   }
 
+  // Map admin action → user_reports.status. Aligned with the
+  // production schema's 4-value enum.
+  let newStatus: string;
+  switch (action) {
+    case "resolve":
+      newStatus = "reviewed";
+      break;
+    case "dismiss":
+      newStatus = "dismissed";
+      break;
+    case "warn":
+    case "ban_temp":
+    case "ban_perm":
+      newStatus = "actioned";
+      break;
+    default:
+      return NextResponse.json({ error: "Invalid action" }, { status: 400 });
+  }
+
   const { error: updateError } = await supabase
     .from("user_reports")
     .update({
-      status: action === "dismiss" ? "dismissed" : "resolved",
+      status: newStatus,
       resolved_at: new Date().toISOString(),
       resolved_by: admin.id,
       resolution_action: resolutionAction,

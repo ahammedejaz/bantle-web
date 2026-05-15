@@ -26,6 +26,7 @@ interface OtherReportRow {
   id: string;
   category: string;
   status: string;
+  resolution_action: string | null;
   created_at: string;
 }
 
@@ -74,7 +75,7 @@ export async function GET(
   if (reportedId) {
     const { data: others } = await supabase
       .from("user_reports")
-      .select("id, category, status, created_at")
+      .select("id, category, status, resolution_action, created_at")
       .eq("reported_id", reportedId)
       .neq("id", reportId)
       .order("created_at", { ascending: false })
