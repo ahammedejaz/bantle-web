@@ -1,9 +1,12 @@
 import type { Metadata } from "next";
 import { Inter, Lora } from "next/font/google";
 import "./globals.css";
-import { Header } from "@/components/Header";
-import { Footer } from "@/components/Footer";
 import { BRAND_NAME, SITE_DESCRIPTION, SITE_URL, TAGLINE } from "@/lib/constants";
+
+// Root layout. Site-wide concerns only: html/body, fonts, globals,
+// site-wide metadata. NO Header/Footer here — those belong to the
+// marketing route group's layout (app/(marketing)/layout.tsx).
+// The admin panel (app/admin/*) supplies its own chrome.
 
 const inter = Inter({
   subsets: ["latin"],
@@ -62,19 +65,7 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className={`${inter.variable} ${lora.variable}`}>
-      <body className="min-h-screen bg-cream text-ink flex flex-col">
-        <a
-          href="#main"
-          className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:bg-teal-900 focus:text-cream focus:px-3 focus:py-2 focus:rounded-button"
-        >
-          Skip to content
-        </a>
-        <Header />
-        <main id="main" className="flex-1">
-          {children}
-        </main>
-        <Footer />
-      </body>
+      <body className="bg-cream text-ink">{children}</body>
     </html>
   );
 }
