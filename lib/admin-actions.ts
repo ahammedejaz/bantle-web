@@ -18,6 +18,8 @@ export type AdminActionType =
   | "user_restored"
   | "platform_created"
   | "platform_updated"
+  | "platform_deactivated"
+  | "platform_activated"
   | "platform_deleted"
   | "listing_closed"
   | "deal_terminated"

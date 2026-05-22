@@ -10,6 +10,13 @@ import {
 } from "@/components/admin/PlatformEditorDialog";
 
 type CategoryKey = "music" | "video" | "cloud" | "work";
+type PlatformToggleResponse = {
+  notification_summary?: {
+    recipient_count?: number;
+    notification_failed_count?: number;
+    push_failure_count?: number;
+  };
+};
 
 const CATEGORY_GROUPS: Array<{ key: CategoryKey; label: string }> = [
   { key: "music", label: "Music" },
@@ -78,10 +85,35 @@ export function PlatformsListClient() {
           };
           throw new Error(data.error ?? `HTTP ${res.status}`);
         }
-        toast.show(
-          next ? "Platform activated." : "Platform deactivated.",
-          "success",
-        );
+        const data = (await res.json()) as PlatformToggleResponse;
+        const summary = data.notification_summary;
+        const failures =
+          (summary?.notification_failed_count ?? 0) +
+          (summary?.push_failure_count ?? 0);
+        if (failures > 0) {
+          toast.show(
+            next
+              ? "Platform activated. Some notifications failed."
+              : "Platform deactivated. Some notifications failed.",
+            "error",
+          );
+        } else if ((summary?.recipient_count ?? 0) > 0) {
+          toast.show(
+            next
+              ? `Platform activated. Notified ${summary?.recipient_count} affected user${
+                  summary?.recipient_count === 1 ? "" : "s"
+                }.`
+              : `Platform deactivated. Notified ${summary?.recipient_count} affected user${
+                  summary?.recipient_count === 1 ? "" : "s"
+                }.`,
+            "success",
+          );
+        } else {
+          toast.show(
+            next ? "Platform activated." : "Platform deactivated.",
+            "success",
+          );
+        }
         await fetchPlatforms();
       } catch (e) {
         const message =

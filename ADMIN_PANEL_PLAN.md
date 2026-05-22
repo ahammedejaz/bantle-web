@@ -756,6 +756,63 @@ component) for defense in depth.
 
 ---
 
+### Phase 4.2 — Platform activation/deactivation discovery + notifications
+
+**Status**: SHIPPED, pending Syed verification
+
+**Goal**: Platform activation/deactivation changes discoverability and
+communication only. It must not delete, archive, close, cancel, complete,
+or date-mutate existing listings or deals.
+
+**Implemented 2026-05-23**:
+
+- Mobile Home uses a new discovery-only view,
+  `discoverable_listings_with_availability`, so inactive-platform
+  listings disappear from discovery without changing the shared
+  `listings_with_availability` view.
+- Mobile notification rendering now handles unknown kinds safely and
+  supports `platform_deactivated` / `platform_activated`.
+- Existing listing, saved, hidden, my-listings, deal, and chat surfaces
+  continue to open and show discontinued-platform copy.
+- Admin `PATCH /admin/api/platforms/[id]` detects activation vs
+  deactivation and sends transactional in-app notifications.
+- Platform-status pushes go through `send_push_notification` and the
+  `platform_status` Android channel.
+- Deactivation recipients: active-listing hosts plus pending/active deal
+  participants.
+- Activation recipients: hosts with active, unarchived listings.
+- Saved-only users, all users, and re-engagement audiences are not
+  notified by default.
+
+**Files modified**:
+
+- bantle-web:
+  - `app/admin/api/platforms/[id]/route.ts`
+  - `app/admin/platforms/PlatformsListClient.tsx`
+  - `lib/admin-actions.ts`
+- bantle mobile/Supabase:
+  - migration `20260523090000_platform_status_notifications_and_discovery.sql`
+  - `send_push_notification`
+  - mobile notification, Home, platform store, and discontinued-copy surfaces
+
+**Verification**:
+
+- Web `npm run build`: passed after sandbox rerun and one TypeScript-target fix.
+- Web `npm run lint`: passed after sandbox rerun.
+- Mobile `npm run typecheck`: passed.
+- Mobile `npm run lint`: still fails due pre-existing lint debt; see
+  `PLATFORM_DEACTIVATION_IMPLEMENTATION.md` in the mobile repo.
+
+**Deployment order**:
+
+1. Ship mobile notification fallback support.
+2. Apply Supabase migration in dev/staging first.
+3. Deploy updated `send_push_notification`.
+4. Deploy web/admin.
+5. Apply production migration after smoke tests.
+
+---
+
 ### Phase 5 — Listings management
 
 **Status**: NOT STARTED
