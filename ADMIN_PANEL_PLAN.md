@@ -1146,9 +1146,10 @@ notifications kind CHECK.
 - `GET /admin/api/broadcasts` — recent broadcasts.
 - `POST /admin/api/broadcasts` — validates and starts an incident broadcast, then invokes `broadcast_push_dispatcher`.
 - `GET /admin/api/broadcasts/preview` — read-only recipient and push-token counts.
+- `POST /admin/api/broadcasts/[id]/retry` — retries an existing failed/partial broadcast without creating a new broadcast row.
 
 **Edge Function**:
-- `broadcast_push_dispatcher` — dedicated batch dispatcher for incident broadcasts. It creates persistent `broadcast_incident` notifications, sends Expo pushes on the `incident_broadcast` channel to users with tokens, clears stale tokens on `DeviceNotRegistered`, and updates broadcast/recipient counts.
+- `broadcast_push_dispatcher` — dedicated dispatcher for incident broadcasts. It creates/reuses persistent `broadcast_incident` notifications, sends Expo pushes one recipient/token per request on the `incident_broadcast` channel to avoid mixed-project Expo token failures, clears stale tokens on `DeviceNotRegistered`, and updates broadcast/recipient counts.
 
 **Pages**:
 - `app/admin/broadcasts/page.tsx`
@@ -1158,11 +1159,13 @@ notifications kind CHECK.
 
 - `/admin/broadcasts` defaults to `All eligible users`; `Test only: Syed` remains available for smoke testing.
 - The page shows the required incident-only warning banner and recent broadcast summaries.
+- Failed/partial broadcasts show a Retry failed delivery action. Retry reuses the same broadcast row and is intended for recipients that failed or missed in-app notification.
 - User-visible title/body reject URLs, line breaks, and obvious marketing or re-engagement wording.
 - Every send requires an admin-only reason and exact confirmation phrase `SEND INCIDENT BROADCAST`.
 - `all_eligible` is not rate-limited by a 24-hour cooldown. Admin may send repeated incident updates when operationally necessary.
 - Eligible recipients exclude deleted users, permanently banned users, and currently temp-banned users.
 - All eligible users receive persistent in-app notifications. Users with push tokens also receive a push.
+- In-app notification delivery is independent from push delivery; push failures should result in `partial_failure`, not a total broadcast failure.
 - Incident broadcasts are transactional/service notices, not marketing; analytics consent is not used as a gate.
 - Persistent in-app notification payloads include only broadcast id, event id, title, body, audience type, and sent time. They do not expose admin id, internal reason, email, push token, or recipient list.
 - Codex did not send an all-user broadcast during implementation or this cooldown-removal adjustment.
@@ -1175,6 +1178,7 @@ notifications kind CHECK.
 - `e5ad933` — `feat(supabase): add incident broadcast dispatcher`
 - `f51c9de` — `feat(admin): add incident broadcast APIs`
 - `a948263` — `feat(admin): add incident broadcast UI`
+- `a6091a2` — `fix(admin): remove incident broadcast cooldown`
 
 **Files modified**:
 
@@ -1194,6 +1198,7 @@ notifications kind CHECK.
   - `PROJECT_DEEP_UNDERSTANDING.md`
   - `PHASE_8_BROADCAST_IMPLEMENTATION.md`
   - `app/admin/api/broadcasts/route.ts`
+  - `app/admin/api/broadcasts/[id]/retry/route.ts`
   - `app/admin/api/broadcasts/preview/route.ts`
   - `app/admin/broadcasts/page.tsx`
   - `app/admin/broadcasts/BroadcastsClient.tsx`
@@ -1211,6 +1216,7 @@ notifications kind CHECK.
 - Mobile `npm run lint`: failed on pre-existing unrelated lint debt outside Phase 8 files.
 - Production Supabase migration was applied and read-only verified.
 - `broadcast_push_dispatcher` was deployed and listed active.
+- Reliability fix deployed `broadcast_push_dispatcher` version 2.
 
 **Known issues**:
 
@@ -1218,6 +1224,7 @@ notifications kind CHECK.
 - No all-user broadcast was sent by Codex.
 - No `test_syed` broadcast was sent by Codex.
 - Mobile lint still has pre-existing unrelated errors in older files; Phase 8 touched files were not in the lint failure list.
+- Latest all-user broadcast `29f165e4-efaf-4eb2-b1de-6d2896588dbe` has 20 in-app notifications and 5 failed push recipients from the pre-fix mixed-project Expo batch error. Syed can retry it from `/admin/broadcasts`.
 
 **Smoke tests**:
 1. Visit `/admin/broadcasts`.
@@ -1239,9 +1246,10 @@ notifications kind CHECK.
 17. Confirm recent broadcasts list shows the send and counts.
 18. Confirm `Test only: Syed` is clearly labeled as smoke-test-only.
 19. Confirm all-user option requires typed confirmation and is not blocked by any 24-hour cooldown message.
-20. Do not send all-user unless Syed explicitly decides to after reviewing the implementation.
-21. Confirm non-admin cannot access `/admin/broadcasts`.
-22. Confirm non-admin cannot access `/admin/api/broadcasts` or `/admin/api/broadcasts/preview`.
+20. For a failed/partial row, click Retry failed delivery and confirm it does not create a new broadcast row.
+21. Do not send all-user unless Syed explicitly decides to after reviewing the implementation.
+22. Confirm non-admin cannot access `/admin/broadcasts`.
+23. Confirm non-admin cannot access `/admin/api/broadcasts`, `/admin/api/broadcasts/preview`, or `/admin/api/broadcasts/[id]/retry`.
 
 ---
 

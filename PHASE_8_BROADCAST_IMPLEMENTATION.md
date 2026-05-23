@@ -14,6 +14,7 @@ Phase 8 added incident-only manual broadcast push support for Bantle admins.
   - `GET /admin/api/broadcasts`
   - `POST /admin/api/broadcasts`
   - `GET /admin/api/broadcasts/preview`
+  - `POST /admin/api/broadcasts/[id]/retry`
 - Added `/admin/broadcasts` UI and Broadcasts nav item.
 
 This feature is incident-only. It does not support marketing, re-engagement, promotions, discounts, retention nudges, or arbitrary all-user messaging.
@@ -39,6 +40,7 @@ Web/admin repo:
 - `PROJECT_DEEP_UNDERSTANDING.md`
 - `PHASE_8_BROADCAST_IMPLEMENTATION.md`
 - `app/admin/api/broadcasts/route.ts`
+- `app/admin/api/broadcasts/[id]/retry/route.ts`
 - `app/admin/api/broadcasts/preview/route.ts`
 - `app/admin/broadcasts/page.tsx`
 - `app/admin/broadcasts/BroadcastsClient.tsx`
@@ -71,12 +73,12 @@ Deployed:
 
 Dispatcher behavior:
 
-- Accepts POST `{ "broadcast_id": "uuid" }`.
-- Requires the broadcast row to be `status = 'sending'`.
+- Accepts POST `{ "broadcast_id": "uuid" }` and retry POST `{ "broadcast_id": "uuid", "retry": true }`.
+- Requires the broadcast row to be `status = 'sending'`, or `failed` / `partial_failure` when retrying.
 - Resolves `test_syed` server-side from `BANTLE_BROADCAST_TEST_USER_ID` or the server-only fallback UUID.
 - Resolves `all_eligible` by excluding deleted, permanently banned, and currently temp-banned users.
-- Inserts persistent `broadcast_incident` notifications.
-- Sends Expo pushes only to recipients with `push_token`.
+- Inserts or reuses persistent `broadcast_incident` notifications.
+- Sends Expo pushes one recipient/token per request only to recipients with `push_token`.
 - Uses the Android channel `incident_broadcast`.
 - Clears stale push tokens when Expo returns `DeviceNotRegistered`.
 - Updates broadcast and recipient counts/status.
@@ -110,6 +112,33 @@ Syed corrected the broadcast product behavior after initial Phase 8 shipment:
 - Kept all incident-only safeguards: admin-only auth, mandatory reason, exact confirmation phrase, URL blocking, marketing/re-engagement wording block, idempotency, audit logging, persistent notifications, push-token-only push delivery, deleted/banned exclusion, and dispatcher duplicate protection.
 - No migration was needed. The existing all-user helper index is harmless and does not enforce a cooldown.
 - No broadcast was sent during this adjustment.
+
+## Broadcast Reliability Fix - 2026-05-24
+
+Syed observed an all-user incident broadcast with 20 eligible recipients that finished as `partial_failure` because Expo rejected a push request containing tokens from different Expo projects/builds.
+
+Production state observed before the fix:
+
+- Latest broadcast id: `29f165e4-efaf-4eb2-b1de-6d2896588dbe`.
+- Status: `partial_failure`.
+- Recipients: 20.
+- Persistent in-app notifications: 20 distinct `broadcast_incident` rows existed.
+- Recipient statuses: 5 `failed`, 15 `skipped_no_token`.
+- Push counts: 0 success, 5 failure, 15 skipped.
+- Error summary: Expo mixed-project token error.
+
+Fix shipped:
+
+- `broadcast_push_dispatcher` now sends Expo pushes one recipient/token per request, avoiding mixed-project batch rejection.
+- Persistent in-app notification creation is independent from push delivery.
+- Existing notification rows are reused on retry; the dispatcher checks for a notification by user and broadcast id before inserting.
+- Existing `broadcast_recipients` rows are reused on retry; retry does not create a new broadcast row and does not expand an old broadcast to newly eligible users.
+- Push failures affect only that recipient and produce `partial_failure`, not a total dispatcher failure.
+- `DeviceNotRegistered` still clears only that specific profile push token.
+- Error summaries are non-secret and scrub Expo push token strings.
+- Web/admin added `POST /admin/api/broadcasts/[id]/retry` and a Retry failed delivery button for `failed` / `partial_failure` rows.
+- Retry audit uses existing `broadcast_sent` action type with payload `{ retry: true }`.
+- Codex did not retry the existing partial-failure broadcast automatically; Syed can retry it from `/admin/broadcasts`.
 
 ## Commands Run
 

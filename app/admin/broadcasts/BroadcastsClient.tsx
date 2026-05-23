@@ -71,6 +71,7 @@ export function BroadcastsClient() {
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [retryingId, setRetryingId] = useState<string | null>(null);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [confirmText, setConfirmText] = useState("");
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
@@ -221,6 +222,44 @@ export function BroadcastsClient() {
     }
   };
 
+  const retryBroadcast = async (broadcast: BroadcastItem) => {
+    if (retryingId) return;
+    setRetryingId(broadcast.id);
+    try {
+      const response = await fetch(
+        `/admin/api/broadcasts/${broadcast.id}/retry`,
+        { method: "POST" },
+      );
+      const data = (await response
+        .json()
+        .catch(() => ({ error: `HTTP ${response.status}` }))) as {
+        error?: string;
+        broadcast?: BroadcastItem;
+      };
+      if (!response.ok) {
+        throw new Error(data.error ?? `HTTP ${response.status}`);
+      }
+
+      const retried = data.broadcast;
+      if (
+        retried?.status === "partial_failure" ||
+        (retried?.push_failure_count ?? 0) > 0 ||
+        (retried?.notification_failed_count ?? 0) > 0
+      ) {
+        toast.show("Retry completed with warnings. Review the summary.", "warning");
+      } else {
+        toast.show("Broadcast delivery retried.", "success");
+      }
+      await fetchBroadcasts();
+    } catch (e) {
+      const message =
+        e instanceof Error ? e.message : "Failed to retry broadcast.";
+      toast.show(message, "error");
+    } finally {
+      setRetryingId(null);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <section className="rounded-card border border-amber-200 bg-amber-50 p-4">
@@ -346,6 +385,8 @@ export function BroadcastsClient() {
                 key={broadcast.id}
                 broadcast={broadcast}
                 expanded={!!expanded[broadcast.id]}
+                retrying={retryingId === broadcast.id}
+                onRetry={() => void retryBroadcast(broadcast)}
                 onToggle={() =>
                   setExpanded((current) => ({
                     ...current,
@@ -544,12 +585,19 @@ function Metric({ label, value }: { label: string; value: number }) {
 function BroadcastRow({
   broadcast,
   expanded,
+  retrying,
+  onRetry,
   onToggle,
 }: {
   broadcast: BroadcastItem;
   expanded: boolean;
+  retrying: boolean;
+  onRetry: () => void;
   onToggle: () => void;
 }) {
+  const canRetry =
+    broadcast.status === "failed" || broadcast.status === "partial_failure";
+
   return (
     <article className="rounded-card border border-line bg-cream-card p-4">
       <div className="flex flex-wrap items-center gap-2">
@@ -593,17 +641,40 @@ function BroadcastRow({
             </p>
           ) : null}
         </div>
-        <button
-          type="button"
-          onClick={onToggle}
-          className="inline-flex shrink-0 items-center gap-1 text-xs font-medium text-teal-700 hover:text-teal-900"
-        >
-          {expanded ? <ChevronUp size={13} /> : <ChevronDown size={13} />}
-          {expanded ? "Hide details" : "Show details"}
-        </button>
+        <div className="flex shrink-0 items-center gap-3">
+          {canRetry ? (
+            <button
+              type="button"
+              onClick={onRetry}
+              disabled={retrying}
+              title="Retries delivery for recipients that failed or missed in-app notification. It does not create a new broadcast."
+              className="inline-flex items-center gap-1 rounded-button border border-amber-300 bg-amber-50 px-2 py-1 text-xs font-medium text-amber-900 hover:bg-amber-100 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <RefreshCw
+                size={13}
+                className={retrying ? "animate-spin" : ""}
+              />
+              {retrying ? "Retrying..." : "Retry failed delivery"}
+            </button>
+          ) : null}
+          <button
+            type="button"
+            onClick={onToggle}
+            className="inline-flex items-center gap-1 text-xs font-medium text-teal-700 hover:text-teal-900"
+          >
+            {expanded ? <ChevronUp size={13} /> : <ChevronDown size={13} />}
+            {expanded ? "Hide details" : "Show details"}
+          </button>
+        </div>
       </div>
       {expanded ? (
         <div className="mt-3 space-y-3">
+          {canRetry ? (
+            <div className="rounded-button border border-amber-200 bg-amber-50 p-3 text-sm text-amber-950">
+              Retries delivery for recipients that failed or missed in-app
+              notification. It does not create a new broadcast.
+            </div>
+          ) : null}
           <div>
             <p className="text-xs uppercase tracking-[0.14em] text-teal-700">
               Reason

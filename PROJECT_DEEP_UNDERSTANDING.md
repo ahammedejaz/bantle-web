@@ -9,13 +9,15 @@ This document records a deep read of the local repository plus a read-only inspe
 Phase 7 audit log viewer was verified by Syed. Phase 8 incident broadcast push is shipped and awaiting Syed smoke verification.
 
 - Web/admin added `/admin/broadcasts`.
-- API routes added: `GET /admin/api/broadcasts`, `POST /admin/api/broadcasts`, and `GET /admin/api/broadcasts/preview`.
+- API routes added: `GET /admin/api/broadcasts`, `POST /admin/api/broadcasts`, `GET /admin/api/broadcasts/preview`, and `POST /admin/api/broadcasts/[id]/retry`.
 - Production migration `20260524000345_phase_8_incident_broadcasts.sql` added service-role-only `broadcasts` and `broadcast_recipients` tables plus `broadcast_incident` in `notifications_kind_check`.
-- Dedicated Edge Function `broadcast_push_dispatcher` creates persistent in-app notifications, sends Expo pushes on the `incident_broadcast` channel, clears stale push tokens on `DeviceNotRegistered`, and updates summary counts.
+- Dedicated Edge Function `broadcast_push_dispatcher` creates/reuses persistent in-app notifications, sends Expo pushes one recipient/token per request on the `incident_broadcast` channel, clears stale push tokens on `DeviceNotRegistered`, and updates summary counts.
 - Broadcasts are incident-only: no marketing, no re-engagement, mandatory admin-only reason, exact confirmation phrase, and URL/marketing-copy validation.
 - Default audience is `all_eligible`; `test_syed` remains available for smoke verification only.
 - There is no 24-hour all-user cooldown. Admins may send repeated incident updates when operationally necessary.
-- Codex did not send an all-user broadcast during implementation or during the cooldown-removal adjustment.
+- Failed/partial broadcasts can be retried without creating a new broadcast row or duplicating existing notification rows.
+- Latest observed all-user broadcast `29f165e4-efaf-4eb2-b1de-6d2896588dbe` had 20 in-app notifications created but 5 push failures from the pre-fix mixed-project Expo batch error. It can be retried from `/admin/broadcasts`.
+- Codex did not send an all-user broadcast during implementation, the cooldown-removal adjustment, or the reliability fix.
 
 ## Phase 7 Audit Log Viewer Update — 2026-05-23
 
