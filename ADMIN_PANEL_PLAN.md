@@ -1,7 +1,7 @@
 # Bantle Admin Panel — Implementation Plan
 
 **Repository**: bantle-web (`~/Documents/GitHub/bantle-web/`)
-**Status**: Phase 5 shipped; awaiting user smoke verification
+**Status**: Phase 5 verified; Phase 6 in progress
 **Last updated**: 2026-05-23
 **Scope**: Tier 1 (reports, users, platforms) + Tier 2 (listings, deals, audit log viewer, manual broadcast push)
 **Out of scope, permanently**: Re-engagement push notifications. This is a positioning decision, not a deferral. See Section 2 for reasoning.
@@ -825,7 +825,7 @@ or date-mutate existing listings or deals.
 
 ### Phase 5 — Listings management
 
-**Status**: SHIPPED
+**Status**: VERIFIED
 
 **Goal**: Admin can search listings and force-close abusive/stale ones with a reason.
 
@@ -902,7 +902,7 @@ indexes, and `listing_closed` in the notifications kind CHECK.
 
 **Known issues**:
 
-- Phase 5 is not `VERIFIED` until Syed runs the smoke tests below.
+- Syed verified Phase 5 smoke and functionality tests passed without failures.
 - Mobile lint still has pre-existing errors in unrelated files; do not treat this as a Phase 5 functional blocker while typecheck passes.
 
 **Smoke tests**:
@@ -930,7 +930,7 @@ indexes, and `listing_closed` in the notifications kind CHECK.
 
 ### Phase 6 — Deals management
 
-**Status**: NOT STARTED
+**Status**: IN PROGRESS
 
 **Goal**: Admin can view deals and force-terminate them for dispute resolution.
 
