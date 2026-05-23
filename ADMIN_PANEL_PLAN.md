@@ -1,8 +1,8 @@
 # Bantle Admin Panel — Implementation Plan
 
 **Repository**: bantle-web (`~/Documents/GitHub/bantle-web/`)
-**Status**: Planning complete; Phase 1 ready to execute
-**Last updated**: 2026-05-15
+**Status**: Phase 5 shipped; awaiting user smoke verification
+**Last updated**: 2026-05-23
 **Scope**: Tier 1 (reports, users, platforms) + Tier 2 (listings, deals, audit log viewer, manual broadcast push)
 **Out of scope, permanently**: Re-engagement push notifications. This is a positioning decision, not a deferral. See Section 2 for reasoning.
 
@@ -129,14 +129,24 @@ Rollback file removes the column, the table, and all indexes/policies.
 
 ### Migration 2 — listings audit fields (Phase 5)
 
-May be needed depending on existing schema. To be confirmed at Phase 5 start:
+Applied in mobile/Supabase repo migration
+`20260523091059_phase_5_listing_close_admin_fields.sql`:
 
 ```sql
--- Conditional: only run if these columns don't exist already.
 ALTER TABLE public.listings
   ADD COLUMN IF NOT EXISTS closed_reason text,
-  ADD COLUMN IF NOT EXISTS closed_by uuid REFERENCES public.profiles(id);
+  ADD COLUMN IF NOT EXISTS closed_by uuid,
+  ADD COLUMN IF NOT EXISTS closed_at timestamptz;
+
+ALTER TABLE public.listings
+  ADD CONSTRAINT listings_closed_by_fkey
+  FOREIGN KEY (closed_by) REFERENCES public.profiles(id) ON DELETE SET NULL;
 ```
+
+The same migration extends `notifications.kind` to include `listing_closed`
+and adds supporting admin/search indexes on listings. It deliberately does
+not add a `listings.status` CHECK constraint because production status values
+are free text and admin UI must render unknown values defensively.
 
 ### Migration 3 — platforms soft delete (Phase 4)
 
@@ -815,26 +825,106 @@ or date-mutate existing listings or deals.
 
 ### Phase 5 — Listings management
 
-**Status**: IN PROGRESS
+**Status**: SHIPPED
 
 **Goal**: Admin can search listings and force-close abusive/stale ones with a reason.
 
-**Schema migration**: Add `listings.closed_reason` and `listings.closed_by` if not present (see Migration 2).
+**Schema migration**: Production migration
+`20260523091059_phase_5_listing_close_admin_fields.sql` added
+`listings.closed_reason`, `listings.closed_by`, `listings.closed_at`, a
+`closed_by` FK to `profiles(id) ON DELETE SET NULL`, supporting listing
+indexes, and `listing_closed` in the notifications kind CHECK.
 
 **API routes**:
-- `GET /api/admin/listings` — search by user, platform, status
-- `GET /api/admin/listings/[id]` — detail
-- `POST /api/admin/listings/[id]/close` — force-close with reason
+- `GET /admin/api/listings` — search by listing/user UUID, host email/name, title, platform, status, archived state
+- `GET /admin/api/listings/[id]` — detail with host, active/pending deals, recent deals, host report counts, and listing audit entries
+- `POST /admin/api/listings/[id]/close` — idempotent force-close with reason
 
 **Pages**:
 - `app/admin/listings/page.tsx`
 - `app/admin/listings/ListingsClient.tsx`
 - `app/admin/listings/[id]/page.tsx`
+- `app/admin/listings/[id]/ListingDetailClient.tsx`
+
+**Behavior shipped**:
+
+- Force-close only accepts active listings. Already closed listings return idempotent success without duplicate notification, push, or audit row.
+- Force-close sets `status = 'closed'`, `closed_reason`, `closed_by`, `closed_at`, and `updated_at`.
+- It leaves `archived_at` unchanged and does not mutate deals, deal dates, conversations, messages, or saved listings.
+- Only the host receives the persistent `listing_closed` notification and best-effort transactional push.
+- Saved-only users, deal participants, all users, and re-engagement audiences are not notified in Phase 5.
+- Admin UI shows active/pending deal warnings and explicitly says existing deals and chats are unchanged.
+
+**Commit SHAs**:
+
+- `9c18b19` — `docs(admin): start phase 5`
+- `3504dd2` — `feat(mobile): support listing close notifications`
+- `ff1671a` — `feat(admin): add listing management APIs`
+- `78d99a3` — `feat(admin): add listings management UI`
+
+**Files modified**:
+
+- bantle mobile/Supabase:
+  - `app/_layout.tsx`
+  - `app/listing/[id].tsx`
+  - `app/notifications.tsx`
+  - `stores/notifications.ts`
+  - `supabase/functions/send_push_notification/index.ts`
+  - `supabase/migrations/20260523091059_phase_5_listing_close_admin_fields.sql`
+  - `supabase/migrations/rollback_20260523091059_phase_5_listing_close_admin_fields.sql`
+  - `types/database.ts`
+- bantle-web:
+  - `ADMIN_PANEL_PLAN.md`
+  - `PHASE_5_LISTINGS_IMPLEMENTATION.md`
+  - `PROJECT_CONTEXT_FOR_AI.md`
+  - `PROJECT_DEEP_UNDERSTANDING.md`
+  - `app/admin/api/listings/route.ts`
+  - `app/admin/api/listings/[id]/route.ts`
+  - `app/admin/api/listings/[id]/close/route.ts`
+  - `app/admin/listings/page.tsx`
+  - `app/admin/listings/ListingsClient.tsx`
+  - `app/admin/listings/[id]/page.tsx`
+  - `app/admin/listings/[id]/ListingDetailClient.tsx`
+  - `components/admin/AdminNav.tsx`
+  - `components/admin/ListingCloseModal.tsx`
+  - `components/admin/ListingRow.tsx`
+  - `components/admin/ListingStatusBadge.tsx`
+
+**Verification**:
+
+- Production Supabase migration applied and read-only verified.
+- `send_push_notification` Edge Function deployed with `listing_closed` support.
+- Mobile `npm run typecheck`: passed.
+- Mobile `npm run lint`: fails due pre-existing repo lint debt unrelated to Phase 5.
+- Web `npm run build`: passed.
+- Web `npm run lint`: passed.
+- `git diff --check`: passed in both repos.
+
+**Known issues**:
+
+- Phase 5 is not `VERIFIED` until Syed runs the smoke tests below.
+- Mobile lint still has pre-existing errors in unrelated files; do not treat this as a Phase 5 functional blocker while typecheck passes.
 
 **Smoke tests**:
-1. Search listings by user → Syed's listings appear.
-2. Click a listing → detail shows current state, active deals if any.
-3. Force-close with reason "Test closure" → listing status = closed, audit log entry created, host receives a notification.
+1. Visit `/admin/listings`.
+2. Search listings by host email/display name/id.
+3. Search listings by title/platform.
+4. Filter by status/platform/archived.
+5. Open a listing detail page.
+6. Confirm host card, listing state, active/pending deals, and recent deals render.
+7. Force-close an active listing with reason `Test closure`.
+8. Confirm listing status becomes `closed`.
+9. Confirm `closed_reason`, `closed_by`, and `closed_at` are populated.
+10. Confirm Home no longer shows the listing.
+11. Confirm direct listing detail still opens and shows inactive/closed copy.
+12. Confirm My Listings shows the listing as closed.
+13. Confirm existing chat/deal surfaces still work.
+14. Confirm no deal status/date fields changed.
+15. Confirm `admin_actions` has `listing_closed`.
+16. Confirm host gets in-app `listing_closed` notification.
+17. Confirm host push is received or correctly reported skipped if no token.
+18. Repeat close on already closed listing and confirm no duplicate notification/push/audit.
+19. Confirm notification tap routes safely to listing detail or fallback.
 
 ---
 
@@ -941,8 +1031,8 @@ These must be answered before the listed phase starts:
 ### Before Phase 3 (Users) [RESOLVED IN PHASE 2]
 - Does `profiles` have `banned_until timestamptz`? **Resolved 2026-05-15**: did not exist; Phase 2's second migration `20260515050834_phase_2_user_bans.sql` added `banned_until`, `banned_reason`, `banned_by`. Phase 3 will use these existing columns directly.
 
-### Before Phase 5 (Listings)
-- Does `listings` have `closed_reason`, `closed_by`? If not, Phase 5 migration adds them.
+### Before Phase 5 (Listings) [RESOLVED]
+- `listings.closed_reason`, `listings.closed_by`, and `listings.closed_at` were added by Phase 5 migration `20260523091059_phase_5_listing_close_admin_fields.sql`.
 
 ### Before Phase 8 (Broadcasts)
 - Are expo push tokens stored on profiles already? (Yes — `profiles.push_token` exists per the data export from Phase 4.3.) Good.

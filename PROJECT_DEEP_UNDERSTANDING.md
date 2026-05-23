@@ -987,6 +987,13 @@ Performance advisor findings observed:
   - Distinguish self-delete `deleted_at` from admin permanent ban `permanently_banned`.
   - Do not route permanent bans through self-delete recovery behavior.
   - Keep push, notification row, report status update, and audit log behavior observable.
+- For listing moderation:
+  - Phase 5 shipped admin search/detail/force-close routes and UI.
+  - Force-close sets `listings.status = 'closed'` plus `closed_reason`, `closed_by`, and `closed_at`.
+  - Force-close does not archive/delete listings and does not mutate deal status, deal dates, conversations, or messages.
+  - Only the listing host receives `listing_closed` in-app notification and best-effort transactional push.
+  - Saved-only users, all users, and deal participants are not notified in Phase 5.
+  - `listings.status` remains unconstrained text; render unknown statuses defensively.
 
 ## Verification Performed
 
