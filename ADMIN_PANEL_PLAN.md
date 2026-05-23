@@ -1169,6 +1169,7 @@ notifications kind CHECK.
 - Incident broadcasts are transactional/service notices, not marketing; analytics consent is not used as a gate.
 - Persistent in-app notification payloads include only broadcast id, event id, title, body, audience type, and sent time. They do not expose admin id, internal reason, email, push token, or recipient list.
 - User-facing broadcast push and in-app notifications display the admin-entered title/body. Fallback copy is only for malformed or missing payloads.
+- In-app broadcast row taps mark read and stay on `/notifications`; push banner taps open `/notifications` without stacking when already there.
 - Codex did not send an all-user broadcast during implementation, the cooldown-removal adjustment, the reliability fix, or the copy clarity fix.
 - Codex did not send a `test_syed` broadcast during implementation or this cooldown-removal adjustment; Syed should run the test send manually.
 
@@ -1241,7 +1242,7 @@ notifications kind CHECK.
 10. Send test broadcast to Syed only.
 11. Confirm push received on Syed's device, or skipped count if no token.
 12. Confirm in-app notification row appears.
-13. Confirm notification tap routes to `/notifications`.
+13. Confirm push notification tap opens `/notifications`, and tapping the in-app broadcast row marks read without stacking another Notifications screen.
 14. Confirm `broadcasts` row summary.
 15. Confirm `broadcast_recipients` row for test user.
 16. Confirm `admin_actions.action_type = broadcast_sent`.

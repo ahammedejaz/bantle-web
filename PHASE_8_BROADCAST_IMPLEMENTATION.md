@@ -151,6 +151,15 @@ Syed observed that a received broadcast notification used overly generic copy. I
 - Deployed `broadcast_push_dispatcher` version 3.
 - Mobile/Supabase commit: `2767f50` - `fix(mobile): show broadcast notification details`.
 
+## Broadcast Notification Navigation Fix - 2026-05-24
+
+Syed observed that tapping a broadcast row inside the in-app Notifications screen pushed another `/notifications` route, causing duplicate screens in the back stack.
+
+- Mobile in-app `broadcast_incident` row taps now only mark the notification read and stay on the current Notifications screen.
+- Root push-tap fallback routing now avoids navigating when already on `/notifications` and uses `replace('/notifications')` for notification-fallback destinations.
+- Resource-specific notification routing for messages, deals, listings, and platform host paths is unchanged.
+- No broadcast was sent and no production data was mutated during this fix.
+
 ## Commands Run
 
 Mobile/Supabase:
@@ -204,7 +213,7 @@ Supabase MCP:
 10. Send test broadcast to Syed only.
 11. Confirm push received on Syed's device, or skipped count if no token.
 12. Confirm in-app notification row appears.
-13. Confirm notification tap routes to `/notifications`.
+13. Confirm push notification tap opens `/notifications`, and tapping the in-app broadcast row marks read without stacking another Notifications screen.
 14. Confirm `broadcasts` row summary.
 15. Confirm `broadcast_recipients` row for test user.
 16. Confirm `admin_actions.action_type = broadcast_sent`.

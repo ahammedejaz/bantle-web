@@ -17,6 +17,7 @@ Phase 7 audit log viewer was verified by Syed. Phase 8 incident broadcast push i
 - There is no 24-hour all-user cooldown. Admins may send repeated incident updates when operationally necessary.
 - Failed/partial broadcasts can be retried without creating a new broadcast row or duplicating existing notification rows.
 - User-facing broadcast push and in-app notifications show the admin-entered title/body. Admin-only reason is not shown to users, and fallback copy is only for malformed payloads.
+- In-app broadcast row taps mark read and stay on `/notifications`; push banner taps open `/notifications` without stacking when already there.
 - Latest observed all-user broadcast `29f165e4-efaf-4eb2-b1de-6d2896588dbe` had 20 in-app notifications with title/body payload fields; read-only inspection during the copy clarity fix showed it as `completed`.
 - Codex did not send an all-user broadcast during implementation, the cooldown-removal adjustment, the reliability fix, or the copy clarity fix.
 
