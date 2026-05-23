@@ -1,6 +1,6 @@
 # Bantle Web - AI project context
 
-Last updated: 2026-05-23
+Last updated: 2026-05-24
 Repo path: `/Users/syedejazahammed/Documents/GitHub/bantle-web`
 Production URL: `https://bantle.in`
 Mobile repo: `/Users/syedejazahammed/Documents/GitHub/bantle`
@@ -28,7 +28,7 @@ The old `BANTLE_WEB_PROJECT_DUMP.md` is useful historical context, but it predat
 - Public pages are mostly static server components.
 - `/reset-password` and `/verify` are client-enhanced Supabase auth helper pages.
 - `/admin/*` uses Supabase cookie sessions, middleware gating, and server-side service-role API routes.
-- Admin Phases 1 through 6 are verified/shipped. Phase 7 audit log viewer is shipped awaiting Syed smoke verification. Phase 8 is not started.
+- Admin Phases 1 through 7 are verified/shipped. Phase 8 incident broadcast push is shipped awaiting Syed smoke verification.
 
 ## 2. Technology stack
 
@@ -530,7 +530,7 @@ Admin pages:
   - `app/admin/platforms/PlatformsListClient.tsx`
   - Platform catalog grouped by category, create/edit/toggle active.
 
-Admin nav currently links Dashboard, Reports, Users, Listings, Deals, Audit, and Platforms. Broadcasts are the remaining roadmap admin phase.
+Admin nav currently links Dashboard, Reports, Users, Listings, Deals, Audit, Broadcasts, and Platforms.
 
 ## 14. Admin API routes
 
@@ -1075,18 +1075,33 @@ Phase 6 - Deals management:
 
 Phase 7 - Audit log viewer:
 
-- Goal: top-level read-only `admin_actions` feed.
-- Likely route:
+- Verified by Syed.
+- Route:
   - `GET /admin/api/audit`
-- Filters by admin/action/date.
+- `/admin/audit` is a top-level read-only `admin_actions` feed with filters by action/resource/date/search and collapsed payload rendering.
 
 Phase 8 - Manual broadcast push:
 
-- Sensitive.
-- Incident-only, not marketing or re-engagement.
-- Rate limit: 1 broadcast per 24 hours.
-- Needs confirmation modal and audit log.
-- `broadcasts` table likely required.
+- Shipped 2026-05-24, awaiting Syed verification.
+- Routes:
+  - `GET /admin/api/broadcasts`
+  - `POST /admin/api/broadcasts`
+  - `GET /admin/api/broadcasts/preview`
+- Page:
+  - `/admin/broadcasts`
+- Supabase:
+  - `broadcasts`
+  - `broadcast_recipients`
+  - `notifications.kind = broadcast_incident`
+  - dedicated Edge Function `broadcast_push_dispatcher`
+- Semantics:
+  - Incident-only, not marketing, not re-engagement.
+  - Default audience is `test_syed`; `all_eligible` is available only after explicit confirmation.
+  - All-user sends are server-rate-limited to one per rolling 24 hours.
+  - Persistent in-app rows are created for eligible recipients; pushes go only to users with `push_token`.
+  - Deleted, permanently banned, and currently temp-banned users are excluded.
+  - User-visible payload does not include admin id, internal reason, emails, push tokens, or recipient lists.
+  - Codex did not send an all-user broadcast during implementation.
 
 ## 23. Verification checklist for future changes
 
@@ -1302,7 +1317,7 @@ Deals management shipped in code and was verified by Syed:
 
 ## 28. Phase 7 Audit Log Viewer Update — 2026-05-23
 
-Audit log viewer is shipped in code and awaiting Syed smoke verification:
+Audit log viewer shipped in code and was verified by Syed:
 
 - `/admin/audit` lists `admin_actions` latest-first.
 - `/admin/api/audit` is a read-only GET route guarded by `requireAdmin()` and backed by the service-role Supabase client.
@@ -1311,6 +1326,19 @@ Audit log viewer is shipped in code and awaiting Syed smoke verification:
 - Known resources link to user, listing, deal, report, or platform admin surfaces.
 - Phase 7 added no Supabase migration and no mobile changes.
 
-## 29. One-sentence mental model
+## 29. Phase 8 Incident Broadcast Update — 2026-05-24
 
-This repo is the public face and admin console for Bantle: the public side explains a household subscription coordination app and handles Supabase email flows, while the admin side uses cookie-authenticated Supabase sessions plus service-role API routes to moderate reports/users, manage listings/deals, view audit history, and maintain the platform catalog.
+Incident broadcast push is shipped in code and awaiting Syed smoke verification:
+
+- `/admin/broadcasts` shows an incident-only warning, a guarded send form, recipient preview counts, all-user rate-limit state, and recent broadcast summaries.
+- `/admin/api/broadcasts` supports read-only recent broadcast listing and guarded POST sends.
+- `/admin/api/broadcasts/preview` is read-only and returns recipient/push-token counts for `test_syed` or `all_eligible`.
+- Production Supabase migration `20260524000345_phase_8_incident_broadcasts.sql` added service-role-only `broadcasts` and `broadcast_recipients` tables plus `broadcast_incident` in `notifications_kind_check`.
+- Dedicated Edge Function `broadcast_push_dispatcher` creates persistent notifications, sends Expo pushes on the `incident_broadcast` channel, clears stale tokens on `DeviceNotRegistered`, and updates broadcast/recipient counts.
+- `all_eligible` sends require exact confirmation, a mandatory admin-only reason, URL-free user-visible copy, marketing/re-engagement wording checks, and one all-user broadcast per rolling 24 hours.
+- `test_syed` is the default and bypasses the all-user 24-hour limit.
+- Codex did not send an all-user broadcast during implementation. Syed should run a `test_syed` smoke send before considering any all-user incident notice.
+
+## 30. One-sentence mental model
+
+This repo is the public face and admin console for Bantle: the public side explains a household subscription coordination app and handles Supabase email flows, while the admin side uses cookie-authenticated Supabase sessions plus service-role API routes to moderate reports/users, manage listings/deals, view audit history, send incident-only broadcasts, and maintain the platform catalog.

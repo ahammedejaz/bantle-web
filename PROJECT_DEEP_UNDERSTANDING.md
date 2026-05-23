@@ -4,9 +4,20 @@ Generated: 2026-05-19
 
 This document records a deep read of the local repository plus a read-only inspection of the connected Supabase project. It is meant to be the current operational map for future work in this codebase.
 
+## Phase 8 Incident Broadcast Update — 2026-05-24
+
+Phase 7 audit log viewer was verified by Syed. Phase 8 incident broadcast push is shipped and awaiting Syed smoke verification.
+
+- Web/admin added `/admin/broadcasts`.
+- API routes added: `GET /admin/api/broadcasts`, `POST /admin/api/broadcasts`, and `GET /admin/api/broadcasts/preview`.
+- Production migration `20260524000345_phase_8_incident_broadcasts.sql` added service-role-only `broadcasts` and `broadcast_recipients` tables plus `broadcast_incident` in `notifications_kind_check`.
+- Dedicated Edge Function `broadcast_push_dispatcher` creates persistent in-app notifications, sends Expo pushes on the `incident_broadcast` channel, clears stale push tokens on `DeviceNotRegistered`, and updates summary counts.
+- Broadcasts are incident-only: no marketing, no re-engagement, mandatory admin-only reason, exact confirmation phrase, URL/marketing-copy validation, and one all-user broadcast per rolling 24 hours.
+- Default audience is `test_syed`; all-user sends are available only with explicit confirmation. Codex did not send an all-user broadcast during implementation.
+
 ## Phase 7 Audit Log Viewer Update — 2026-05-23
 
-Phase 6 deals management was verified by Syed. Phase 7 audit log viewer is shipped and awaiting Syed smoke verification.
+Phase 6 deals management was verified by Syed. Phase 7 audit log viewer was verified by Syed.
 
 - Web/admin added `/admin/audit`.
 - API route added: `GET /admin/api/audit`.

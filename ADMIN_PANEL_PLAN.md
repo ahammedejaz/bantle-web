@@ -1,8 +1,8 @@
 # Bantle Admin Panel — Implementation Plan
 
 **Repository**: bantle-web (`~/Documents/GitHub/bantle-web/`)
-**Status**: Phase 5 verified; Phase 6 verified; Phase 7 shipped, awaiting Syed verification
-**Last updated**: 2026-05-23
+**Status**: Phase 5 verified; Phase 6 verified; Phase 7 verified; Phase 8 shipped, awaiting Syed verification
+**Last updated**: 2026-05-24
 **Scope**: Tier 1 (reports, users, platforms) + Tier 2 (listings, deals, audit log viewer, manual broadcast push)
 **Out of scope, permanently**: Re-engagement push notifications. This is a positioning decision, not a deferral. See Section 2 for reasoning.
 
@@ -1125,9 +1125,9 @@ notifications kind CHECK.
 
 ### Phase 8 — Manual broadcast push
 
-**Status**: IN PROGRESS
+**Status**: SHIPPED
 
-**Goal**: Admin can send a one-off push notification to all users for genuine incidents only. Rate-limited, audit-logged.
+**Goal**: Admin can send a one-off push notification to eligible users for genuine incidents only. Rate-limited, audit-logged.
 
 **This phase is the most sensitive.** It exposes the ability to push to every user. The constraints are:
 
@@ -1137,20 +1137,110 @@ notifications kind CHECK.
 - Banner above the broadcast form: "Broadcasts are for incidents only — service outages, security notices. Do not use for marketing or re-engagement."
 
 **Schema**:
-- New `broadcasts` table (id, admin_id, title, body, audience_filter jsonb, sent_at, recipient_count).
+- New `broadcasts` table tracks incident title/body, admin-only reason, audience filter, idempotency key, event id, status, counts, sent/completed timestamps, and error summary.
+- New `broadcast_recipients` table tracks per-recipient notification id, push ticket/error, status, and timestamps. It does not store push token snapshots.
+- Both tables have RLS enabled and no user policies; service-role admin routes and the Edge Function own access.
+- `notifications_kind_check` now includes `broadcast_incident`.
 
 **API routes**:
-- `POST /api/admin/broadcasts` — send a broadcast (calls Supabase Edge Function or direct expo-server-sdk call)
-- `GET /api/admin/broadcasts` — recent broadcasts
+- `GET /admin/api/broadcasts` — recent broadcasts and all-user rate-limit state.
+- `POST /admin/api/broadcasts` — validates and starts an incident broadcast, then invokes `broadcast_push_dispatcher`.
+- `GET /admin/api/broadcasts/preview` — read-only recipient and push-token counts.
+
+**Edge Function**:
+- `broadcast_push_dispatcher` — dedicated batch dispatcher for incident broadcasts. It creates persistent `broadcast_incident` notifications, sends Expo pushes on the `incident_broadcast` channel to users with tokens, clears stale tokens on `DeviceNotRegistered`, and updates broadcast/recipient counts.
 
 **Pages**:
 - `app/admin/broadcasts/page.tsx`
 - `app/admin/broadcasts/BroadcastsClient.tsx`
 
+**Behavior shipped**:
+
+- `/admin/broadcasts` defaults to `Test: Syed only`; all-user is never the default.
+- The page shows the required incident-only warning banner and recent broadcast summaries.
+- User-visible title/body reject URLs, line breaks, and obvious marketing or re-engagement wording.
+- Every send requires an admin-only reason and exact confirmation phrase `SEND INCIDENT BROADCAST`.
+- `all_eligible` is rate-limited server-side to one broadcast per rolling 24 hours; `test_syed` bypasses that all-user limit.
+- Eligible recipients exclude deleted users, permanently banned users, and currently temp-banned users.
+- Incident broadcasts are transactional/service notices, not marketing; analytics consent is not used as a gate.
+- Persistent in-app notification payloads include only broadcast id, event id, title, body, audience type, and sent time. They do not expose admin id, internal reason, email, push token, or recipient list.
+- Codex did not send an all-user broadcast during implementation.
+- Codex did not send a `test_syed` broadcast during implementation; Syed should run the test send manually.
+
+**Commit SHAs**:
+
+- `5e67e6c` — `docs(admin): start phase 8`
+- `f03c230` — `feat(mobile): support incident broadcasts`
+- `e5ad933` — `feat(supabase): add incident broadcast dispatcher`
+- `f51c9de` — `feat(admin): add incident broadcast APIs`
+- `a948263` — `feat(admin): add incident broadcast UI`
+
+**Files modified**:
+
+- Mobile/Supabase repo:
+  - `app/_layout.tsx`
+  - `app/notifications.tsx`
+  - `lib/push.ts`
+  - `stores/notifications.ts`
+  - `supabase/config.toml`
+  - `supabase/functions/broadcast_push_dispatcher/index.ts`
+  - `supabase/migrations/20260524000345_phase_8_incident_broadcasts.sql`
+  - `supabase/migrations/rollback_20260524000345_phase_8_incident_broadcasts.sql`
+  - `types/database.ts`
+- Web/admin repo:
+  - `ADMIN_PANEL_PLAN.md`
+  - `PROJECT_CONTEXT_FOR_AI.md`
+  - `PROJECT_DEEP_UNDERSTANDING.md`
+  - `PHASE_8_BROADCAST_IMPLEMENTATION.md`
+  - `app/admin/api/broadcasts/route.ts`
+  - `app/admin/api/broadcasts/preview/route.ts`
+  - `app/admin/broadcasts/page.tsx`
+  - `app/admin/broadcasts/BroadcastsClient.tsx`
+  - `components/admin/AdminNav.tsx`
+  - `components/admin/AdminToast.tsx`
+  - `lib/admin-broadcasts.ts`
+
+**Verification**:
+
+- Web `npm run build`: passed.
+- Web `npm run lint`: passed.
+- Web `git diff --check`: passed.
+- Mobile `npm run typecheck`: passed.
+- Mobile `git diff --check`: passed.
+- Mobile `npm run lint`: failed on pre-existing unrelated lint debt outside Phase 8 files.
+- Production Supabase migration was applied and read-only verified.
+- `broadcast_push_dispatcher` was deployed and listed active.
+
+**Known issues**:
+
+- Phase 8 is shipped but not verified. Syed must run the smoke tests below.
+- No all-user broadcast was sent by Codex.
+- No `test_syed` broadcast was sent by Codex.
+- Mobile lint still has pre-existing unrelated errors in older files; Phase 8 touched files were not in the lint failure list.
+
 **Smoke tests**:
-1. Visit `/admin/broadcasts` → see banner + form + last-sent list.
-2. Send a test broadcast to a filtered audience (only Syed's UUID) → confirms rate-limit not hit, push received on device, audit log entry created.
-3. Try to send a second broadcast within 24h → 429 error, friendly message in toast.
+1. Visit `/admin/broadcasts`.
+2. Confirm incident-only warning banner is visible.
+3. Confirm default audience is `Test: Syed only`.
+4. Preview `test_syed`.
+5. Preview `all_eligible`.
+6. Confirm counts are sensible.
+7. Try wrong confirmation phrase and confirm blocked.
+8. Try missing reason and confirm blocked.
+9. Try marketing/re-engagement wording and confirm blocked.
+10. Send test broadcast to Syed only.
+11. Confirm push received on Syed's device, or skipped count if no token.
+12. Confirm in-app notification row appears.
+13. Confirm notification tap routes to `/notifications`.
+14. Confirm `broadcasts` row summary.
+15. Confirm `broadcast_recipients` row for test user.
+16. Confirm `admin_actions.action_type = broadcast_sent`.
+17. Confirm recent broadcasts list shows the send and counts.
+18. Confirm all-user option requires typed confirmation.
+19. Confirm all-user 24-hour rate-limit display.
+20. Do not send all-user unless Syed explicitly decides to after reviewing the implementation.
+21. Confirm non-admin cannot access `/admin/broadcasts`.
+22. Confirm non-admin cannot access `/admin/api/broadcasts` or `/admin/api/broadcasts/preview`.
 
 ---
 
