@@ -1102,6 +1102,7 @@ Phase 8 - Manual broadcast push:
   - Persistent in-app rows are created for eligible recipients independently from push delivery; pushes go only to users with `push_token`.
   - Pushes are sent one recipient/token per Expo request to avoid mixed-project token batch failures.
   - Failed/partial broadcasts can be retried without creating a new broadcast row or duplicating existing notification rows.
+  - User-facing broadcast push and in-app notifications show the admin-entered title/body. Fallback copy is only used for malformed or missing payloads.
   - Deleted, permanently banned, and currently temp-banned users are excluded.
   - User-visible payload does not include admin id, internal reason, emails, push tokens, or recipient lists.
   - Codex did not send an all-user broadcast during implementation.
@@ -1339,11 +1340,12 @@ Incident broadcast push is shipped in code and awaiting Syed smoke verification:
 - Production Supabase migration `20260524000345_phase_8_incident_broadcasts.sql` added service-role-only `broadcasts` and `broadcast_recipients` tables plus `broadcast_incident` in `notifications_kind_check`.
 - Dedicated Edge Function `broadcast_push_dispatcher` creates/reuses persistent notifications, sends Expo pushes one recipient/token per request on the `incident_broadcast` channel, clears stale tokens on `DeviceNotRegistered`, and updates broadcast/recipient counts.
 - `/admin/api/broadcasts/[id]/retry` and the Retry failed delivery UI retry existing failed/partial broadcasts without creating a new broadcast row.
+- User-facing push and in-app broadcast notifications show the admin-entered title/body; admin-only reason is not shown to users, and fallback copy is only for malformed payloads.
 - `all_eligible` sends require exact confirmation, a mandatory admin-only reason, URL-free user-visible copy, and marketing/re-engagement wording checks.
 - There is no 24-hour all-user cooldown; admins may send outage-start and outage-resolved updates when needed.
 - `all_eligible` is the default audience. `test_syed` remains available only for smoke verification.
-- Latest observed all-user broadcast `29f165e4-efaf-4eb2-b1de-6d2896588dbe` had 20 in-app notifications created but 5 push failures from the pre-fix mixed-project Expo batch error. It can be retried from `/admin/broadcasts`.
-- Codex did not send an all-user broadcast during implementation, the cooldown-removal adjustment, or the reliability fix.
+- Latest observed all-user broadcast `29f165e4-efaf-4eb2-b1de-6d2896588dbe` had 20 in-app notifications with title/body payload fields; read-only inspection during the copy clarity fix showed it as `completed`.
+- Codex did not send an all-user broadcast during implementation, the cooldown-removal adjustment, the reliability fix, or the copy clarity fix.
 
 ## 30. One-sentence mental model
 

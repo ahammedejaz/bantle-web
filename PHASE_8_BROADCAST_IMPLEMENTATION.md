@@ -138,7 +138,18 @@ Fix shipped:
 - Error summaries are non-secret and scrub Expo push token strings.
 - Web/admin added `POST /admin/api/broadcasts/[id]/retry` and a Retry failed delivery button for `failed` / `partial_failure` rows.
 - Retry audit uses existing `broadcast_sent` action type with payload `{ retry: true }`.
-- Codex did not retry the existing partial-failure broadcast automatically; Syed can retry it from `/admin/broadcasts`.
+- Codex did not retry the existing partial-failure broadcast automatically during the reliability fix. Later read-only inspection during the copy clarity fix showed broadcast `29f165e4-efaf-4eb2-b1de-6d2896588dbe` as `completed`.
+
+## Broadcast Copy Clarity Fix - 2026-05-24
+
+Syed observed that a received broadcast notification used overly generic copy. Inspection showed the existing broadcast notification payloads already had `title` and `body`, so no database backfill was needed.
+
+- Mobile in-app `broadcast_incident` rows now render the admin-entered payload `title` and `body`; fallback copy is only `Bantle update` / `Please open Bantle for details.` when payloads are malformed or missing.
+- `broadcast_push_dispatcher` still uses the admin-entered broadcast title/body for the Expo push banner and now also includes `title` and `body` in push `data`.
+- Admin-only `reason`, admin id, emails, push tokens, and recipient lists remain excluded from user-visible notification payloads.
+- No new broadcast was sent, no retry was triggered, and no new notification rows were created during this fix.
+- Deployed `broadcast_push_dispatcher` version 3.
+- Mobile/Supabase commit: `2767f50` - `fix(mobile): show broadcast notification details`.
 
 ## Commands Run
 

@@ -1168,7 +1168,8 @@ notifications kind CHECK.
 - In-app notification delivery is independent from push delivery; push failures should result in `partial_failure`, not a total broadcast failure.
 - Incident broadcasts are transactional/service notices, not marketing; analytics consent is not used as a gate.
 - Persistent in-app notification payloads include only broadcast id, event id, title, body, audience type, and sent time. They do not expose admin id, internal reason, email, push token, or recipient list.
-- Codex did not send an all-user broadcast during implementation or this cooldown-removal adjustment.
+- User-facing broadcast push and in-app notifications display the admin-entered title/body. Fallback copy is only for malformed or missing payloads.
+- Codex did not send an all-user broadcast during implementation, the cooldown-removal adjustment, the reliability fix, or the copy clarity fix.
 - Codex did not send a `test_syed` broadcast during implementation or this cooldown-removal adjustment; Syed should run the test send manually.
 
 **Commit SHAs**:
@@ -1179,6 +1180,7 @@ notifications kind CHECK.
 - `f51c9de` — `feat(admin): add incident broadcast APIs`
 - `a948263` — `feat(admin): add incident broadcast UI`
 - `a6091a2` — `fix(admin): remove incident broadcast cooldown`
+- `2767f50` — `fix(mobile): show broadcast notification details`
 
 **Files modified**:
 
@@ -1224,7 +1226,7 @@ notifications kind CHECK.
 - No all-user broadcast was sent by Codex.
 - No `test_syed` broadcast was sent by Codex.
 - Mobile lint still has pre-existing unrelated errors in older files; Phase 8 touched files were not in the lint failure list.
-- Latest all-user broadcast `29f165e4-efaf-4eb2-b1de-6d2896588dbe` has 20 in-app notifications and 5 failed push recipients from the pre-fix mixed-project Expo batch error. Syed can retry it from `/admin/broadcasts`.
+- Latest all-user broadcast `29f165e4-efaf-4eb2-b1de-6d2896588dbe` has 20 in-app notifications with title/body payload fields; read-only inspection during the copy clarity fix showed it as `completed`.
 
 **Smoke tests**:
 1. Visit `/admin/broadcasts`.

@@ -16,8 +16,9 @@ Phase 7 audit log viewer was verified by Syed. Phase 8 incident broadcast push i
 - Default audience is `all_eligible`; `test_syed` remains available for smoke verification only.
 - There is no 24-hour all-user cooldown. Admins may send repeated incident updates when operationally necessary.
 - Failed/partial broadcasts can be retried without creating a new broadcast row or duplicating existing notification rows.
-- Latest observed all-user broadcast `29f165e4-efaf-4eb2-b1de-6d2896588dbe` had 20 in-app notifications created but 5 push failures from the pre-fix mixed-project Expo batch error. It can be retried from `/admin/broadcasts`.
-- Codex did not send an all-user broadcast during implementation, the cooldown-removal adjustment, or the reliability fix.
+- User-facing broadcast push and in-app notifications show the admin-entered title/body. Admin-only reason is not shown to users, and fallback copy is only for malformed payloads.
+- Latest observed all-user broadcast `29f165e4-efaf-4eb2-b1de-6d2896588dbe` had 20 in-app notifications with title/body payload fields; read-only inspection during the copy clarity fix showed it as `completed`.
+- Codex did not send an all-user broadcast during implementation, the cooldown-removal adjustment, the reliability fix, or the copy clarity fix.
 
 ## Phase 7 Audit Log Viewer Update — 2026-05-23
 
