@@ -4,9 +4,20 @@ Generated: 2026-05-19
 
 This document records a deep read of the local repository plus a read-only inspection of the connected Supabase project. It is meant to be the current operational map for future work in this codebase.
 
+## Phase 7 Audit Log Viewer Update — 2026-05-23
+
+Phase 6 deals management was verified by Syed. Phase 7 audit log viewer is shipped and awaiting Syed smoke verification.
+
+- Web/admin added `/admin/audit`.
+- API route added: `GET /admin/api/audit`.
+- The route is read-only, calls `requireAdmin()`, uses the service-role Supabase client server-side, and returns `admin_actions` latest-first.
+- Filters support action type, admin id, target user id, target resource type/id, date range, and q search over action/reason/resource/user/UUID.
+- Payload JSON is collapsed by default in the UI and display-redacts suspicious keys containing token/secret/key/password/authorization/private.
+- No migration, mobile code change, or Supabase schema change was needed for Phase 7.
+
 ## Phase 6 Deals Management Update — 2026-05-23
 
-Phase 5 listings management was verified by Syed. Phase 6 deals management is shipped and awaiting Syed smoke verification.
+Phase 5 listings management was verified by Syed. Phase 6 deals management was verified by Syed.
 
 - Web/admin added `/admin/deals` and `/admin/deals/[id]`.
 - API routes added: `GET /admin/api/deals`, `GET /admin/api/deals/[id]`, and `POST /admin/api/deals/[id]/terminate`.

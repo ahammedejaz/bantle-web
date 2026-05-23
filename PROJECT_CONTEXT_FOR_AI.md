@@ -1,6 +1,6 @@
 # Bantle Web - AI project context
 
-Last updated: 2026-05-16
+Last updated: 2026-05-23
 Repo path: `/Users/syedejazahammed/Documents/GitHub/bantle-web`
 Production URL: `https://bantle.in`
 Mobile repo: `/Users/syedejazahammed/Documents/GitHub/bantle`
@@ -28,7 +28,7 @@ The old `BANTLE_WEB_PROJECT_DUMP.md` is useful historical context, but it predat
 - Public pages are mostly static server components.
 - `/reset-password` and `/verify` are client-enhanced Supabase auth helper pages.
 - `/admin/*` uses Supabase cookie sessions, middleware gating, and server-side service-role API routes.
-- Admin Phases 1 through 5 are verified/shipped, and Phase 6 is shipped awaiting Syed smoke verification. Phases 7 through 8 are not started.
+- Admin Phases 1 through 6 are verified/shipped. Phase 7 audit log viewer is shipped awaiting Syed smoke verification. Phase 8 is not started.
 
 ## 2. Technology stack
 
@@ -521,12 +521,16 @@ Admin pages:
   - `app/admin/deals/[id]/page.tsx`
   - `app/admin/deals/[id]/DealDetailClient.tsx`
   - Deal summary, host/buyer cards, listing card, conversation, recent messages, ratings, audit entries, and force-terminate action.
+- `/admin/audit`
+  - `app/admin/audit/page.tsx`
+  - `app/admin/audit/AuditClient.tsx`
+  - Read-only `admin_actions` feed with action/resource/date/search filters, safe links, and collapsed payload display.
 - `/admin/platforms`
   - `app/admin/platforms/page.tsx`
   - `app/admin/platforms/PlatformsListClient.tsx`
   - Platform catalog grouped by category, create/edit/toggle active.
 
-Admin nav currently links Dashboard, Reports, Users, Listings, Deals, and Platforms. Audit Log and Broadcasts are roadmap phases, not top-level nav items yet.
+Admin nav currently links Dashboard, Reports, Users, Listings, Deals, Audit, and Platforms. Broadcasts are the remaining roadmap admin phase.
 
 ## 14. Admin API routes
 
@@ -662,6 +666,18 @@ Deals:
   - Host and buyer get persistent `deal_terminated` notifications and best-effort transactional pushes.
   - Inserts a best-effort system chat message using existing `messages.kind = 'deal_cancelled'`.
   - Logs `admin_actions.action_type = 'deal_terminated'`.
+
+Audit:
+
+- `GET /admin/api/audit`
+  - File: `app/admin/api/audit/route.ts`
+  - GET-only, read-only route over `admin_actions`.
+  - Uses `requireAdmin()` and the service-role Supabase client server-side.
+  - Query params: `page`, `page_size`, `action_type`, `admin_id`, `target_user_id`, `target_resource_type`, `target_resource_id`, `date_from`, `date_to`, `q`.
+  - Sorts latest-first by `created_at`.
+  - Validates UUID and date filters; date-only values are expanded to full UTC day boundaries.
+  - Joins admin and target-user profile summaries.
+  - Does not search payload and does not insert audit rows.
 
 Platforms:
 
@@ -1273,7 +1289,7 @@ Listings management shipped and was verified by Syed:
 
 ## 27. Phase 6 Deals Management Update — 2026-05-23
 
-Deals management is now shipped in code and awaiting Syed smoke verification:
+Deals management shipped in code and was verified by Syed:
 
 - `/admin/deals` searches and filters deals by deal/listing/user identity, participant email/name, platform, status, and role.
 - `/admin/deals/[id]` shows deal state, listing, host, buyer, conversation, recent messages, ratings, and audit entries.
@@ -1284,6 +1300,17 @@ Deals management is now shipped in code and awaiting Syed smoke verification:
 - Saved-only users, unrelated users, all users, and re-engagement audiences are not notified in Phase 6.
 - Production Supabase migration and `send_push_notification` deployment are complete; mobile release is still required for first-class `deal_terminated` notification and admin-termination UI.
 
-## 28. One-sentence mental model
+## 28. Phase 7 Audit Log Viewer Update — 2026-05-23
 
-This repo is the public face and admin console for Bantle: the public side explains a household subscription coordination app and handles Supabase email flows, while the admin side uses cookie-authenticated Supabase sessions plus service-role API routes to moderate reports/users, manage listings/deals, and maintain the platform catalog.
+Audit log viewer is shipped in code and awaiting Syed smoke verification:
+
+- `/admin/audit` lists `admin_actions` latest-first.
+- `/admin/api/audit` is a read-only GET route guarded by `requireAdmin()` and backed by the service-role Supabase client.
+- Filters cover action type, target resource type, date range, and search by action/reason/resource/user/UUID.
+- Payload JSON is collapsed by default and display-redacts suspicious keys containing token/secret/key/password/authorization/private.
+- Known resources link to user, listing, deal, report, or platform admin surfaces.
+- Phase 7 added no Supabase migration and no mobile changes.
+
+## 29. One-sentence mental model
+
+This repo is the public face and admin console for Bantle: the public side explains a household subscription coordination app and handles Supabase email flows, while the admin side uses cookie-authenticated Supabase sessions plus service-role API routes to moderate reports/users, manage listings/deals, view audit history, and maintain the platform catalog.

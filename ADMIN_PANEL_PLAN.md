@@ -1,7 +1,7 @@
 # Bantle Admin Panel — Implementation Plan
 
 **Repository**: bantle-web (`~/Documents/GitHub/bantle-web/`)
-**Status**: Phase 5 verified; Phase 6 verified; Phase 7 in progress
+**Status**: Phase 5 verified; Phase 6 verified; Phase 7 shipped, awaiting Syed verification
 **Last updated**: 2026-05-23
 **Scope**: Tier 1 (reports, users, platforms) + Tier 2 (listings, deals, audit log viewer, manual broadcast push)
 **Out of scope, permanently**: Re-engagement push notifications. This is a positioning decision, not a deferral. See Section 2 for reasoning.
@@ -1013,7 +1013,7 @@ notifications kind CHECK.
 
 **Known issues**:
 
-- Phase 6 is shipped but not verified. Syed must run the smoke tests below.
+- Syed verified Phase 6 smoke and functionality tests passed without failures.
 - Mobile lint still has pre-existing errors in unrelated files; do not treat this as a Phase 6 functional blocker while typecheck passes.
 
 **Smoke tests**:
@@ -1044,21 +1044,82 @@ notifications kind CHECK.
 
 ### Phase 7 — Audit log viewer
 
-**Status**: IN PROGRESS
+**Status**: SHIPPED
 
 **Goal**: Admin can view a read-only feed of all admin actions, filterable.
 
 **API routes**:
-- `GET /api/admin/audit` — paginated list, filterable by admin/action_type/date
+- `GET /admin/api/audit` — read-only paginated audit feed, filterable by action, admin, target user, target resource, date range, and search text
 
 **Pages**:
 - `app/admin/audit/page.tsx`
 - `app/admin/audit/AuditClient.tsx`
 
+**Components**:
+- `components/admin/AuditActionBadge.tsx`
+- `components/admin/AuditPayloadViewer.tsx`
+- `components/admin/AuditRow.tsx`
+
+**Behavior shipped**:
+
+- `/admin/audit` lists `admin_actions` latest-first.
+- The API is GET-only and uses `requireAdmin()` plus the service-role Supabase client on the server.
+- Phase 7 does not add migrations, does not change mobile code, and does not mutate audit rows.
+- Filters support action type, target resource type, date range, and text/UUID search.
+- Payload JSON is collapsed by default and display-redacts suspicious keys containing token/secret/key/password/authorization/private.
+- Known resource rows link safely to user, listing, deal, report, or platforms admin pages.
+- Unknown action types and resource types render with neutral fallback UI.
+- No edit/delete/export UI or API route exists.
+
+**Commit SHAs**:
+
+- `70ff8d4` — `docs(admin): start phase 7`
+- `ce74c40` — `feat(admin): add audit log API`
+- `b1e5865` — `feat(admin): add audit log viewer`
+
+**Files modified**:
+
+- `ADMIN_PANEL_PLAN.md`
+- `PROJECT_CONTEXT_FOR_AI.md`
+- `PROJECT_DEEP_UNDERSTANDING.md`
+- `PHASE_7_AUDIT_IMPLEMENTATION.md`
+- `app/admin/api/audit/route.ts`
+- `app/admin/audit/page.tsx`
+- `app/admin/audit/AuditClient.tsx`
+- `components/admin/AdminNav.tsx`
+- `components/admin/AuditActionBadge.tsx`
+- `components/admin/AuditPayloadViewer.tsx`
+- `components/admin/AuditRow.tsx`
+
+**Verification**:
+
+- Web `npm run build`: passed.
+- Web `npm run lint`: passed.
+- Web `git diff --check`: passed.
+- Mobile repo was not changed for Phase 7.
+- No Supabase migration was added or applied for Phase 7.
+
+**Known issues**:
+
+- Phase 7 is shipped but not verified. Syed must run the smoke tests below.
+
 **Smoke tests**:
-1. Visit `/admin/audit` → list of all admin actions taken to date appears (should include every action from Phases 2–6).
-2. Filter by action_type "user_banned" → only ban actions appear.
-3. Filter by date range → only actions in that window appear.
+1. Visit `/admin/audit`.
+2. Confirm audit actions appear latest-first.
+3. Filter by `user_banned`.
+4. Filter by `listing_closed`.
+5. Filter by `deal_terminated`.
+6. Filter by `platform_deactivated` or `platform_activated`.
+7. Filter by date range.
+8. Search by target resource id.
+9. Search by action/reason text.
+10. Expand and collapse payload.
+11. Confirm payload renders safely and suspicious keys are redacted if present.
+12. Click supported links: user, listing, deal, report, platform.
+13. Confirm unknown/stale action types still render.
+14. Confirm there are no edit/delete/export buttons.
+15. Confirm non-admin user cannot access `/admin/audit`.
+16. Confirm non-admin user cannot access `/admin/api/audit`.
 
 ---
 
