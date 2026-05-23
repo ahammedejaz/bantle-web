@@ -1044,7 +1044,7 @@ notifications kind CHECK.
 
 ### Phase 7 — Audit log viewer
 
-**Status**: SHIPPED
+**Status**: VERIFIED
 
 **Goal**: Admin can view a read-only feed of all admin actions, filterable.
 
@@ -1125,7 +1125,7 @@ notifications kind CHECK.
 
 ### Phase 8 — Manual broadcast push
 
-**Status**: NOT STARTED
+**Status**: IN PROGRESS
 
 **Goal**: Admin can send a one-off push notification to all users for genuine incidents only. Rate-limited, audit-logged.
 
