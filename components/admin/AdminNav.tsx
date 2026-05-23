@@ -3,7 +3,15 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Flag, Users, Layers, Home, LogOut, ListChecks } from "lucide-react";
+import {
+  Flag,
+  Handshake,
+  Home,
+  Layers,
+  ListChecks,
+  LogOut,
+  Users,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { LogoutConfirmDialog } from "./LogoutConfirmDialog";
 
@@ -12,6 +20,7 @@ const NAV_ITEMS = [
   { href: "/admin/reports", label: "Reports", icon: Flag },
   { href: "/admin/users", label: "Users", icon: Users },
   { href: "/admin/listings", label: "Listings", icon: ListChecks },
+  { href: "/admin/deals", label: "Deals", icon: Handshake },
   { href: "/admin/platforms", label: "Platforms", icon: Layers },
 ];
 
