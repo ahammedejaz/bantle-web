@@ -815,7 +815,7 @@ or date-mutate existing listings or deals.
 
 ### Phase 5 — Listings management
 
-**Status**: NOT STARTED
+**Status**: IN PROGRESS
 
 **Goal**: Admin can search listings and force-close abusive/stale ones with a reason.
 
