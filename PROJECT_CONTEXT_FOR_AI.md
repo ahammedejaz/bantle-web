@@ -19,7 +19,7 @@ Scan scope for this document:
 `bantle-web` is a Next.js 14 App Router application with two major surfaces:
 
 1. Public marketing, support, and legal pages for Bantle at `bantle.in`.
-2. A protected admin panel at `/admin/*` for reports, users, listings, and platform catalog management.
+2. A protected admin panel at `/admin/*` for reports, users, listings, deals, and platform catalog management.
 
 Bantle itself is an India-first mobile app for household subscription coordination. The current product positioning is important: Bantle is framed as a tool for roommates, family, and partners who already share a household. It is not meant to be described as a stranger marketplace. Payments happen outside Bantle via UPI. Bantle does not hold money.
 
@@ -28,7 +28,7 @@ The old `BANTLE_WEB_PROJECT_DUMP.md` is useful historical context, but it predat
 - Public pages are mostly static server components.
 - `/reset-password` and `/verify` are client-enhanced Supabase auth helper pages.
 - `/admin/*` uses Supabase cookie sessions, middleware gating, and server-side service-role API routes.
-- Admin Phases 1 through 5 are shipped. Phase 5 is awaiting Syed smoke verification; Phases 6 through 8 are not started.
+- Admin Phases 1 through 5 are verified/shipped, and Phase 6 is shipped awaiting Syed smoke verification. Phases 7 through 8 are not started.
 
 ## 2. Technology stack
 
@@ -513,12 +513,20 @@ Admin pages:
   - `app/admin/listings/[id]/page.tsx`
   - `app/admin/listings/[id]/ListingDetailClient.tsx`
   - Listing summary, host card, active/pending deals, recent deals, audit entries, and force-close action.
+- `/admin/deals`
+  - `app/admin/deals/page.tsx`
+  - `app/admin/deals/DealsClient.tsx`
+  - Search, status/platform/role filters, pagination, and deal rows.
+- `/admin/deals/[id]`
+  - `app/admin/deals/[id]/page.tsx`
+  - `app/admin/deals/[id]/DealDetailClient.tsx`
+  - Deal summary, host/buyer cards, listing card, conversation, recent messages, ratings, audit entries, and force-terminate action.
 - `/admin/platforms`
   - `app/admin/platforms/page.tsx`
   - `app/admin/platforms/PlatformsListClient.tsx`
   - Platform catalog grouped by category, create/edit/toggle active.
 
-Admin nav currently links Dashboard, Reports, Users, Listings, and Platforms. Deals, Audit Log, and Broadcasts are roadmap phases, not top-level nav items yet.
+Admin nav currently links Dashboard, Reports, Users, Listings, Deals, and Platforms. Audit Log and Broadcasts are roadmap phases, not top-level nav items yet.
 
 ## 14. Admin API routes
 
@@ -634,6 +642,26 @@ Listings:
   - It does not mutate `archived_at`, deal statuses, deal dates, conversations, or messages.
   - Host only gets persistent `listing_closed` notification and best-effort transactional push.
   - Logs `admin_actions.action_type = 'listing_closed'`.
+
+Deals:
+
+- `GET /admin/api/deals`
+  - File: `app/admin/api/deals/route.ts`
+  - Query params: `q`, `user_id`, `listing_id`, `platform`, `status`, `role`, `page`, `page_size`.
+  - Searches deal UUID, listing UUID, user UUID, listing title/platform, and host/buyer email/display name.
+  - Returns deal rows with listing summary, host summary, buyer summary, and admin termination metadata.
+- `GET /admin/api/deals/[id]`
+  - File: `app/admin/api/deals/[id]/route.ts`
+  - Returns deal detail, listing, host, buyer, conversation summary, recent messages, ratings, and deal audit entries.
+- `POST /admin/api/deals/[id]/terminate`
+  - File: `app/admin/api/deals/[id]/terminate/route.ts`
+  - Body: `{ "reason": "..." }`, 3-500 chars.
+  - Pending/active deals are set to `status = 'cancelled'` with admin termination metadata.
+  - Already admin-terminated deals are idempotent and do not send duplicate notification, push, message, or audit.
+  - It does not mutate `started_at`, `ends_at`, listings, ratings, conversations, archives, unrelated deals, or chat history.
+  - Host and buyer get persistent `deal_terminated` notifications and best-effort transactional pushes.
+  - Inserts a best-effort system chat message using existing `messages.kind = 'deal_cancelled'`.
+  - Logs `admin_actions.action_type = 'deal_terminated'`.
 
 Platforms:
 
@@ -897,9 +925,10 @@ Read `ADMIN_PANEL_PLAN.md` for full details and smoke tests. Current summary:
   - Catalog list/create/update/activate-deactivate.
 - Phase 4.1 - Mobile PlatformTile fallback rollout: shipped in the mobile repo.
   - Admin panel unchanged.
-- Phase 5 - Listings management: shipped, awaiting Syed smoke verification.
+- Phase 5 - Listings management: verified by Syed.
   - Search/list/detail listings; force-close active listings with reason; host notification/push; no deal mutation.
-- Phase 6 - Deals management: not started.
+- Phase 6 - Deals management: shipped, awaiting Syed smoke verification.
+  - Search/list/detail deals; force-terminate pending/active deals with reason; host+buyer notification/push; best-effort system chat event; no listing/rating/unrelated-deal mutation.
 - Phase 7 - Audit log viewer: not started.
 - Phase 8 - Manual incident broadcast push: not started.
 
@@ -1002,7 +1031,7 @@ Before starting any admin roadmap phase, read `ADMIN_PANEL_PLAN.md` in full and 
 
 Phase 5 - Listings management:
 
-- Shipped 2026-05-23, awaiting Syed verification.
+- Shipped 2026-05-23 and verified by Syed.
 - Production migration added `listings.closed_reason`, `closed_by`, and `closed_at`.
 - Routes:
   - `GET /admin/api/listings`
@@ -1016,12 +1045,17 @@ Phase 5 - Listings management:
 
 Phase 6 - Deals management:
 
-- Goal: view deals and force-terminate for dispute resolution.
-- Likely routes:
+- Shipped 2026-05-23, awaiting Syed verification.
+- Routes:
   - `GET /admin/api/deals`
   - `GET /admin/api/deals/[id]`
   - `POST /admin/api/deals/[id]/terminate`
-- Need both-party notifications and audit log.
+- Force-terminate semantics:
+  - Allow pending/active only.
+  - Set `status = 'cancelled'`, preserve/set `terminated_at`, and write `terminated_by`, `termination_reason`, `termination_source = 'admin'`.
+  - Notify host and buyer only with `deal_terminated`; no saved-only or all-user notification.
+  - Best-effort system chat event uses `messages.kind = 'deal_cancelled'`.
+  - Do not mutate listings, ratings, conversations, archives, started/ends dates, or unrelated deals.
 
 Phase 7 - Audit log viewer:
 
@@ -1220,14 +1254,14 @@ Platform activation/deactivation now has transition-aware admin behavior:
 
 Deployment notes:
 
-- Do not deploy admin fanout before the mobile app supports unknown/platform notification kinds.
-- Apply the mobile repo migration in dev/staging first.
-- Deploy the updated `send_push_notification` Edge Function before relying on platform-status pushes.
+- Do not deploy admin fanout before the mobile app supports the notification kind being inserted.
+- Apply mobile repo migrations before enabling the corresponding admin action broadly.
+- Deploy the updated `send_push_notification` Edge Function before relying on new transactional push kinds.
 - See `PLATFORM_DEACTIVATION_IMPLEMENTATION.md` in both repos for smoke tests and rollback notes.
 
 ## 26. Phase 5 Listings Management Update — 2026-05-23
 
-Listings management is now shipped in code and awaiting Syed smoke verification:
+Listings management shipped and was verified by Syed:
 
 - `/admin/listings` searches and filters listings by host, title, platform, status, and archive state.
 - `/admin/listings/[id]` shows listing state, host, active/pending deals, recent deals, audit entries, and host report counts.
@@ -1237,6 +1271,19 @@ Listings management is now shipped in code and awaiting Syed smoke verification:
 - Saved-only users, deal participants, all users, and re-engagement audiences are not notified in Phase 5.
 - Production Supabase migration and `send_push_notification` deployment are complete; mobile release is still required for first-class `listing_closed` notification UI.
 
-## 27. One-sentence mental model
+## 27. Phase 6 Deals Management Update — 2026-05-23
 
-This repo is the public face and admin console for Bantle: the public side explains a household subscription coordination app and handles Supabase email flows, while the admin side uses cookie-authenticated Supabase sessions plus service-role API routes to moderate reports/users, manage listings, and maintain the platform catalog.
+Deals management is now shipped in code and awaiting Syed smoke verification:
+
+- `/admin/deals` searches and filters deals by deal/listing/user identity, participant email/name, platform, status, and role.
+- `/admin/deals/[id]` shows deal state, listing, host, buyer, conversation, recent messages, ratings, and audit entries.
+- Force-terminate accepts pending/active deals only and writes `status = 'cancelled'`, `terminated_at`, `terminated_by`, `termination_reason`, and `termination_source = 'admin'`.
+- Force-terminate does not close/archive listings, mutate `started_at`/`ends_at`, mutate ratings, delete conversations/messages, archive deals, or touch unrelated deals.
+- Host and buyer receive persistent `deal_terminated` notifications and best-effort transactional pushes through the Edge Function.
+- A best-effort system chat event is inserted using existing `deal_cancelled` message kind so mobile can render "Deal terminated by Bantle."
+- Saved-only users, unrelated users, all users, and re-engagement audiences are not notified in Phase 6.
+- Production Supabase migration and `send_push_notification` deployment are complete; mobile release is still required for first-class `deal_terminated` notification and admin-termination UI.
+
+## 28. One-sentence mental model
+
+This repo is the public face and admin console for Bantle: the public side explains a household subscription coordination app and handles Supabase email flows, while the admin side uses cookie-authenticated Supabase sessions plus service-role API routes to moderate reports/users, manage listings/deals, and maintain the platform catalog.

@@ -4,6 +4,19 @@ Generated: 2026-05-19
 
 This document records a deep read of the local repository plus a read-only inspection of the connected Supabase project. It is meant to be the current operational map for future work in this codebase.
 
+## Phase 6 Deals Management Update — 2026-05-23
+
+Phase 5 listings management was verified by Syed. Phase 6 deals management is shipped and awaiting Syed smoke verification.
+
+- Web/admin added `/admin/deals` and `/admin/deals/[id]`.
+- API routes added: `GET /admin/api/deals`, `GET /admin/api/deals/[id]`, and `POST /admin/api/deals/[id]/terminate`.
+- Production migration `20260523182659_phase_6_deal_admin_termination.sql` added `deals.terminated_by`, `termination_reason`, `termination_source`, supporting admin indexes, and `deal_terminated` in `notifications_kind_check`.
+- Force-termination is pending/active only, sets `status = 'cancelled'`, preserves/sets `terminated_at`, and records admin termination metadata.
+- Force-termination does not mutate listings, ratings, conversations, archives, started/ends dates, or unrelated deals.
+- Host and buyer receive persistent `deal_terminated` rows and best-effort transactional pushes via `send_push_notification`.
+- A best-effort system chat event uses existing `messages.kind = 'deal_cancelled'` with Bantle termination copy.
+- Mobile support was pushed in bantle commit `b651188`; web/admin API/UI commits are `320a957` and `f721792`.
+
 ## Safety Boundary
 
 - Supabase was used only through read-only MCP inspection tools and read-only SQL metadata queries.

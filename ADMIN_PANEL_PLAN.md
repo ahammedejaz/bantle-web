@@ -1,7 +1,7 @@
 # Bantle Admin Panel — Implementation Plan
 
 **Repository**: bantle-web (`~/Documents/GitHub/bantle-web/`)
-**Status**: Phase 5 verified; Phase 6 in progress
+**Status**: Phase 5 verified; Phase 6 shipped, awaiting Syed verification
 **Last updated**: 2026-05-23
 **Scope**: Tier 1 (reports, users, platforms) + Tier 2 (listings, deals, audit log viewer, manual broadcast push)
 **Out of scope, permanently**: Re-engagement push notifications. This is a positioning decision, not a deferral. See Section 2 for reasoning.
@@ -930,24 +930,115 @@ indexes, and `listing_closed` in the notifications kind CHECK.
 
 ### Phase 6 — Deals management
 
-**Status**: IN PROGRESS
+**Status**: SHIPPED
 
 **Goal**: Admin can view deals and force-terminate them for dispute resolution.
 
+**Schema migration**: Production migration
+`20260523182659_phase_6_deal_admin_termination.sql` added
+`deals.terminated_by`, `deals.termination_reason`, and
+`deals.termination_source`, a `terminated_by` FK to `profiles(id) ON DELETE
+SET NULL`, supporting admin deal indexes, and `deal_terminated` in the
+notifications kind CHECK.
+
 **API routes**:
-- `GET /api/admin/deals` — search by user, status, listing
-- `GET /api/admin/deals/[id]` — detail
-- `POST /api/admin/deals/[id]/terminate` — force-terminate with reason
+- `GET /admin/api/deals` — search by deal/listing/user UUID, participant email/name, listing title/platform, status, role, and platform
+- `GET /admin/api/deals/[id]` — detail with listing, host, buyer, conversation summary, recent messages, ratings, and deal audit entries
+- `POST /admin/api/deals/[id]/terminate` — idempotent admin force-termination with reason
 
 **Pages**:
 - `app/admin/deals/page.tsx`
 - `app/admin/deals/DealsClient.tsx`
 - `app/admin/deals/[id]/page.tsx`
+- `app/admin/deals/[id]/DealDetailClient.tsx`
+
+**Behavior shipped**:
+
+- Force-terminate only accepts pending or active deals. Completed, disputed, and user-cancelled deals return 409.
+- Already admin-terminated deals return idempotent success without duplicate notification, push, chat event, or audit row.
+- Admin termination sets `status = 'cancelled'`, `terminated_at = COALESCE(existing terminated_at, now())`, `terminated_by`, `termination_reason`, and `termination_source = 'admin'`.
+- It does not mutate `started_at`, `ends_at`, listings, ratings, conversations, archives, unrelated deals, or chat history.
+- Both host and buyer receive persistent `deal_terminated` notifications and best-effort transactional pushes through `send_push_notification`.
+- A best-effort system chat event is inserted with `messages.kind = 'deal_cancelled'`, `sender_id = NULL`, and Bantle termination copy.
+- Saved-only users, unrelated users, all users, and re-engagement audiences are not notified.
+
+**Commit SHAs**:
+
+- `fc64990` — `docs(admin): start phase 6`
+- `b651188` — `feat(mobile): support admin deal termination`
+- `320a957` — `feat(admin): add deal management APIs`
+- `f721792` — `feat(admin): add deals management UI`
+
+**Files modified**:
+
+- bantle mobile/Supabase:
+  - `app/(tabs)/deals.tsx`
+  - `app/_layout.tsx`
+  - `app/chat/[conversationId].tsx`
+  - `app/deal/[id].tsx`
+  - `app/notifications.tsx`
+  - `stores/deals.ts`
+  - `stores/notifications.ts`
+  - `supabase/functions/send_push_notification/index.ts`
+  - `supabase/migrations/20260523182659_phase_6_deal_admin_termination.sql`
+  - `supabase/migrations/rollback_20260523182659_phase_6_deal_admin_termination.sql`
+  - `types/database.ts`
+- bantle-web:
+  - `ADMIN_PANEL_PLAN.md`
+  - `PHASE_6_DEALS_IMPLEMENTATION.md`
+  - `PROJECT_CONTEXT_FOR_AI.md`
+  - `PROJECT_DEEP_UNDERSTANDING.md`
+  - `app/admin/api/deals/route.ts`
+  - `app/admin/api/deals/[id]/route.ts`
+  - `app/admin/api/deals/[id]/terminate/route.ts`
+  - `app/admin/deals/page.tsx`
+  - `app/admin/deals/DealsClient.tsx`
+  - `app/admin/deals/[id]/page.tsx`
+  - `app/admin/deals/[id]/DealDetailClient.tsx`
+  - `components/admin/AdminNav.tsx`
+  - `components/admin/DealRow.tsx`
+  - `components/admin/DealStatusBadge.tsx`
+  - `components/admin/DealTerminateModal.tsx`
+
+**Verification**:
+
+- Production Supabase migration applied and read-only verified.
+- `send_push_notification` Edge Function deployed with `deal_terminated` support.
+- Mobile `npm run typecheck`: passed.
+- Mobile `npm run lint`: fails due pre-existing repo lint debt unrelated to Phase 6.
+- Mobile `git diff --check`: passed.
+- Web `npm run build`: passed.
+- Web `npm run lint`: passed.
+- Web `git diff --check`: passed.
+
+**Known issues**:
+
+- Phase 6 is shipped but not verified. Syed must run the smoke tests below.
+- Mobile lint still has pre-existing errors in unrelated files; do not treat this as a Phase 6 functional blocker while typecheck passes.
 
 **Smoke tests**:
-1. Search deals → Syed's active deals appear.
-2. Click a deal → shows host, buyer, listing, status.
-3. Force-terminate → `terminated_at` set, both parties notified, audit log entry created.
+1. Visit `/admin/deals`.
+2. Search by deal id.
+3. Search by listing id/title/platform.
+4. Search by host/buyer email/display name/id.
+5. Filter by status.
+6. Open deal detail.
+7. Confirm host card, buyer card, listing card, conversation/messages, ratings, and audit sections render.
+8. Force-terminate a pending test deal with reason `Test termination`.
+9. Confirm status becomes `cancelled`.
+10. Confirm `terminated_at` is set or preserved.
+11. Confirm `terminated_by`, `termination_reason`, and `termination_source = 'admin'`.
+12. Confirm both host and buyer get persistent `deal_terminated` notifications.
+13. Confirm push is received or correctly reported skipped if no token.
+14. Confirm system chat event appears as admin/Bantle termination.
+15. Confirm `admin_actions.action_type = 'deal_terminated'`.
+16. Confirm Home/listing state is not changed by deal termination.
+17. Confirm ratings are not changed.
+18. Confirm unrelated deals are not changed.
+19. Confirm existing chat still opens.
+20. Repeat terminate on already admin-terminated deal and confirm no duplicate notification/push/message/audit.
+21. Try terminate completed/disputed/user-cancelled deal and confirm 409/friendly error.
+22. Confirm mobile deal detail/deals tab show admin termination copy.
 
 ---
 
