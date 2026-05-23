@@ -8,7 +8,6 @@ import { logAdminAction } from "@/lib/admin-actions";
 import {
   BROADCAST_CONFIRMATION_TEXT,
   getBroadcastPreview,
-  getBroadcastRateLimit,
   parseAudienceType,
   type BroadcastAudienceType,
 } from "@/lib/admin-broadcasts";
@@ -91,10 +90,7 @@ export async function GET(request: NextRequest) {
     query = query.filter("audience_filter->>audience_type", "eq", parsedAudience);
   }
 
-  const [{ data, error, count }, rateLimit] = await Promise.all([
-    query,
-    getBroadcastRateLimit(supabase),
-  ]);
+  const { data, error, count } = await query;
 
   if (error) {
     console.error("[admin broadcasts list]", error);
@@ -106,7 +102,6 @@ export async function GET(request: NextRequest) {
     total: count ?? 0,
     page,
     page_size: pageSize,
-    rate_limit: rateLimit,
   });
 }
 
@@ -152,20 +147,10 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       broadcast: normalizeBroadcast(existing),
       idempotent: true,
-      rate_limit: await getBroadcastRateLimit(supabase),
     });
   }
 
   const preview = await getBroadcastPreview(supabase, audienceType);
-  if (audienceType === "all_eligible" && !preview.rate_limit.allowed) {
-    return NextResponse.json(
-      {
-        error: "All-user broadcasts are limited to one per 24 hours.",
-        next_allowed_at: preview.rate_limit.next_allowed_at,
-      },
-      { status: 429 },
-    );
-  }
 
   const sentAt = new Date().toISOString();
   const eventId = `broadcast:${idempotencyKey}`;
@@ -197,7 +182,6 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({
           broadcast: normalizeBroadcast(raced),
           idempotent: true,
-          rate_limit: await getBroadcastRateLimit(supabase),
         });
       }
     }
@@ -246,7 +230,6 @@ export async function POST(request: NextRequest) {
     broadcast: normalizeBroadcast(broadcast),
     idempotent: false,
     dispatcher: dispatch,
-    rate_limit: await getBroadcastRateLimit(supabase),
   });
 }
 

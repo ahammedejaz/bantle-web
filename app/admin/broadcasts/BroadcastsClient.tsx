@@ -55,16 +55,6 @@ type BroadcastPreview = {
   push_token_count: number;
   no_push_token_count: number;
   excluded_deleted_or_banned_count: number;
-  rate_limit: {
-    allowed: boolean;
-    next_allowed_at: string | null;
-  };
-};
-
-type RateLimit = {
-  all_user_allowed: boolean;
-  next_allowed_at: string | null;
-  last_all_user_broadcast_at: string | null;
 };
 
 export function BroadcastsClient() {
@@ -72,11 +62,10 @@ export function BroadcastsClient() {
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
   const [reason, setReason] = useState("");
-  const [audienceType, setAudienceType] = useState<AudienceType>("test_syed");
+  const [audienceType, setAudienceType] = useState<AudienceType>("all_eligible");
   const [preview, setPreview] = useState<BroadcastPreview | null>(null);
   const [previewLoading, setPreviewLoading] = useState(false);
   const [broadcasts, setBroadcasts] = useState<BroadcastItem[]>([]);
-  const [rateLimit, setRateLimit] = useState<RateLimit | null>(null);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(20);
   const [total, setTotal] = useState(0);
@@ -112,12 +101,10 @@ export function BroadcastsClient() {
         broadcasts: BroadcastItem[];
         total: number;
         page_size: number;
-        rate_limit: RateLimit;
       };
       setBroadcasts(data.broadcasts);
       setTotal(data.total);
       setPageSize(data.page_size);
-      setRateLimit(data.rate_limit);
     } catch (e) {
       const message =
         e instanceof Error ? e.message : "Failed to load broadcasts.";
@@ -161,14 +148,11 @@ export function BroadcastsClient() {
   }, [fetchPreview]);
 
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
-  const allUserBlocked =
-    audienceType === "all_eligible" && preview?.rate_limit.allowed === false;
   const canOpenConfirm =
     !formError &&
     !!preview &&
     !previewLoading &&
-    !submitting &&
-    !allUserBlocked;
+    !submitting;
 
   const openConfirm = () => {
     if (!canOpenConfirm) return;
@@ -298,8 +282,8 @@ export function BroadcastsClient() {
                 onChange={(e) => setAudienceType(e.target.value as AudienceType)}
                 className="w-full rounded-button border border-line bg-cream px-3 py-2 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-teal-900"
               >
-                <option value="test_syed">Test: Syed only</option>
                 <option value="all_eligible">All eligible users</option>
+                <option value="test_syed">Test only: Syed</option>
               </select>
             </Field>
             <button
@@ -316,19 +300,12 @@ export function BroadcastsClient() {
             </button>
           </div>
 
-          <PreviewPanel
-            preview={preview}
-            loading={previewLoading}
-            rateLimit={rateLimit}
-          />
+          <AudienceNotice audienceType={audienceType} />
+
+          <PreviewPanel preview={preview} loading={previewLoading} />
 
           {formError ? (
             <p className="text-sm text-red-800">{formError}</p>
-          ) : allUserBlocked ? (
-            <p className="text-sm text-red-800">
-              All-user broadcast is rate-limited until{" "}
-              {fmtDateTime(preview?.rate_limit.next_allowed_at ?? null)}.
-            </p>
           ) : null}
 
           <div className="flex justify-end">
@@ -498,11 +475,9 @@ function Field({
 function PreviewPanel({
   preview,
   loading,
-  rateLimit,
 }: {
   preview: BroadcastPreview | null;
   loading: boolean;
-  rateLimit: RateLimit | null;
 }) {
   if (loading) {
     return (
@@ -531,13 +506,26 @@ function PreviewPanel({
         />
       </div>
       <p className="mt-3 text-xs text-ink-muted">
-        Test sends do not consume the all-user 24-hour limit.
-        {rateLimit?.next_allowed_at
-          ? ` Next all-user broadcast available at ${fmtDateTime(
-              rateLimit.next_allowed_at,
-            )}.`
-          : " All-user broadcast is currently available."}
+        Preview counts are recomputed before sending.
       </p>
+    </div>
+  );
+}
+
+function AudienceNotice({ audienceType }: { audienceType: AudienceType }) {
+  if (audienceType === "all_eligible") {
+    return (
+      <div className="rounded-card border border-amber-200 bg-amber-50 p-3 text-sm text-amber-950">
+        All eligible users will receive an in-app notification. Users with push
+        tokens will also receive a push.
+      </div>
+    );
+  }
+
+  return (
+    <div className="rounded-card border border-line bg-cream p-3 text-sm text-ink-muted">
+      Test-only mode sends to Syed for smoke verification. Use All eligible
+      users for real incident updates.
     </div>
   );
 }

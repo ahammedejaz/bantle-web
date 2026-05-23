@@ -12,8 +12,10 @@ Phase 7 audit log viewer was verified by Syed. Phase 8 incident broadcast push i
 - API routes added: `GET /admin/api/broadcasts`, `POST /admin/api/broadcasts`, and `GET /admin/api/broadcasts/preview`.
 - Production migration `20260524000345_phase_8_incident_broadcasts.sql` added service-role-only `broadcasts` and `broadcast_recipients` tables plus `broadcast_incident` in `notifications_kind_check`.
 - Dedicated Edge Function `broadcast_push_dispatcher` creates persistent in-app notifications, sends Expo pushes on the `incident_broadcast` channel, clears stale push tokens on `DeviceNotRegistered`, and updates summary counts.
-- Broadcasts are incident-only: no marketing, no re-engagement, mandatory admin-only reason, exact confirmation phrase, URL/marketing-copy validation, and one all-user broadcast per rolling 24 hours.
-- Default audience is `test_syed`; all-user sends are available only with explicit confirmation. Codex did not send an all-user broadcast during implementation.
+- Broadcasts are incident-only: no marketing, no re-engagement, mandatory admin-only reason, exact confirmation phrase, and URL/marketing-copy validation.
+- Default audience is `all_eligible`; `test_syed` remains available for smoke verification only.
+- There is no 24-hour all-user cooldown. Admins may send repeated incident updates when operationally necessary.
+- Codex did not send an all-user broadcast during implementation or during the cooldown-removal adjustment.
 
 ## Phase 7 Audit Log Viewer Update — 2026-05-23
 

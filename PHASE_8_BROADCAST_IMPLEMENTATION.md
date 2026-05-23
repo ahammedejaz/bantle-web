@@ -90,12 +90,26 @@ Dispatcher behavior:
 - Mandatory admin-only reason.
 - User-visible title/body are URL-free and single-line.
 - User-visible title/body reject obvious marketing and re-engagement wording.
-- `all_eligible` is rate-limited server-side to one broadcast per rolling 24 hours.
-- `test_syed` bypasses the all-user 24-hour limit.
+- `all_eligible` is not blocked by a 24-hour cooldown. Admin may send repeated incident updates when operationally necessary.
+- `test_syed` is for smoke verification only.
 - Broadcast notification payloads do not include admin id, internal reason, email, push token, or recipient list.
 - Analytics consent is not used as a gate because these are transactional incident notices, not analytics or marketing.
 - Codex did not send an all-user broadcast.
 - Codex did not send a `test_syed` broadcast.
+
+## Phase 8 Adjustment - 2026-05-24
+
+Syed corrected the broadcast product behavior after initial Phase 8 shipment:
+
+- Removed the 24-hour all-user restriction from API, UI, and docs.
+- Removed all-user rate-limit fields from broadcast GET/preview responses.
+- Removed the POST 429 path for recent all-user broadcasts.
+- Changed `/admin/broadcasts` to default to `All eligible users`.
+- Kept `Test only: Syed` as an explicit smoke-test option.
+- Added clearer all-user copy: all eligible users receive in-app notifications, and users with push tokens also receive pushes.
+- Kept all incident-only safeguards: admin-only auth, mandatory reason, exact confirmation phrase, URL blocking, marketing/re-engagement wording block, idempotency, audit logging, persistent notifications, push-token-only push delivery, deleted/banned exclusion, and dispatcher duplicate protection.
+- No migration was needed. The existing all-user helper index is harmless and does not enforce a cooldown.
+- No broadcast was sent during this adjustment.
 
 ## Commands Run
 
@@ -133,14 +147,14 @@ Supabase MCP:
 - The migration has already been applied to production.
 - The Edge Function has already been deployed.
 - No all-user broadcast was sent by Codex.
-- Syed should run a `test_syed` smoke send before considering any all-user incident notice.
-- All-user broadcast capability exists in code but should only be used for genuine incidents after manual review.
+- Syed can use `test_syed` for smoke verification.
+- All-user broadcast capability exists in code and should be used only for genuine incident updates.
 
 ## Smoke Test Checklist
 
 1. Visit `/admin/broadcasts`.
 2. Confirm incident-only warning banner is visible.
-3. Confirm default audience is `Test: Syed only`.
+3. Confirm default audience is `All eligible users`.
 4. Preview `test_syed`.
 5. Preview `all_eligible`.
 6. Confirm counts are sensible.
@@ -156,10 +170,11 @@ Supabase MCP:
 16. Confirm `admin_actions.action_type = broadcast_sent`.
 17. Confirm recent broadcasts list shows the send and counts.
 18. Confirm all-user option requires typed confirmation.
-19. Confirm all-user 24-hour rate-limit display.
-20. Do not send all-user unless Syed explicitly decides to after reviewing the implementation.
-21. Confirm non-admin cannot access `/admin/broadcasts`.
-22. Confirm non-admin cannot access `/admin/api/broadcasts` or `/admin/api/broadcasts/preview`.
+19. Confirm `Test only: Syed` is clearly labeled as smoke-test-only.
+20. Confirm no all-user 24-hour cooldown messaging appears.
+21. Do not send all-user unless Syed explicitly decides to after reviewing the implementation.
+22. Confirm non-admin cannot access `/admin/broadcasts`.
+23. Confirm non-admin cannot access `/admin/api/broadcasts` or `/admin/api/broadcasts/preview`.
 
 ## Rollback Notes
 

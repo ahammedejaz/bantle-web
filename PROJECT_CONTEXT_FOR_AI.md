@@ -1096,8 +1096,8 @@ Phase 8 - Manual broadcast push:
   - dedicated Edge Function `broadcast_push_dispatcher`
 - Semantics:
   - Incident-only, not marketing, not re-engagement.
-  - Default audience is `test_syed`; `all_eligible` is available only after explicit confirmation.
-  - All-user sends are server-rate-limited to one per rolling 24 hours.
+  - Default audience is `all_eligible`; `test_syed` is available for smoke verification only.
+  - All-user sends are not blocked by a 24-hour cooldown; admins may send repeated incident updates when operationally necessary.
   - Persistent in-app rows are created for eligible recipients; pushes go only to users with `push_token`.
   - Deleted, permanently banned, and currently temp-banned users are excluded.
   - User-visible payload does not include admin id, internal reason, emails, push tokens, or recipient lists.
@@ -1330,14 +1330,15 @@ Audit log viewer shipped in code and was verified by Syed:
 
 Incident broadcast push is shipped in code and awaiting Syed smoke verification:
 
-- `/admin/broadcasts` shows an incident-only warning, a guarded send form, recipient preview counts, all-user rate-limit state, and recent broadcast summaries.
+- `/admin/broadcasts` shows an incident-only warning, a guarded send form, recipient preview counts, and recent broadcast summaries.
 - `/admin/api/broadcasts` supports read-only recent broadcast listing and guarded POST sends.
 - `/admin/api/broadcasts/preview` is read-only and returns recipient/push-token counts for `test_syed` or `all_eligible`.
 - Production Supabase migration `20260524000345_phase_8_incident_broadcasts.sql` added service-role-only `broadcasts` and `broadcast_recipients` tables plus `broadcast_incident` in `notifications_kind_check`.
 - Dedicated Edge Function `broadcast_push_dispatcher` creates persistent notifications, sends Expo pushes on the `incident_broadcast` channel, clears stale tokens on `DeviceNotRegistered`, and updates broadcast/recipient counts.
-- `all_eligible` sends require exact confirmation, a mandatory admin-only reason, URL-free user-visible copy, marketing/re-engagement wording checks, and one all-user broadcast per rolling 24 hours.
-- `test_syed` is the default and bypasses the all-user 24-hour limit.
-- Codex did not send an all-user broadcast during implementation. Syed should run a `test_syed` smoke send before considering any all-user incident notice.
+- `all_eligible` sends require exact confirmation, a mandatory admin-only reason, URL-free user-visible copy, and marketing/re-engagement wording checks.
+- There is no 24-hour all-user cooldown; admins may send outage-start and outage-resolved updates when needed.
+- `all_eligible` is the default audience. `test_syed` remains available only for smoke verification.
+- Codex did not send an all-user broadcast during implementation or during the cooldown-removal adjustment.
 
 ## 30. One-sentence mental model
 

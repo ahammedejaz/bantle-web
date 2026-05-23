@@ -1,7 +1,7 @@
 # Bantle Admin Panel — Implementation Plan
 
 **Repository**: bantle-web (`~/Documents/GitHub/bantle-web/`)
-**Status**: Phase 5 verified; Phase 6 verified; Phase 7 verified; Phase 8 shipped, awaiting Syed verification
+**Status**: Phase 5 verified; Phase 6 verified; Phase 7 verified; Phase 8 shipped, awaiting Syed verification after cooldown removal
 **Last updated**: 2026-05-24
 **Scope**: Tier 1 (reports, users, platforms) + Tier 2 (listings, deals, audit log viewer, manual broadcast push)
 **Out of scope, permanently**: Re-engagement push notifications. This is a positioning decision, not a deferral. See Section 2 for reasoning.
@@ -1127,11 +1127,11 @@ notifications kind CHECK.
 
 **Status**: SHIPPED
 
-**Goal**: Admin can send a one-off push notification to eligible users for genuine incidents only. Rate-limited, audit-logged.
+**Goal**: Admin can send incident updates to eligible users for genuine incidents only. Confirmed, audit-logged, and not rate-limited by a 24-hour cooldown.
 
 **This phase is the most sensitive.** It exposes the ability to push to every user. The constraints are:
 
-- Rate limit: 1 broadcast per 24 hours.
+- No 24-hour cooldown. Admin may send multiple incident updates when needed, such as outage-start and outage-resolved notices.
 - Mandatory reason field, stored in audit log.
 - Confirmation modal: "Send to N users? This action is irreversible."
 - Banner above the broadcast form: "Broadcasts are for incidents only — service outages, security notices. Do not use for marketing or re-engagement."
@@ -1143,7 +1143,7 @@ notifications kind CHECK.
 - `notifications_kind_check` now includes `broadcast_incident`.
 
 **API routes**:
-- `GET /admin/api/broadcasts` — recent broadcasts and all-user rate-limit state.
+- `GET /admin/api/broadcasts` — recent broadcasts.
 - `POST /admin/api/broadcasts` — validates and starts an incident broadcast, then invokes `broadcast_push_dispatcher`.
 - `GET /admin/api/broadcasts/preview` — read-only recipient and push-token counts.
 
@@ -1156,16 +1156,17 @@ notifications kind CHECK.
 
 **Behavior shipped**:
 
-- `/admin/broadcasts` defaults to `Test: Syed only`; all-user is never the default.
+- `/admin/broadcasts` defaults to `All eligible users`; `Test only: Syed` remains available for smoke testing.
 - The page shows the required incident-only warning banner and recent broadcast summaries.
 - User-visible title/body reject URLs, line breaks, and obvious marketing or re-engagement wording.
 - Every send requires an admin-only reason and exact confirmation phrase `SEND INCIDENT BROADCAST`.
-- `all_eligible` is rate-limited server-side to one broadcast per rolling 24 hours; `test_syed` bypasses that all-user limit.
+- `all_eligible` is not rate-limited by a 24-hour cooldown. Admin may send repeated incident updates when operationally necessary.
 - Eligible recipients exclude deleted users, permanently banned users, and currently temp-banned users.
+- All eligible users receive persistent in-app notifications. Users with push tokens also receive a push.
 - Incident broadcasts are transactional/service notices, not marketing; analytics consent is not used as a gate.
 - Persistent in-app notification payloads include only broadcast id, event id, title, body, audience type, and sent time. They do not expose admin id, internal reason, email, push token, or recipient list.
-- Codex did not send an all-user broadcast during implementation.
-- Codex did not send a `test_syed` broadcast during implementation; Syed should run the test send manually.
+- Codex did not send an all-user broadcast during implementation or this cooldown-removal adjustment.
+- Codex did not send a `test_syed` broadcast during implementation or this cooldown-removal adjustment; Syed should run the test send manually.
 
 **Commit SHAs**:
 
@@ -1202,9 +1203,9 @@ notifications kind CHECK.
 
 **Verification**:
 
-- Web `npm run build`: passed.
-- Web `npm run lint`: passed.
-- Web `git diff --check`: passed.
+- Web `npm run build`: passed after cooldown-removal adjustment.
+- Web `npm run lint`: passed after cooldown-removal adjustment.
+- Web `git diff --check`: passed after cooldown-removal adjustment.
 - Mobile `npm run typecheck`: passed.
 - Mobile `git diff --check`: passed.
 - Mobile `npm run lint`: failed on pre-existing unrelated lint debt outside Phase 8 files.
@@ -1221,7 +1222,7 @@ notifications kind CHECK.
 **Smoke tests**:
 1. Visit `/admin/broadcasts`.
 2. Confirm incident-only warning banner is visible.
-3. Confirm default audience is `Test: Syed only`.
+3. Confirm default audience is `All eligible users`.
 4. Preview `test_syed`.
 5. Preview `all_eligible`.
 6. Confirm counts are sensible.
@@ -1236,8 +1237,8 @@ notifications kind CHECK.
 15. Confirm `broadcast_recipients` row for test user.
 16. Confirm `admin_actions.action_type = broadcast_sent`.
 17. Confirm recent broadcasts list shows the send and counts.
-18. Confirm all-user option requires typed confirmation.
-19. Confirm all-user 24-hour rate-limit display.
+18. Confirm `Test only: Syed` is clearly labeled as smoke-test-only.
+19. Confirm all-user option requires typed confirmation and is not blocked by any 24-hour cooldown message.
 20. Do not send all-user unless Syed explicitly decides to after reviewing the implementation.
 21. Confirm non-admin cannot access `/admin/broadcasts`.
 22. Confirm non-admin cannot access `/admin/api/broadcasts` or `/admin/api/broadcasts/preview`.

@@ -16,7 +16,7 @@ export default function AdminBroadcastsPage() {
         Incident broadcasts
       </h1>
       <p className="text-sm text-ink-muted mb-8 max-w-2xl">
-        Send one-off incident notices to Bantle users. Marketing and
+        Send incident notices to eligible Bantle users. Marketing and
         re-engagement pushes are not allowed.
       </p>
       <Suspense
