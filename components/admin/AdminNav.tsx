@@ -10,6 +10,7 @@ import {
   Layers,
   ListChecks,
   LogOut,
+  ScrollText,
   Users,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -21,6 +22,7 @@ const NAV_ITEMS = [
   { href: "/admin/users", label: "Users", icon: Users },
   { href: "/admin/listings", label: "Listings", icon: ListChecks },
   { href: "/admin/deals", label: "Deals", icon: Handshake },
+  { href: "/admin/audit", label: "Audit", icon: ScrollText },
   { href: "/admin/platforms", label: "Platforms", icon: Layers },
 ];
 
