@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { CheckCircle, XCircle } from "lucide-react";
+import { AlertTriangle, CheckCircle, XCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-export type ToastVariant = "success" | "error";
+export type ToastVariant = "success" | "error" | "warning";
 
 interface AdminToastProps {
   message: string | null;
@@ -50,11 +50,15 @@ export function AdminToast({ message, variant, onDismiss }: AdminToastProps) {
           "border max-w-md",
           variant === "success"
             ? "bg-teal-50 border-teal-200 text-teal-900"
-            : "bg-red-50 border-red-200 text-red-900",
+            : variant === "warning"
+              ? "bg-amber-50 border-amber-200 text-amber-900"
+              : "bg-red-50 border-red-200 text-red-900",
         )}
       >
         {variant === "success" ? (
           <CheckCircle size={18} className="shrink-0" />
+        ) : variant === "warning" ? (
+          <AlertTriangle size={18} className="shrink-0" />
         ) : (
           <XCircle size={18} className="shrink-0" />
         )}
