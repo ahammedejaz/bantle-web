@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import { createServerClient } from "@supabase/ssr";
 import { createServiceRoleSupabase } from "@/lib/admin-supabase-server";
+import { DashboardClient } from "./DashboardClient";
 
 export const metadata = {
   title: "Dashboard — Bantle admin",
@@ -42,18 +43,20 @@ export default async function AdminDashboardPage() {
   if (!profile?.is_admin) redirect("/");
 
   return (
-    <div className="px-4 md:px-8 py-8 md:py-12 max-w-3xl mx-auto">
+    <div className="px-4 md:px-8 py-8 md:py-12 max-w-6xl mx-auto">
       <p className="text-xs uppercase tracking-[0.14em] text-teal-600 mb-4">
         Dashboard
       </p>
       <h1 className="font-serif italic text-3xl md:text-4xl text-teal-900 leading-[1.1]">
         Welcome, {profile.display_name ?? "admin"}.
       </h1>
-      <p className="mt-5 text-lg text-ink-muted max-w-xl">
-        Use the navigation on the left to manage reports, users, and
-        platforms. Listings, deals, audit log, and broadcasts arrive
-        in Phases 5&ndash;8.
+      <p className="mt-5 text-sm md:text-base text-ink-muted max-w-3xl">
+        Use this dashboard to monitor Bantle operations across users, reports,
+        listings, deals, platforms, audit logs, and incident broadcasts.
       </p>
+      <div className="mt-8">
+        <DashboardClient />
+      </div>
     </div>
   );
 }
