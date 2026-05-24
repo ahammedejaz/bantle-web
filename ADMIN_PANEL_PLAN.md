@@ -1,9 +1,9 @@
 # Bantle Admin Panel — Implementation Plan
 
 **Repository**: bantle-web (`~/Documents/GitHub/bantle-web/`)
-**Status**: Phase 5 verified; Phase 6 verified; Phase 7 verified; Phase 8 shipped, awaiting Syed verification after cooldown removal
+**Status**: Phase 5 verified; Phase 6 verified; Phase 7 verified; Phase 8 verified; Phase 9 in progress
 **Last updated**: 2026-05-24
-**Scope**: Tier 1 (reports, users, platforms) + Tier 2 (listings, deals, audit log viewer, manual broadcast push)
+**Scope**: Tier 1 (reports, users, platforms) + Tier 2 (listings, deals, audit log viewer, manual broadcast push) + Phase 9 dashboard analytics refresh
 **Out of scope, permanently**: Re-engagement push notifications. This is a positioning decision, not a deferral. See Section 2 for reasoning.
 
 ---
@@ -1125,7 +1125,7 @@ notifications kind CHECK.
 
 ### Phase 8 — Manual broadcast push
 
-**Status**: SHIPPED
+**Status**: VERIFIED
 
 **Goal**: Admin can send incident updates to eligible users for genuine incidents only. Confirmed, audit-logged, and not rate-limited by a 24-hour cooldown.
 
@@ -1254,6 +1254,24 @@ notifications kind CHECK.
 21. Do not send all-user unless Syed explicitly decides to after reviewing the implementation.
 22. Confirm non-admin cannot access `/admin/broadcasts`.
 23. Confirm non-admin cannot access `/admin/api/broadcasts`, `/admin/api/broadcasts/preview`, or `/admin/api/broadcasts/[id]/retry`.
+
+---
+
+### Phase 9 — Admin dashboard analytics and refresh
+
+**Status**: IN PROGRESS
+
+**Goal**: Replace the stale `/admin` placeholder with a useful read-only operational dashboard covering completed admin modules: reports, users, listings, deals, platforms, audit logs, and incident broadcasts.
+
+**Scope**:
+- Add `GET /admin/api/dashboard` for aggregate operational metrics only.
+- Refresh `/admin` with metric cards, quick links, and recent admin actions.
+- Keep analytics read-only and operational. No marketing analytics, no re-engagement metrics, no PostHog embed, and no raw user lists.
+- No schema migration expected.
+
+**Implementation notes**:
+- Started after Syed verified Phase 8 smoke tests passed.
+- Phase 9 must be marked `SHIPPED` only after implementation, build/lint verification, commit, and push.
 
 ---
 
