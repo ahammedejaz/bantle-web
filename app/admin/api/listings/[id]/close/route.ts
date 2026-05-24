@@ -5,6 +5,10 @@ import { type NextRequest, NextResponse } from "next/server";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { requireAdmin } from "@/lib/admin-auth";
 import { logAdminAction } from "@/lib/admin-actions";
+import {
+  getInternalFunctionHeaders,
+  internalFunctionConfigError,
+} from "@/lib/admin-internal-functions";
 
 type ListingRow = {
   id: string;
@@ -258,9 +262,21 @@ async function notifyHost(args: {
     summary.notification_inserted_count = 1;
   }
 
+  let internalHeaders: Record<string, string>;
+  try {
+    internalHeaders = getInternalFunctionHeaders();
+  } catch (error) {
+    const message = internalFunctionConfigError(error);
+    console.error("[admin listing close] push config failed:", message);
+    summary.push_failure_count = 1;
+    summary.warnings.push(`push_failed:${message}`);
+    return summary;
+  }
+
   const { data, error: pushError } = await supabase.functions.invoke(
     "send_push_notification",
     {
+      headers: internalHeaders,
       body: {
         recipient_id: listing.user_id,
         kind: "listing_closed",

@@ -5,6 +5,10 @@ import { type NextRequest, NextResponse } from "next/server";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { requireAdmin } from "@/lib/admin-auth";
 import { logAdminAction } from "@/lib/admin-actions";
+import {
+  getInternalFunctionHeaders,
+  internalFunctionConfigError,
+} from "@/lib/admin-internal-functions";
 
 const UUID_RE =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -58,7 +62,20 @@ export async function POST(request: NextRequest, { params }: RouteContext) {
     );
   }
 
-  const dispatch = await invokeDispatcherRetry(supabase, broadcastId);
+  let internalHeaders: Record<string, string>;
+  try {
+    internalHeaders = getInternalFunctionHeaders();
+  } catch (error) {
+    const message = internalFunctionConfigError(error);
+    console.error("[admin broadcasts retry] dispatcher config failed:", message);
+    return NextResponse.json({ error: message }, { status: 500 });
+  }
+
+  const dispatch = await invokeDispatcherRetry(
+    supabase,
+    broadcastId,
+    internalHeaders,
+  );
   const after = await fetchBroadcast(supabase, broadcastId);
   if (!after) {
     return NextResponse.json(
@@ -124,10 +141,14 @@ async function fetchBroadcast(
 async function invokeDispatcherRetry(
   supabase: SupabaseClient,
   broadcastId: string,
+  internalHeaders: Record<string, string>,
 ): Promise<{ success: boolean; error: string | null; result: unknown }> {
   const { data, error } = await supabase.functions.invoke(
     "broadcast_push_dispatcher",
-    { body: { broadcast_id: broadcastId, retry: true } },
+    {
+      headers: internalHeaders,
+      body: { broadcast_id: broadcastId, retry: true },
+    },
   );
 
   if (error) {

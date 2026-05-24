@@ -9,6 +9,10 @@ import { type NextRequest, NextResponse } from "next/server";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { requireAdmin } from "@/lib/admin-auth";
 import { logAdminAction, type AdminActionType } from "@/lib/admin-actions";
+import {
+  getInternalFunctionHeaders,
+  internalFunctionConfigError,
+} from "@/lib/admin-internal-functions";
 
 const VALID_CATEGORIES = ["music", "video", "cloud", "work"] as const;
 type Category = (typeof VALID_CATEGORIES)[number];
@@ -237,6 +241,20 @@ async function sendPlatformPushes(args: {
   let failure = 0;
   let skipped = 0;
   const warnings: string[] = [];
+  let internalHeaders: Record<string, string>;
+
+  try {
+    internalHeaders = getInternalFunctionHeaders();
+  } catch (error) {
+    const message = internalFunctionConfigError(error);
+    console.error("[admin platform push]", message);
+    return {
+      success,
+      failure: recipients.length,
+      skipped,
+      warnings: [`push_failed:${message}`],
+    };
+  }
 
   for (const recipient of recipients) {
     const payload = notificationPayload({
@@ -249,6 +267,7 @@ async function sendPlatformPushes(args: {
     const { data, error } = await supabase.functions.invoke(
       "send_push_notification",
       {
+        headers: internalHeaders,
         body: {
           recipient_id: recipient.userId,
           kind,

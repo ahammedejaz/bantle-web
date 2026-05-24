@@ -11,6 +11,10 @@ import {
   parseAudienceType,
   type BroadcastAudienceType,
 } from "@/lib/admin-broadcasts";
+import {
+  getInternalFunctionHeaders,
+  internalFunctionConfigError,
+} from "@/lib/admin-internal-functions";
 
 const DEFAULT_PAGE_SIZE = 20;
 const MAX_PAGE_SIZE = 50;
@@ -129,6 +133,14 @@ export async function POST(request: NextRequest) {
 
   const { title, body: messageBody, reason, audienceType, idempotencyKey } =
     validation.value;
+  let internalHeaders: Record<string, string>;
+  try {
+    internalHeaders = getInternalFunctionHeaders();
+  } catch (error) {
+    const message = internalFunctionConfigError(error);
+    console.error("[admin broadcasts create] dispatcher config failed:", message);
+    return NextResponse.json({ error: message }, { status: 500 });
+  }
 
   const existing = await findBroadcastByIdempotency(supabase, idempotencyKey);
   if (existing) {
@@ -193,7 +205,7 @@ export async function POST(request: NextRequest) {
   }
 
   const broadcastId = inserted.id as string;
-  const dispatch = await invokeDispatcher(supabase, broadcastId);
+  const dispatch = await invokeDispatcher(supabase, broadcastId, internalHeaders);
   const broadcast = await fetchBroadcast(supabase, broadcastId);
   if (!broadcast) {
     return NextResponse.json(
@@ -387,10 +399,14 @@ async function fetchBroadcast(
 async function invokeDispatcher(
   supabase: SupabaseClient,
   broadcastId: string,
+  internalHeaders: Record<string, string>,
 ): Promise<{ success: boolean; error: string | null; result: unknown }> {
   const { data, error } = await supabase.functions.invoke(
     "broadcast_push_dispatcher",
-    { body: { broadcast_id: broadcastId } },
+    {
+      headers: internalHeaders,
+      body: { broadcast_id: broadcastId },
+    },
   );
 
   if (error) {

@@ -5,6 +5,10 @@ import { type NextRequest, NextResponse } from "next/server";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { requireAdmin } from "@/lib/admin-auth";
 import { logAdminAction } from "@/lib/admin-actions";
+import {
+  getInternalFunctionHeaders,
+  internalFunctionConfigError,
+} from "@/lib/admin-internal-functions";
 
 type ListingSummary = {
   id: string;
@@ -288,11 +292,23 @@ async function notifyParticipants(args: {
     }
   }
 
+  let internalHeaders: Record<string, string>;
+  try {
+    internalHeaders = getInternalFunctionHeaders();
+  } catch (error) {
+    const message = internalFunctionConfigError(error);
+    console.error("[admin deal terminate] push config failed:", message);
+    summary.push_failure_count += recipients.size;
+    summary.warnings.push(`push_failed:${message}`);
+    return summary;
+  }
+
   await Promise.all(
     Array.from(recipients.entries()).map(async ([recipientId, role]) => {
       const { data, error } = await supabase.functions.invoke(
         "send_push_notification",
         {
+          headers: internalHeaders,
           body: {
             recipient_id: recipientId,
             kind: "deal_terminated",
