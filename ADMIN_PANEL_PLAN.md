@@ -8,6 +8,17 @@
 
 ---
 
+## Pre-Launch Fix 2 Status - 2026-05-24
+
+Shipped, awaiting Syed smoke verification:
+
+- Platform/direct push partial failure reporting: web/admin now distinguishes in-app notification failures from push-only failures, and `send_push_notification` is deployed as ACTIVE version 17 with safer Expo ticket parsing.
+- Admin-closed listing reopen bypass: production migration `20260524095313 protect_admin_closed_listing_reopen` prevents normal clients from reopening Bantle/admin-closed listings or changing closure metadata; mobile hides the actual Reopen action and shows Bantle closure copy.
+
+No change was made to broadcast behavior, deal lifecycle/context UI, account deletion behavior, Next.js, CSRF/origin guards, verify page, dependency versions, or mobile lint debt in this pass.
+
+---
+
 ## Status legend (used by every phase)
 
 - **NOT STARTED** — Phase has not begun.

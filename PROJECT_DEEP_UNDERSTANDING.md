@@ -4,6 +4,15 @@ Generated: 2026-05-19
 
 This document records a deep read of the local repository plus a read-only inspection of the connected Supabase project. It is meant to be the current operational map for future work in this codebase.
 
+## Pre-Launch Fix 2 Update — 2026-05-24
+
+Two scoped pre-launch fixes are shipped and awaiting Syed smoke verification:
+
+- Platform/direct push partial failure: `send_push_notification` now accepts Expo ticket `data` as either a single ticket object or an array. It was deployed as ACTIVE version 17. Web/admin platform toasts now distinguish in-app notification insert failures from push-only failures. `broadcast_push_dispatcher` was left unchanged.
+- Admin-closed listing reopen bypass: production migration `20260524095313 protect_admin_closed_listing_reopen` added a `BEFORE UPDATE` trigger on `public.listings`. Normal clients cannot alter `closed_reason`, `closed_by`, or `closed_at`, and cannot reopen listings with Bantle/admin closure metadata. Mobile listing edit/My Listings now expose Bantle-closed state while preserving self-closed reopen.
+
+No broadcasts, push sends, deal cancellations/terminations, account deletes, or manual production listing mutations were performed during this fix pass.
+
 ## Phase 9 Dashboard Analytics Update — 2026-05-24
 
 Phase 8 incident broadcasts were verified by Syed. Phase 9 dashboard analytics is shipped and awaiting Syed smoke verification.

@@ -30,6 +30,14 @@ The old `BANTLE_WEB_PROJECT_DUMP.md` is useful historical context, but it predat
 - `/admin/*` uses Supabase cookie sessions, middleware gating, and server-side service-role API routes.
 - Admin Phases 1 through 8 are verified. Phase 9 dashboard analytics refresh is shipped awaiting Syed smoke verification.
 
+### Pre-Launch Fix 2 Update - 2026-05-24
+
+- Web/admin commit `a3b4fc7` updated platform activation/deactivation toast copy so persistent in-app notification failures and push-only failures are reported separately.
+- Mobile/Supabase commit `04bed57` updated `send_push_notification`; the deployed function is ACTIVE version 17 and now parses Expo ticket `data` as either one object or an array.
+- Production migration `20260524095313 protect_admin_closed_listing_reopen` added DB-level protection against owners reopening Bantle/admin-closed listings or spoofing closure metadata.
+- Mobile commits `d9da79e` and `775cc91` added the DB migration and updated listing edit/My Listings UI for Bantle-closed rows.
+- `broadcast_push_dispatcher` was intentionally left unchanged.
+
 ## 2. Technology stack
 
 - Framework: Next.js `14.2.35`, App Router.
