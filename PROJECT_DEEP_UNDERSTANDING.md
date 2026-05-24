@@ -845,6 +845,7 @@ The database has 39 migrations recorded. Major themes:
 
 - Active, JWT verification enabled.
 - Service-role cron/dispatcher function.
+- Privileged function boundary requires trusted internal authorization before service-role work.
 - Reads `deals_pending_milestones`.
 - Inserts milestone notifications idempotently.
 - Sends milestone push notifications through `send_push_notification`.
@@ -856,6 +857,7 @@ The database has 39 migrations recorded. Major themes:
 
 - Active, JWT verification enabled.
 - Service-role cron/dispatcher function.
+- Privileged function boundary requires trusted internal authorization before service-role work.
 - Finds profiles whose `deleted_at` is older than the grace window.
 - Re-checks each row before deletion.
 - Deletes users through Supabase Auth admin API.
@@ -865,11 +867,21 @@ The database has 39 migrations recorded. Major themes:
 ### `send_push_notification`
 
 - Active, JWT verification enabled.
+- Privileged function boundary requires trusted internal authorization before service-role work.
 - Supports direct invocation and database webhook payloads.
 - Handles message inserts, deal inserts, and deal updates.
 - Sends Expo push notifications.
 - Clears stale `DeviceNotRegistered` push tokens.
 - Uses channel IDs such as `messages`, `deals_v2`, and `milestones`.
+
+### `broadcast_push_dispatcher`
+
+- Active, JWT verification enabled.
+- Privileged function boundary requires trusted internal authorization before service-role work.
+- Creates/reuses incident broadcast notification rows.
+- Sends Expo pushes one recipient/token per request.
+- Clears stale `DeviceNotRegistered` push tokens.
+- Updates broadcast and recipient counters.
 
 ### `export_user_data`
 

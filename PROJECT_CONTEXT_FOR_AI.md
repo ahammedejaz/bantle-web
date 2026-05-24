@@ -1104,6 +1104,7 @@ Phase 8 - Manual broadcast push:
   - Pushes are sent one recipient/token per Expo request to avoid mixed-project token batch failures.
   - Failed/partial broadcasts can be retried without creating a new broadcast row or duplicating existing notification rows.
   - User-facing broadcast push and in-app notifications show the admin-entered title/body. Fallback copy is only used for malformed or missing payloads.
+  - Privileged Edge Function calls now require trusted internal authorization before service-role work. Web/admin callers pass `x-bantle-internal-secret` from server-only `BANTLE_INTERNAL_FUNCTION_SECRET`; existing service-role bearer invocations remain supported for database webhook/cron compatibility.
   - In-app broadcast row taps mark read and stay on `/notifications`; push banner taps open `/notifications` without stacking when already there.
   - Push notification responses are consumed once with a central handler, in-memory and persisted recent response keys, and `clearLastNotificationResponseAsync()` when available.
   - Deleted, permanently banned, and currently temp-banned users are excluded.
