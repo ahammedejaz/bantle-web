@@ -1,7 +1,7 @@
 # Bantle Admin Panel — Implementation Plan
 
 **Repository**: bantle-web (`~/Documents/GitHub/bantle-web/`)
-**Status**: Phase 5 verified; Phase 6 verified; Phase 7 verified; Phase 8 verified; Phase 9 shipped, awaiting Syed verification
+**Status**: Phase 5 verified; Phase 6 verified; Phase 7 verified; Phase 8 verified; Phase 9 verified
 **Last updated**: 2026-05-24
 **Scope**: Tier 1 (reports, users, platforms) + Tier 2 (listings, deals, audit log viewer, manual broadcast push) + Phase 9 dashboard analytics refresh
 **Out of scope, permanently**: Re-engagement push notifications. This is a positioning decision, not a deferral. See Section 2 for reasoning.
@@ -1276,7 +1276,7 @@ notifications kind CHECK.
 - Metrics cover users, reports, listings, deals, platforms, broadcasts, and audit actions.
 - Report `open` maps to `user_reports.status = 'pending'`; report `resolved` combines `reviewed` and `actioned`.
 - Dashboard analytics are operational only. No marketing analytics, re-engagement metrics, PostHog embed, raw user lists, or schema migration were added.
-- Phase 9 is shipped, not verified. Syed must run the smoke tests below before marking `VERIFIED`.
+- Phase 9 smoke testing was completed successfully by Syed and is now verified.
 
 **Commit SHAs**:
 - `0f962f5` — `docs(admin): start phase 9`
