@@ -1170,6 +1170,7 @@ notifications kind CHECK.
 - Persistent in-app notification payloads include only broadcast id, event id, title, body, audience type, and sent time. They do not expose admin id, internal reason, email, push token, or recipient list.
 - User-facing broadcast push and in-app notifications display the admin-entered title/body. Fallback copy is only for malformed or missing payloads.
 - In-app broadcast row taps mark read and stay on `/notifications`; push banner taps open `/notifications` without stacking when already there.
+- Mobile push notification responses are consumed once with a central handler, in-memory and persisted recent response keys, and `clearLastNotificationResponseAsync()` when available, so stale broadcast push taps do not reopen `/notifications` on later app opens.
 - Codex did not send an all-user broadcast during implementation, the cooldown-removal adjustment, the reliability fix, or the copy clarity fix.
 - Codex did not send a `test_syed` broadcast during implementation or this cooldown-removal adjustment; Syed should run the test send manually.
 

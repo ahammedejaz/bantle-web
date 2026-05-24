@@ -1104,6 +1104,7 @@ Phase 8 - Manual broadcast push:
   - Failed/partial broadcasts can be retried without creating a new broadcast row or duplicating existing notification rows.
   - User-facing broadcast push and in-app notifications show the admin-entered title/body. Fallback copy is only used for malformed or missing payloads.
   - In-app broadcast row taps mark read and stay on `/notifications`; push banner taps open `/notifications` without stacking when already there.
+  - Push notification responses are consumed once with a central handler, in-memory and persisted recent response keys, and `clearLastNotificationResponseAsync()` when available.
   - Deleted, permanently banned, and currently temp-banned users are excluded.
   - User-visible payload does not include admin id, internal reason, emails, push tokens, or recipient lists.
   - Codex did not send an all-user broadcast during implementation.
@@ -1343,6 +1344,7 @@ Incident broadcast push is shipped in code and awaiting Syed smoke verification:
 - `/admin/api/broadcasts/[id]/retry` and the Retry failed delivery UI retry existing failed/partial broadcasts without creating a new broadcast row.
 - User-facing push and in-app broadcast notifications show the admin-entered title/body; admin-only reason is not shown to users, and fallback copy is only for malformed payloads.
 - In-app broadcast notification row taps mark read and stay on the Notifications screen; push banner taps open Notifications without stacking when already there.
+- Push notification responses are consumed once using a central mobile handler, an in-memory set, and persisted recent response keys, so stale Expo last-response data does not re-navigate after app reopen/resume.
 - `all_eligible` sends require exact confirmation, a mandatory admin-only reason, URL-free user-visible copy, and marketing/re-engagement wording checks.
 - There is no 24-hour all-user cooldown; admins may send outage-start and outage-resolved updates when needed.
 - `all_eligible` is the default audience. `test_syed` remains available only for smoke verification.

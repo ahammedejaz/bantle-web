@@ -160,6 +160,16 @@ Syed observed that tapping a broadcast row inside the in-app Notifications scree
 - Resource-specific notification routing for messages, deals, listings, and platform host paths is unchanged.
 - No broadcast was sent and no production data was mutated during this fix.
 
+## Push Response Consumption Guard - 2026-05-24
+
+Syed observed that Android could re-apply the same Expo notification tap response after returning from a broadcast push and reopening the app.
+
+- Mobile push-tap routing now flows through a central response handler for both `getLastNotificationResponseAsync()` and `addNotificationResponseReceivedListener(...)`.
+- Notification responses are consumed once using a stable response key, an in-memory set, and a persisted AsyncStorage list of recent response keys.
+- The handler calls `Notifications.clearLastNotificationResponseAsync()` when available and skips navigation when the computed destination is already the current route.
+- Broadcast push taps still open `/notifications`, but stale responses should not reopen `/notifications` on later app opens/resumes.
+- No broadcast was sent and no production data was mutated during this fix.
+
 ## Commands Run
 
 Mobile/Supabase:
