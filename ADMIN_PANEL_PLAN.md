@@ -1,7 +1,7 @@
 # Bantle Admin Panel — Implementation Plan
 
 **Repository**: bantle-web (`~/Documents/GitHub/bantle-web/`)
-**Status**: Phase 5 verified; Phase 6 verified; Phase 7 verified; Phase 8 verified; Phase 9 in progress
+**Status**: Phase 5 verified; Phase 6 verified; Phase 7 verified; Phase 8 verified; Phase 9 shipped, awaiting Syed verification
 **Last updated**: 2026-05-24
 **Scope**: Tier 1 (reports, users, platforms) + Tier 2 (listings, deals, audit log viewer, manual broadcast push) + Phase 9 dashboard analytics refresh
 **Out of scope, permanently**: Re-engagement push notifications. This is a positioning decision, not a deferral. See Section 2 for reasoning.
@@ -1224,7 +1224,7 @@ notifications kind CHECK.
 
 **Known issues**:
 
-- Phase 8 is shipped but not verified. Syed must run the smoke tests below.
+- Phase 8 was verified by Syed before Phase 9 started. The checklist below remains as historical smoke coverage.
 - No all-user broadcast was sent by Codex.
 - No `test_syed` broadcast was sent by Codex.
 - Mobile lint still has pre-existing unrelated errors in older files; Phase 8 touched files were not in the lint failure list.
@@ -1259,7 +1259,7 @@ notifications kind CHECK.
 
 ### Phase 9 — Admin dashboard analytics and refresh
 
-**Status**: IN PROGRESS
+**Status**: SHIPPED
 
 **Goal**: Replace the stale `/admin` placeholder with a useful read-only operational dashboard covering completed admin modules: reports, users, listings, deals, platforms, audit logs, and incident broadcasts.
 
@@ -1271,7 +1271,42 @@ notifications kind CHECK.
 
 **Implementation notes**:
 - Started after Syed verified Phase 8 smoke tests passed.
-- Phase 9 must be marked `SHIPPED` only after implementation, build/lint verification, commit, and push.
+- Added `GET /admin/api/dashboard`, guarded by `requireAdmin()` and backed by service-role read-only aggregate queries.
+- Replaced stale dashboard placeholder copy with metric cards, quick links, and recent admin actions.
+- Metrics cover users, reports, listings, deals, platforms, broadcasts, and audit actions.
+- Report `open` maps to `user_reports.status = 'pending'`; report `resolved` combines `reviewed` and `actioned`.
+- Dashboard analytics are operational only. No marketing analytics, re-engagement metrics, PostHog embed, raw user lists, or schema migration were added.
+- Phase 9 is shipped, not verified. Syed must run the smoke tests below before marking `VERIFIED`.
+
+**Commit SHAs**:
+- `0f962f5` — `docs(admin): start phase 9`
+- `8c337bf` — `feat(admin): add dashboard analytics`
+
+**Files modified**:
+- `app/admin/api/dashboard/route.ts`
+- `app/admin/DashboardClient.tsx`
+- `app/admin/page.tsx`
+- `ADMIN_PANEL_PLAN.md`
+- `PROJECT_CONTEXT_FOR_AI.md`
+- `PROJECT_DEEP_UNDERSTANDING.md`
+- `PHASE_9_DASHBOARD_ANALYTICS.md`
+
+**Verification**:
+- Web `npm run build`: passed.
+- Web `npm run lint`: passed.
+- Web `git diff --check`: passed.
+
+**Smoke tests**:
+1. Open `/admin`.
+2. Confirm stale "Phases 5-8 arrive later" copy is gone.
+3. Confirm dashboard analytics cards load.
+4. Confirm counts look reasonable for users, reports, listings, deals, platforms, broadcasts, and audit actions.
+5. Confirm recent admin actions render.
+6. Click quick links to Reports, Users, Listings, Deals, Audit, Broadcasts, and Platforms.
+7. Confirm Broadcasts card says incident-only / not marketing.
+8. Confirm Audit card says read-only.
+9. Refresh page and confirm no errors.
+10. Confirm non-admin access to `/admin` remains blocked.
 
 ---
 

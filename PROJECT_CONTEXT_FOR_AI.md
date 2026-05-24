@@ -28,7 +28,7 @@ The old `BANTLE_WEB_PROJECT_DUMP.md` is useful historical context, but it predat
 - Public pages are mostly static server components.
 - `/reset-password` and `/verify` are client-enhanced Supabase auth helper pages.
 - `/admin/*` uses Supabase cookie sessions, middleware gating, and server-side service-role API routes.
-- Admin Phases 1 through 7 are verified/shipped. Phase 8 incident broadcast push is shipped awaiting Syed smoke verification.
+- Admin Phases 1 through 8 are verified. Phase 9 dashboard analytics refresh is shipped awaiting Syed smoke verification.
 
 ## 2. Technology stack
 
@@ -943,10 +943,11 @@ Read `ADMIN_PANEL_PLAN.md` for full details and smoke tests. Current summary:
   - Admin panel unchanged.
 - Phase 5 - Listings management: verified by Syed.
   - Search/list/detail listings; force-close active listings with reason; host notification/push; no deal mutation.
-- Phase 6 - Deals management: shipped, awaiting Syed smoke verification.
+- Phase 6 - Deals management: verified by Syed.
   - Search/list/detail deals; force-terminate pending/active deals with reason; host+buyer notification/push; best-effort system chat event; no listing/rating/unrelated-deal mutation.
-- Phase 7 - Audit log viewer: not started.
-- Phase 8 - Manual incident broadcast push: not started.
+- Phase 7 - Audit log viewer: verified by Syed.
+- Phase 8 - Manual incident broadcast push: verified by Syed.
+- Phase 9 - Admin dashboard analytics and refresh: shipped, awaiting Syed smoke verification.
 
 Important permanent scope decision: re-engagement push notifications are out of scope permanently. Only transactional/functional/commitment/incident pushes are allowed.
 
@@ -1082,7 +1083,7 @@ Phase 7 - Audit log viewer:
 
 Phase 8 - Manual broadcast push:
 
-- Shipped 2026-05-24, awaiting Syed verification.
+- Verified by Syed.
 - Routes:
   - `GET /admin/api/broadcasts`
   - `POST /admin/api/broadcasts`
@@ -1108,6 +1109,22 @@ Phase 8 - Manual broadcast push:
   - Deleted, permanently banned, and currently temp-banned users are excluded.
   - User-visible payload does not include admin id, internal reason, emails, push tokens, or recipient lists.
   - Codex did not send an all-user broadcast during implementation.
+
+Phase 9 - Admin dashboard analytics and refresh:
+
+- Shipped 2026-05-24, awaiting Syed verification.
+- Route:
+  - `GET /admin/api/dashboard`
+- Page:
+  - `/admin`
+- Semantics:
+  - Replaces the stale Phase 5-8 placeholder copy with an operational admin dashboard.
+  - Uses `requireAdmin()` plus the server-only service-role Supabase client in the API route.
+  - Returns aggregate counts only for users, reports, listings, deals, platforms, broadcasts, and audit actions.
+  - Shows recent admin actions without exposing raw user lists or push tokens.
+  - Includes quick links to Reports, Users, Listings, Deals, Audit, Broadcasts, and Platforms.
+  - Broadcast copy remains incident-only / not marketing; audit copy is read-only.
+  - No marketing analytics, re-engagement analytics, PostHog dashboard embed, mobile change, schema migration, or production data mutation was added.
 
 ## 23. Verification checklist for future changes
 
@@ -1334,7 +1351,7 @@ Audit log viewer shipped in code and was verified by Syed:
 
 ## 29. Phase 8 Incident Broadcast Update — 2026-05-24
 
-Incident broadcast push is shipped in code and awaiting Syed smoke verification:
+Incident broadcast push was verified by Syed:
 
 - `/admin/broadcasts` shows an incident-only warning, a guarded send form, recipient preview counts, and recent broadcast summaries.
 - `/admin/api/broadcasts` supports read-only recent broadcast listing and guarded POST sends.
@@ -1351,6 +1368,18 @@ Incident broadcast push is shipped in code and awaiting Syed smoke verification:
 - Latest observed all-user broadcast `29f165e4-efaf-4eb2-b1de-6d2896588dbe` had 20 in-app notifications with title/body payload fields; read-only inspection during the copy clarity fix showed it as `completed`.
 - Codex did not send an all-user broadcast during implementation, the cooldown-removal adjustment, the reliability fix, or the copy clarity fix.
 
-## 30. One-sentence mental model
+## 30. Phase 9 Dashboard Analytics Update — 2026-05-24
+
+Phase 8 incident broadcasts were verified by Syed. Phase 9 dashboard analytics is shipped in code and awaiting Syed smoke verification:
+
+- `/admin` no longer says Listings, Deals, Audit, and Broadcasts are future phases.
+- `/admin/api/dashboard` is a read-only admin route guarded by `requireAdmin()` and using the service-role Supabase client server-side only.
+- The dashboard shows aggregate operational metrics for users, reports, listings, deals, platforms, broadcasts, and audit actions.
+- Report `open` maps to `user_reports.status = 'pending'`; report `resolved` combines `reviewed` and `actioned`.
+- The dashboard includes quick links to the completed admin modules and a recent admin actions feed.
+- Broadcasts are labeled incident-only / not marketing, and audit access is labeled read-only.
+- No schema migration, mobile change, marketing analytics, re-engagement analytics, PostHog embed, raw user list, or production data mutation was added.
+
+## 31. One-sentence mental model
 
 This repo is the public face and admin console for Bantle: the public side explains a household subscription coordination app and handles Supabase email flows, while the admin side uses cookie-authenticated Supabase sessions plus service-role API routes to moderate reports/users, manage listings/deals, view audit history, send incident-only broadcasts, and maintain the platform catalog.

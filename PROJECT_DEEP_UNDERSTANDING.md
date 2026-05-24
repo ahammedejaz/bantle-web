@@ -4,9 +4,21 @@ Generated: 2026-05-19
 
 This document records a deep read of the local repository plus a read-only inspection of the connected Supabase project. It is meant to be the current operational map for future work in this codebase.
 
+## Phase 9 Dashboard Analytics Update — 2026-05-24
+
+Phase 8 incident broadcasts were verified by Syed. Phase 9 dashboard analytics is shipped and awaiting Syed smoke verification.
+
+- Web/admin added `GET /admin/api/dashboard`.
+- `/admin` now renders read-only operational metrics instead of stale Phase 5-8 placeholder copy.
+- Metrics cover users, reports, listings, deals, platforms, broadcasts, and audit actions.
+- Report `open` maps to `pending`; report `resolved` combines `reviewed` and `actioned`.
+- The dashboard includes recent admin actions and quick links to Reports, Users, Listings, Deals, Audit, Broadcasts, and Platforms.
+- Broadcast dashboard copy stays incident-only / not marketing, and audit copy is read-only.
+- No schema migration, mobile code change, marketing analytics, re-engagement analytics, PostHog embed, raw user lists, or production data mutation was added.
+
 ## Phase 8 Incident Broadcast Update — 2026-05-24
 
-Phase 7 audit log viewer was verified by Syed. Phase 8 incident broadcast push is shipped and awaiting Syed smoke verification.
+Phase 7 audit log viewer was verified by Syed. Phase 8 incident broadcast push was verified by Syed.
 
 - Web/admin added `/admin/broadcasts`.
 - API routes added: `GET /admin/api/broadcasts`, `POST /admin/api/broadcasts`, `GET /admin/api/broadcasts/preview`, and `POST /admin/api/broadcasts/[id]/retry`.
