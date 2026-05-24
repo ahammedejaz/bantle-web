@@ -87,14 +87,20 @@ export function PlatformsListClient() {
         }
         const data = (await res.json()) as PlatformToggleResponse;
         const summary = data.notification_summary;
-        const failures =
-          (summary?.notification_failed_count ?? 0) +
-          (summary?.push_failure_count ?? 0);
-        if (failures > 0) {
+        const notificationFailures = summary?.notification_failed_count ?? 0;
+        const pushFailures = summary?.push_failure_count ?? 0;
+        if (notificationFailures > 0) {
           toast.show(
             next
-              ? "Platform activated. Some notifications failed."
-              : "Platform deactivated. Some notifications failed.",
+              ? "Platform activated, but some in-app notifications failed."
+              : "Platform deactivated, but some in-app notifications failed.",
+            "error",
+          );
+        } else if (pushFailures > 0) {
+          toast.show(
+            next
+              ? "Platform activated. In-app notifications were sent, but push failed for some users."
+              : "Platform deactivated. In-app notifications were sent, but push failed for some users.",
             "error",
           );
         } else if ((summary?.recipient_count ?? 0) > 0) {
