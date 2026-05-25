@@ -4,13 +4,27 @@ Generated: 2026-05-19
 
 This document records a deep read of the local repository plus a read-only inspection of the connected Supabase project. It is meant to be the current operational map for future work in this codebase.
 
+## Pre-Launch Fix 8 Update — 2026-05-25
+
+`BANTLE-WEB-004` is shipped in commit `387a1e1d2f172d204af2cca07f675cd364b9bd45` and awaiting Syed smoke verification.
+
+- `next` and `eslint-config-next` were upgraded from `14.2.35` to `16.2.6`.
+- `eslint` was upgraded from `^8` to `^9.39.4` for `eslint-config-next@16.2.6`.
+- React package ranges stayed `^18`; the lockfile resolves React and React DOM to `18.3.1`.
+- `overrides.next.postcss = 8.5.15` is required because `next@16.2.6` still depends on nested `postcss@8.4.31`, which kept `npm audit --omit=dev` reporting a moderate advisory.
+- Compatibility changes were limited to Promise-based dynamic route params, `await cookies()` in admin server components, ESLint 9 flat config, and the Next-generated `tsconfig.json` updates.
+- `npm audit --omit=dev` reports `found 0 vulnerabilities`; `npm run build` and `npm run lint` pass.
+- Build warns that the `middleware.ts` convention is deprecated in favor of `proxy`; no middleware/proxy behavior was changed in this pass.
+
+No migrations, production data mutations, admin mutation API calls, broadcasts, push notifications, or emails were performed.
+
 ## Pre-Launch Fix 7 Update — 2026-05-25
 
-Two scoped web/admin security fixes are shipped in commit `b60a498a6e938dd84bba1dc65353ad95527c7343` and awaiting Syed smoke verification:
+Two scoped web/admin security fixes were shipped in commit `b60a498a6e938dd84bba1dc65353ad95527c7343` and Syed smoke-tested Fix 7 successfully:
 
 - Admin mutation CSRF/origin hardening: `requireAdmin(request)` now validates mutating requests against `request.nextUrl.origin` using `Origin` first and `Referer` as fallback before any user/profile/service-role work. `POST /admin/api/logout` applies the same guard because it does not call `requireAdmin`.
 - Public verify page token handling: `/verify` now strips auth query/hash params from the visible URL and shows success only after Supabase verification/session establishment succeeds through `verifyOtp`, `exchangeCodeForSession`, or access/refresh `setSession`. `type` alone and invalid/expired/already-used links no longer show false success.
-- `BANTLE-WEB-004` remains a separate Next.js major-upgrade pass. No packages were upgraded in Fix 7.
+- `BANTLE-WEB-004` was handled separately in Fix 8. No packages were upgraded in Fix 7.
 
 No migrations, production data mutations, broadcasts, push notifications, or emails were performed during this pass.
 
@@ -89,7 +103,7 @@ Phase 5 listings management was verified by Syed. Phase 6 deals management was v
 
 ## Executive Model
 
-- The repository is a Next.js 14 App Router web app.
+- The repository is a Next.js 16 App Router web app.
 - It has two major surfaces:
   - Public marketing/support/legal pages under `app/(marketing)`.
   - A protected admin panel under `app/admin`.
@@ -224,12 +238,12 @@ Total covered lines in this ledger: 12,120.
 
 ### Package and Build
 
-- `package.json` defines a Next 14.2.35 app using React 18 and TypeScript 5.
+- `package.json` defines a Next 16.2.6 app using React 18 and TypeScript 5.
 - Scripts are:
   - `dev`: `next dev`
   - `build`: `next build`
   - `start`: `next start`
-  - `lint`: `next lint`
+  - `lint`: `eslint .`
 - Key dependencies:
   - `@supabase/supabase-js` for browser/admin API interactions.
   - `@supabase/ssr` for cookie-based middleware/server auth.

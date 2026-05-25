@@ -1,6 +1,6 @@
 # Bantle Web - AI project context
 
-Last updated: 2026-05-24
+Last updated: 2026-05-25
 Repo path: `/Users/syedejazahammed/Documents/GitHub/bantle-web`
 Production URL: `https://bantle.in`
 Mobile repo: `/Users/syedejazahammed/Documents/GitHub/bantle`
@@ -16,7 +16,7 @@ Scan scope for this document:
 
 ## 1. Executive summary
 
-`bantle-web` is a Next.js 14 App Router application with two major surfaces:
+`bantle-web` is a Next.js 16 App Router application with two major surfaces:
 
 1. Public marketing, support, and legal pages for Bantle at `bantle.in`.
 2. A protected admin panel at `/admin/*` for reports, users, listings, deals, and platform catalog management.
@@ -30,12 +30,22 @@ The old `BANTLE_WEB_PROJECT_DUMP.md` is useful historical context, but it predat
 - `/admin/*` uses Supabase cookie sessions, middleware gating, and server-side service-role API routes.
 - Admin Phases 1 through 8 are verified. Phase 9 dashboard analytics refresh is shipped awaiting Syed smoke verification.
 
+### Pre-Launch Fix 8 Update - 2026-05-25
+
+- Web/admin commit `387a1e1d2f172d204af2cca07f675cd364b9bd45` shipped `BANTLE-WEB-004` as a dedicated dependency security pass.
+- `next` and `eslint-config-next` were upgraded from `14.2.35` to `16.2.6`; `eslint` was upgraded from `^8` to `^9.39.4` to satisfy the new config peer dependency.
+- React package ranges stayed `^18`; the lockfile resolves React and React DOM to `18.3.1`.
+- `overrides.next.postcss = 8.5.15` is present because `next@16.2.6` still depends on nested `postcss@8.4.31`, which kept `npm audit --omit=dev` reporting a moderate advisory.
+- Next 16 compatibility updates were limited to Promise-based dynamic route params, `await cookies()` in server components, the ESLint flat config, and the Next-generated TypeScript config adjustments.
+- `npm audit --omit=dev` now reports `found 0 vulnerabilities`. `npm run build` and `npm run lint` pass. Build still warns that the `middleware.ts` convention is deprecated in favor of `proxy`; behavior was not changed in this pass.
+- No migrations, production data mutations, admin mutation API calls, broadcasts, push notifications, or emails were performed.
+
 ### Pre-Launch Fix 7 Update - 2026-05-25
 
-- Web/admin commit `b60a498a6e938dd84bba1dc65353ad95527c7343` shipped `BANTLE-WEB-005` and `BANTLE-WEB-006`, pending Syed smoke verification.
+- Web/admin commit `b60a498a6e938dd84bba1dc65353ad95527c7343` shipped `BANTLE-WEB-005` and `BANTLE-WEB-006`; Syed smoke-tested Fix 7 successfully.
 - Admin mutation CSRF/origin guard: `requireAdmin(request)` now validates mutating requests against `request.nextUrl.origin` via `Origin` or `Referer` before user/profile/service-role work. `POST /admin/api/logout` uses the same guard because it does not call `requireAdmin`.
 - Public verify page: `/verify` strips auth query/hash params from the visible URL and only renders success after Supabase `verifyOtp`, `exchangeCodeForSession`, or access/refresh `setSession` succeeds. URL param presence and `type=signup` alone no longer show success.
-- `BANTLE-WEB-004` remains a separate Next.js major-upgrade pass. No package files were changed in Fix 7.
+- `BANTLE-WEB-004` was handled separately in Fix 8. No package files were changed in Fix 7.
 - No migrations, production data mutations, broadcasts, push notifications, or emails were performed in this pass.
 
 ### Pre-Launch Fix 2 Update - 2026-05-24
@@ -48,7 +58,7 @@ The old `BANTLE_WEB_PROJECT_DUMP.md` is useful historical context, but it predat
 
 ## 2. Technology stack
 
-- Framework: Next.js `14.2.35`, App Router.
+- Framework: Next.js `16.2.6`, App Router.
 - Runtime language: TypeScript 5, strict mode enabled.
 - React: React 18.
 - Styling: Tailwind CSS 3.4 with custom Bantle tokens in `tailwind.config.ts`.
