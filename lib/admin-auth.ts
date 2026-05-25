@@ -23,9 +23,45 @@ type RequireAdminFailure = {
   error: NextResponse;
 };
 
+const MUTATION_METHODS = new Set(["POST", "PUT", "PATCH", "DELETE"]);
+
+export function validateSameOriginMutationRequest(
+  request: NextRequest,
+): NextResponse | null {
+  if (!MUTATION_METHODS.has(request.method.toUpperCase())) {
+    return null;
+  }
+
+  const expectedOrigin = request.nextUrl.origin;
+  const origin = request.headers.get("origin");
+  if (origin) {
+    return originMatches(origin, expectedOrigin)
+      ? null
+      : invalidOriginResponse();
+  }
+
+  const referer = request.headers.get("referer");
+  if (referer) {
+    return originMatches(referer, expectedOrigin)
+      ? null
+      : invalidOriginResponse();
+  }
+
+  if (process.env.NODE_ENV === "production") {
+    return invalidOriginResponse();
+  }
+
+  return null;
+}
+
 export async function requireAdmin(
   request: NextRequest,
 ): Promise<RequireAdminSuccess | RequireAdminFailure> {
+  const originError = validateSameOriginMutationRequest(request);
+  if (originError) {
+    return { error: originError };
+  }
+
   const response = NextResponse.next({ request });
   const userClient = createRouteSupabase(request, response);
 
@@ -62,4 +98,19 @@ export async function requireAdmin(
     admin: { id: user.id, email: profile.email ?? user.email ?? "" },
     supabase: createServiceRoleSupabase(),
   };
+}
+
+function originMatches(value: string, expectedOrigin: string): boolean {
+  try {
+    return new URL(value).origin === expectedOrigin;
+  } catch {
+    return false;
+  }
+}
+
+function invalidOriginResponse(): NextResponse {
+  return NextResponse.json(
+    { error: "Invalid request origin." },
+    { status: 403 },
+  );
 }
