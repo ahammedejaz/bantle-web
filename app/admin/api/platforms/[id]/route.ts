@@ -11,8 +11,13 @@ import { requireAdmin } from "@/lib/admin-auth";
 import { logAdminAction, type AdminActionType } from "@/lib/admin-actions";
 import {
   getInternalFunctionHeaders,
-  internalFunctionConfigError,
 } from "@/lib/admin-internal-functions";
+import {
+  adminErrorResponse,
+  safeAdminErrorCode,
+  safeAdminErrorLog,
+  safeAdminWarning,
+} from "@/lib/admin-safe-errors";
 
 const VALID_CATEGORIES = ["music", "video", "cloud", "work"] as const;
 type Category = (typeof VALID_CATEGORIES)[number];
@@ -104,7 +109,15 @@ async function collectPlatformRecipients(
     .is("archived_at", null);
 
   if (listingsError) {
-    warnings.push(`active_listing_query_failed:${listingsError.message}`);
+    safeAdminErrorLog("admin_platform_recipients_listings_failed", listingsError, {
+      operation: "platform_recipient_lookup",
+      transition,
+    });
+    warnings.push(
+      safeAdminWarning(
+        `active_listing_query_failed:${safeAdminErrorCode(listingsError)}`,
+      ),
+    );
   } else {
     for (const row of (listingRows ?? []) as Array<{
       id: string | null;
@@ -125,7 +138,13 @@ async function collectPlatformRecipients(
       .eq("listing.platform", platformId);
 
     if (dealsError) {
-      warnings.push(`deal_query_failed:${dealsError.message}`);
+      safeAdminErrorLog("admin_platform_recipients_deals_failed", dealsError, {
+        operation: "platform_recipient_lookup",
+        transition,
+      });
+      warnings.push(
+        safeAdminWarning(`deal_query_failed:${safeAdminErrorCode(dealsError)}`),
+      );
     } else {
       for (const row of (dealRows ?? []) as Array<{
         id: string | null;
@@ -204,16 +223,17 @@ async function insertPlatformNotifications(args: {
 
   const { error } = await supabase.from("notifications").insert(rows);
   if (error) {
-    console.error(
-      "[admin platforms] platform notification insert failed:",
-      error.code,
-      error.message,
-      error.details,
-    );
+    safeAdminErrorLog("admin_platform_notification_insert_failed", error, {
+      operation: "platform_notification_insert",
+      kind,
+      recipient_count: recipients.length,
+    });
     return {
       inserted: 0,
       failed: recipients.length,
-      warning: `notification_insert_failed:${error.message}`,
+      warning: safeAdminWarning(
+        `notification_insert_failed:${safeAdminErrorCode(error)}`,
+      ),
     };
   }
   return { inserted: recipients.length, failed: 0, warning: null };
@@ -246,13 +266,16 @@ async function sendPlatformPushes(args: {
   try {
     internalHeaders = getInternalFunctionHeaders();
   } catch (error) {
-    const message = internalFunctionConfigError(error);
-    console.error("[admin platform push]", message);
+    safeAdminErrorLog("admin_platform_push_config_failed", error, {
+      operation: "platform_push",
+      kind,
+      recipient_count: recipients.length,
+    });
     return {
       success,
       failure: recipients.length,
       skipped,
-      warnings: [`push_failed:${message}`],
+      warnings: [safeAdminWarning("push_failed:config_error")],
     };
   }
 
@@ -277,7 +300,13 @@ async function sendPlatformPushes(args: {
     );
     if (error) {
       failure += 1;
-      warnings.push(`push_failed:${error.message}`);
+      safeAdminErrorLog("admin_platform_push_invoke_failed", error, {
+        operation: "platform_push",
+        kind,
+      });
+      warnings.push(
+        safeAdminWarning(`push_failed:${safeAdminErrorCode(error)}`),
+      );
       continue;
     }
     const result = data as
@@ -289,7 +318,7 @@ async function sendPlatformPushes(args: {
       skipped += 1;
     } else if (result?.error) {
       failure += 1;
-      warnings.push(`push_failed:${result.error}`);
+      warnings.push(safeAdminWarning(`push_failed:${result.error}`));
     } else {
       skipped += 1;
     }
@@ -325,6 +354,11 @@ export async function PATCH(
     .maybeSingle();
 
   if (fetchError || !existing) {
+    if (fetchError) {
+      safeAdminErrorLog("admin_platform_fetch_failed", fetchError, {
+        operation: "platform_update",
+      });
+    }
     return NextResponse.json({ error: "Platform not found" }, { status: 404 });
   }
   const previousPlatform = existing as PlatformRow;
@@ -425,11 +459,12 @@ export async function PATCH(
     .single();
 
   if (error) {
-    console.error("[admin platforms update]", error);
-    return NextResponse.json(
-      { error: `Update failed: ${error.message}` },
-      { status: 500 },
-    );
+    const correlationId = safeAdminErrorLog("admin_platform_update_failed", error, {
+      operation: "platform_update",
+    });
+    return adminErrorResponse("Platform could not be updated.", 500, {
+      correlationId,
+    });
   }
 
   const updatedPlatform = data as PlatformRow;

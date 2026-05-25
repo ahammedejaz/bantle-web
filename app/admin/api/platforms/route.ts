@@ -7,6 +7,10 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/admin-auth";
 import { logAdminAction } from "@/lib/admin-actions";
+import {
+  adminErrorResponse,
+  safeAdminErrorLog,
+} from "@/lib/admin-safe-errors";
 
 const VALID_CATEGORIES = ["music", "video", "cloud", "work"] as const;
 type Category = (typeof VALID_CATEGORIES)[number];
@@ -156,11 +160,14 @@ export async function POST(request: NextRequest) {
         { status: 409 },
       );
     }
-    console.error("[admin platforms create]", error);
-    return NextResponse.json(
-      { error: `Create failed: ${error.message}` },
-      { status: 500 },
+    const correlationId = safeAdminErrorLog(
+      "admin_platforms_create_failed",
+      error,
+      { operation: "platform_create" },
     );
+    return adminErrorResponse("Platform could not be created.", 500, {
+      correlationId,
+    });
   }
 
   await logAdminAction(supabase, {

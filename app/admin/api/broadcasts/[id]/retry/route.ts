@@ -7,8 +7,13 @@ import { requireAdmin } from "@/lib/admin-auth";
 import { logAdminAction } from "@/lib/admin-actions";
 import {
   getInternalFunctionHeaders,
-  internalFunctionConfigError,
 } from "@/lib/admin-internal-functions";
+import {
+  adminErrorResponse,
+  safeAdminErrorCode,
+  safeAdminErrorLog,
+  safeAdminSummary,
+} from "@/lib/admin-safe-errors";
 
 const UUID_RE =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -34,6 +39,15 @@ type BroadcastRow = {
   idempotency_key: string;
   event_id: string;
 };
+
+type DispatcherResult = {
+  success: boolean;
+  error: string | null;
+  result: Record<string, unknown> | null;
+};
+
+const BROADCAST_RETRY_ERROR =
+  "Broadcast retry could not be completed. Try again or check server logs.";
 
 type RouteContext = {
   params: Promise<{
@@ -67,9 +81,12 @@ export async function POST(request: NextRequest, { params }: RouteContext) {
   try {
     internalHeaders = getInternalFunctionHeaders();
   } catch (error) {
-    const message = internalFunctionConfigError(error);
-    console.error("[admin broadcasts retry] dispatcher config failed:", message);
-    return NextResponse.json({ error: message }, { status: 500 });
+    const correlationId = safeAdminErrorLog(
+      "admin_broadcasts_retry_config_failed",
+      error,
+      { operation: "broadcast_retry" },
+    );
+    return adminErrorResponse(BROADCAST_RETRY_ERROR, 500, { correlationId });
   }
 
   const dispatch = await invokeDispatcherRetry(
@@ -79,10 +96,12 @@ export async function POST(request: NextRequest, { params }: RouteContext) {
   );
   const after = await fetchBroadcast(supabase, broadcastId);
   if (!after) {
-    return NextResponse.json(
-      { error: "Retry ran, but broadcast reload failed." },
-      { status: 500 },
+    const correlationId = safeAdminErrorLog(
+      "admin_broadcasts_retry_reload_failed",
+      "broadcast_reload_failed",
+      { operation: "broadcast_retry" },
     );
+    return adminErrorResponse(BROADCAST_RETRY_ERROR, 500, { correlationId });
   }
 
   await logAdminAction(supabase, {
@@ -107,12 +126,21 @@ export async function POST(request: NextRequest, { params }: RouteContext) {
       push_success_count: after.push_success_count,
       push_failure_count: after.push_failure_count,
       push_skipped_count: after.push_skipped_count,
-      error_summary: after.error_summary,
+      error_summary: safeAdminSummary(after.error_summary),
       idempotency_key: after.idempotency_key,
       event_id: after.event_id,
       dispatcher_error: dispatch.error,
     },
   });
+
+  if (!dispatch.success) {
+    const correlationId = safeAdminErrorLog(
+      "admin_broadcasts_retry_dispatch_failed",
+      dispatch.error,
+      { operation: "broadcast_retry" },
+    );
+    return adminErrorResponse(BROADCAST_RETRY_ERROR, 502, { correlationId });
+  }
 
   return NextResponse.json({
     broadcast: normalizeBroadcast(after),
@@ -133,7 +161,9 @@ async function fetchBroadcast(
     .maybeSingle();
 
   if (error) {
-    console.error("[admin broadcasts retry] lookup failed:", error);
+    safeAdminErrorLog("admin_broadcasts_retry_lookup_failed", error, {
+      operation: "broadcast_retry_lookup",
+    });
     return null;
   }
   return (data as unknown as BroadcastRow | null) ?? null;
@@ -143,7 +173,7 @@ async function invokeDispatcherRetry(
   supabase: SupabaseClient,
   broadcastId: string,
   internalHeaders: Record<string, string>,
-): Promise<{ success: boolean; error: string | null; result: unknown }> {
+): Promise<DispatcherResult> {
   const { data, error } = await supabase.functions.invoke(
     "broadcast_push_dispatcher",
     {
@@ -153,10 +183,18 @@ async function invokeDispatcherRetry(
   );
 
   if (error) {
-    return { success: false, error: error.message, result: data ?? null };
+    const safeCode = safeAdminErrorCode(error);
+    safeAdminErrorLog("admin_broadcasts_retry_dispatcher_failed", error, {
+      operation: "broadcast_retry_dispatch",
+    });
+    return {
+      success: false,
+      error: `dispatcher_invoke_failed:${safeCode}`,
+      result: safeDispatcherResult(data),
+    };
   }
 
-  return { success: true, error: null, result: data ?? null };
+  return { success: true, error: null, result: safeDispatcherResult(data) };
 }
 
 function normalizeBroadcast(row: BroadcastRow) {
@@ -181,8 +219,37 @@ function normalizeBroadcast(row: BroadcastRow) {
     sent_at: row.sent_at,
     created_at: row.created_at,
     completed_at: row.completed_at,
-    error_summary: row.error_summary,
+    error_summary: safeAdminSummary(row.error_summary),
     idempotency_key: row.idempotency_key,
     event_id: row.event_id,
   };
+}
+
+function safeDispatcherResult(data: unknown): Record<string, unknown> | null {
+  if (!data || typeof data !== "object") return null;
+  const record = data as Record<string, unknown>;
+  const result: Record<string, unknown> = {};
+  for (const key of [
+    "status",
+    "correlation_id",
+    "recipient_count",
+    "notification_inserted_count",
+    "notification_failed_count",
+    "push_success_count",
+    "push_failure_count",
+    "push_skipped_count",
+  ]) {
+    const value = record[key];
+    if (
+      typeof value === "string" ||
+      typeof value === "number" ||
+      typeof value === "boolean"
+    ) {
+      result[key] = value;
+    }
+  }
+  if (Array.isArray(record.errors)) {
+    result.error_count = record.errors.length;
+  }
+  return result;
 }

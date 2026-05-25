@@ -10,6 +10,10 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/admin-auth";
 import { logAdminAction } from "@/lib/admin-actions";
+import {
+  adminErrorResponse,
+  safeAdminErrorLog,
+} from "@/lib/admin-safe-errors";
 
 export async function POST(
   request: NextRequest,
@@ -51,10 +55,14 @@ export async function POST(
       .eq("id", userId);
 
     if (error) {
-      return NextResponse.json(
-        { error: `Restore failed: ${error.message}` },
-        { status: 500 },
+      const correlationId = safeAdminErrorLog(
+        "admin_user_restore_ban_failed",
+        error,
+        { operation: "user_restore_ban" },
       );
+      return adminErrorResponse("User could not be restored.", 500, {
+        correlationId,
+      });
     }
 
     await logAdminAction(supabase, {
@@ -77,10 +85,14 @@ export async function POST(
     .eq("id", userId);
 
   if (error) {
-    return NextResponse.json(
-      { error: `Restore failed: ${error.message}` },
-      { status: 500 },
+    const correlationId = safeAdminErrorLog(
+      "admin_user_restore_self_delete_failed",
+      error,
+      { operation: "user_restore_self_delete" },
     );
+    return adminErrorResponse("User could not be restored.", 500, {
+      correlationId,
+    });
   }
 
   await logAdminAction(supabase, {

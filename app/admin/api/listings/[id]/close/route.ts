@@ -7,8 +7,13 @@ import { requireAdmin } from "@/lib/admin-auth";
 import { logAdminAction } from "@/lib/admin-actions";
 import {
   getInternalFunctionHeaders,
-  internalFunctionConfigError,
 } from "@/lib/admin-internal-functions";
+import {
+  adminErrorResponse,
+  safeAdminErrorCode,
+  safeAdminErrorLog,
+  safeAdminWarning,
+} from "@/lib/admin-safe-errors";
 
 type ListingRow = {
   id: string;
@@ -113,11 +118,14 @@ export async function POST(
     .maybeSingle();
 
   if (updateError) {
-    console.error("[admin listing close]", updateError);
-    return NextResponse.json(
-      { error: `Close failed: ${updateError.message}` },
-      { status: 500 },
+    const correlationId = safeAdminErrorLog(
+      "admin_listing_close_update_failed",
+      updateError,
+      { operation: "listing_close" },
     );
+    return adminErrorResponse("Listing could not be closed.", 500, {
+      correlationId,
+    });
   }
 
   if (!updated) {
@@ -189,7 +197,9 @@ async function fetchListing(
     .maybeSingle();
 
   if (error) {
-    console.error("[admin listing close] fetch failed:", error);
+    safeAdminErrorLog("admin_listing_close_fetch_failed", error, {
+      operation: "listing_close_fetch",
+    });
     return null;
   }
   return (data as ListingRow | null) ?? null;
@@ -206,7 +216,9 @@ async function getDealCounts(
     .in("status", ["pending", "active"]);
 
   if (error) {
-    console.warn("[admin listing close] deal count failed:", error.message);
+    safeAdminErrorLog("admin_listing_close_deal_count_failed", error, {
+      operation: "listing_close_deal_count",
+    });
     return { pending: 0, active: 0 };
   }
 
@@ -252,12 +264,15 @@ async function notifyHost(args: {
 
   if (notificationError) {
     summary.notification_failed_count = 1;
-    summary.warnings.push(`notification_failed:${notificationError.message}`);
-    console.error(
-      "[admin listing close] notification insert failed:",
-      notificationError.code,
-      notificationError.message,
-      notificationError.details,
+    summary.warnings.push(
+      safeAdminWarning(
+        `notification_failed:${safeAdminErrorCode(notificationError)}`,
+      ),
+    );
+    safeAdminErrorLog(
+      "admin_listing_close_notification_insert_failed",
+      notificationError,
+      { operation: "listing_close_notification_insert" },
     );
   } else {
     summary.notification_inserted_count = 1;
@@ -267,10 +282,11 @@ async function notifyHost(args: {
   try {
     internalHeaders = getInternalFunctionHeaders();
   } catch (error) {
-    const message = internalFunctionConfigError(error);
-    console.error("[admin listing close] push config failed:", message);
+    safeAdminErrorLog("admin_listing_close_push_config_failed", error, {
+      operation: "listing_close_push",
+    });
     summary.push_failure_count = 1;
-    summary.warnings.push(`push_failed:${message}`);
+    summary.warnings.push(safeAdminWarning("push_failed:config_error"));
     return summary;
   }
 
@@ -288,7 +304,12 @@ async function notifyHost(args: {
 
   if (pushError) {
     summary.push_failure_count = 1;
-    summary.warnings.push(`push_failed:${pushError.message}`);
+    safeAdminErrorLog("admin_listing_close_push_invoke_failed", pushError, {
+      operation: "listing_close_push",
+    });
+    summary.warnings.push(
+      safeAdminWarning(`push_failed:${safeAdminErrorCode(pushError)}`),
+    );
     return summary;
   }
 
@@ -301,7 +322,7 @@ async function notifyHost(args: {
     summary.push_skipped_count = 1;
   } else if (pushResult?.error) {
     summary.push_failure_count = 1;
-    summary.warnings.push(`push_failed:${pushResult.error}`);
+    summary.warnings.push(safeAdminWarning(`push_failed:${pushResult.error}`));
   } else {
     summary.push_skipped_count = 1;
   }

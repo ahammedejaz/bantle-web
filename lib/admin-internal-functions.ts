@@ -11,6 +11,6 @@ export function getInternalFunctionHeaders(): Record<string, string> {
 }
 
 export function internalFunctionConfigError(error: unknown): string {
-  if (error instanceof Error) return error.message;
-  return `${INTERNAL_FUNCTION_SECRET_ENV} is not configured.`;
+  void error;
+  return "Internal dispatcher is not configured.";
 }

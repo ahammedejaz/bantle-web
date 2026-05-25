@@ -33,7 +33,7 @@ export async function sendAdminPush(
     .maybeSingle();
 
   if (error) {
-    return { sent: false, reason: `Profile fetch error: ${error.message}` };
+    return { sent: false, reason: "profile_fetch_failed" };
   }
   if (!profile?.push_token) {
     return { sent: false, reason: "Recipient has no push token registered" };
@@ -60,17 +60,14 @@ export async function sendAdminPush(
   });
 
   if (!response.ok) {
-    return { sent: false, reason: `Expo API ${response.status}` };
+    return { sent: false, reason: `expo_http_${response.status}` };
   }
 
   const result = (await response.json()) as {
     data?: { status?: string; message?: string };
   };
   if (result?.data?.status === "error") {
-    return {
-      sent: false,
-      reason: `Expo error: ${result.data?.message ?? "unknown"}`,
-    };
+    return { sent: false, reason: "expo_error" };
   }
 
   return { sent: true };

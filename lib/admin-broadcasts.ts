@@ -55,7 +55,7 @@ export async function getBroadcastPreview(
 
   const { data, error } = await query;
   if (error) {
-    throw new Error(`Audience lookup failed: ${error.message}`);
+    throw new Error("audience_lookup_failed");
   }
 
   const rows = ((data ?? []) as ProfileAudienceRow[]).filter((row) => !!row.id);

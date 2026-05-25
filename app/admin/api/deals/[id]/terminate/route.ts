@@ -7,8 +7,13 @@ import { requireAdmin } from "@/lib/admin-auth";
 import { logAdminAction } from "@/lib/admin-actions";
 import {
   getInternalFunctionHeaders,
-  internalFunctionConfigError,
 } from "@/lib/admin-internal-functions";
+import {
+  adminErrorResponse,
+  safeAdminErrorCode,
+  safeAdminErrorLog,
+  safeAdminWarning,
+} from "@/lib/admin-safe-errors";
 
 type ListingSummary = {
   id: string;
@@ -126,11 +131,14 @@ export async function POST(
     .maybeSingle();
 
   if (updateError) {
-    console.error("[admin deal terminate]", updateError);
-    return NextResponse.json(
-      { error: `Terminate failed: ${updateError.message}` },
-      { status: 500 },
+    const correlationId = safeAdminErrorLog(
+      "admin_deal_terminate_update_failed",
+      updateError,
+      { operation: "deal_terminate" },
     );
+    return adminErrorResponse("Deal could not be terminated.", 500, {
+      correlationId,
+    });
   }
 
   if (!updatedMarker) {
@@ -222,7 +230,9 @@ async function fetchDeal(
     .maybeSingle();
 
   if (error) {
-    console.error("[admin deal terminate] fetch failed:", error);
+    safeAdminErrorLog("admin_deal_terminate_fetch_failed", error, {
+      operation: "deal_terminate_fetch",
+    });
     return null;
   }
   return (data as unknown as DealRow | null) ?? null;
@@ -281,12 +291,16 @@ async function notifyParticipants(args: {
     const { error } = await supabase.from("notifications").insert(rows);
     if (error) {
       summary.notification_failed_count = rows.length;
-      summary.warnings.push(`notification_failed:${error.message}`);
-      console.error(
-        "[admin deal terminate] notification insert failed:",
-        error.code,
-        error.message,
-        error.details,
+      summary.warnings.push(
+        safeAdminWarning(`notification_failed:${safeAdminErrorCode(error)}`),
+      );
+      safeAdminErrorLog(
+        "admin_deal_terminate_notification_insert_failed",
+        error,
+        {
+          operation: "deal_terminate_notification_insert",
+          recipient_count: rows.length,
+        },
       );
     } else {
       summary.notification_inserted_count = rows.length;
@@ -297,10 +311,12 @@ async function notifyParticipants(args: {
   try {
     internalHeaders = getInternalFunctionHeaders();
   } catch (error) {
-    const message = internalFunctionConfigError(error);
-    console.error("[admin deal terminate] push config failed:", message);
+    safeAdminErrorLog("admin_deal_terminate_push_config_failed", error, {
+      operation: "deal_terminate_push",
+      recipient_count: recipients.size,
+    });
     summary.push_failure_count += recipients.size;
-    summary.warnings.push(`push_failed:${message}`);
+    summary.warnings.push(safeAdminWarning("push_failed:config_error"));
     return summary;
   }
 
@@ -327,7 +343,12 @@ async function notifyParticipants(args: {
 
       if (error) {
         summary.push_failure_count += 1;
-        summary.warnings.push(`push_failed:${error.message}`);
+        safeAdminErrorLog("admin_deal_terminate_push_invoke_failed", error, {
+          operation: "deal_terminate_push",
+        });
+        summary.warnings.push(
+          safeAdminWarning(`push_failed:${safeAdminErrorCode(error)}`),
+        );
         return;
       }
 
@@ -340,7 +361,9 @@ async function notifyParticipants(args: {
         summary.push_skipped_count += 1;
       } else if (pushResult?.error) {
         summary.push_failure_count += 1;
-        summary.warnings.push(`push_failed:${pushResult.error}`);
+        summary.warnings.push(
+          safeAdminWarning(`push_failed:${pushResult.error}`),
+        );
       } else {
         summary.push_skipped_count += 1;
       }
@@ -391,11 +414,13 @@ async function insertSystemMessage(args: {
   });
 
   if (error) {
-    console.error("[admin deal terminate] system message failed:", error);
+    safeAdminErrorLog("admin_deal_terminate_system_message_failed", error, {
+      operation: "deal_terminate_system_message",
+    });
     return {
       inserted: false,
       failed: true,
-      warning: `message_failed:${error.message}`,
+      warning: safeAdminWarning(`message_failed:${safeAdminErrorCode(error)}`),
     };
   }
 

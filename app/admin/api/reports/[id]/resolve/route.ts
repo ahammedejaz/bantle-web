@@ -21,6 +21,10 @@ import {
   type AdminActionType,
 } from "@/lib/admin-actions";
 import { sendAdminPush } from "@/lib/admin-push";
+import {
+  adminErrorResponse,
+  safeAdminErrorLog,
+} from "@/lib/admin-safe-errors";
 
 const VALID_ACTIONS = new Set([
   "resolve",
@@ -106,7 +110,9 @@ export async function POST(
           data: { type: "moderation_warning" },
         });
         if (!pushResult.sent) {
-          console.warn("[admin warn] push failed:", pushResult.reason);
+          safeAdminErrorLog("admin_report_warn_push_failed", pushResult.reason, {
+            operation: "report_resolve_warn_push",
+          });
         }
         // Insert in-app notification row so the user can see the
         // record after the OS push fades. Phase 2.2.
@@ -118,11 +124,10 @@ export async function POST(
             payload: { reason },
           });
         if (notifError) {
-          console.error(
-            "[admin warn] notifications insert failed:",
-            notifError.code,
-            notifError.message,
-            notifError.details,
+          safeAdminErrorLog(
+            "admin_report_warn_notification_insert_failed",
+            notifError,
+            { operation: "report_resolve_notification_insert" },
           );
           // Don't fail the admin action — the moderation action
           // itself succeeded; the missing inbox entry is degraded
@@ -152,9 +157,15 @@ export async function POST(
         })
         .eq("id", reportedId);
       if (banError) {
-        return NextResponse.json(
-          { error: `Ban failed: ${banError.message}` },
-          { status: 500 },
+        const correlationId = safeAdminErrorLog(
+          "admin_report_temp_ban_failed",
+          banError,
+          { operation: "report_resolve_temp_ban" },
+        );
+        return adminErrorResponse(
+          "Report action could not be completed.",
+          500,
+          { correlationId },
         );
       }
       await sendAdminPush({
@@ -179,11 +190,10 @@ export async function POST(
           },
         });
       if (notifError) {
-        console.error(
-          "[admin ban_temp] notifications insert failed:",
-          notifError.code,
-          notifError.message,
-          notifError.details,
+        safeAdminErrorLog(
+          "admin_report_temp_ban_notification_insert_failed",
+          notifError,
+          { operation: "report_resolve_notification_insert" },
         );
         // Don't fail the admin action.
       }
@@ -215,9 +225,15 @@ export async function POST(
         })
         .eq("id", reportedId);
       if (banError) {
-        return NextResponse.json(
-          { error: `Permaban failed: ${banError.message}` },
-          { status: 500 },
+        const correlationId = safeAdminErrorLog(
+          "admin_report_perm_ban_failed",
+          banError,
+          { operation: "report_resolve_perm_ban" },
+        );
+        return adminErrorResponse(
+          "Report action could not be completed.",
+          500,
+          { correlationId },
         );
       }
       await sendAdminPush({
@@ -236,11 +252,10 @@ export async function POST(
           payload: { reason },
         });
       if (notifError) {
-        console.error(
-          "[admin ban_perm] notifications insert failed:",
-          notifError.code,
-          notifError.message,
-          notifError.details,
+        safeAdminErrorLog(
+          "admin_report_perm_ban_notification_insert_failed",
+          notifError,
+          { operation: "report_resolve_notification_insert" },
         );
         // Don't fail the admin action.
       }
@@ -283,10 +298,14 @@ export async function POST(
     .eq("id", reportId);
 
   if (updateError) {
-    return NextResponse.json(
-      { error: `Report update failed: ${updateError.message}` },
-      { status: 500 },
+    const correlationId = safeAdminErrorLog(
+      "admin_report_update_failed",
+      updateError,
+      { operation: "report_resolve_update" },
     );
+    return adminErrorResponse("Report action could not be completed.", 500, {
+      correlationId,
+    });
   }
 
   await logAdminAction(supabase, {

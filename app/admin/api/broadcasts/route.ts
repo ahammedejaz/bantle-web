@@ -13,11 +13,18 @@ import {
 } from "@/lib/admin-broadcasts";
 import {
   getInternalFunctionHeaders,
-  internalFunctionConfigError,
 } from "@/lib/admin-internal-functions";
+import {
+  adminErrorResponse,
+  safeAdminErrorCode,
+  safeAdminErrorLog,
+  safeAdminSummary,
+} from "@/lib/admin-safe-errors";
 
 const DEFAULT_PAGE_SIZE = 20;
 const MAX_PAGE_SIZE = 50;
+const BROADCAST_SEND_ERROR =
+  "Broadcast could not be sent. Try again or check server logs.";
 const UUID_RE =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const URL_RE = /(https?:\/\/|www\.|[a-z0-9-]+\.[a-z]{2,})/i;
@@ -51,6 +58,12 @@ type BroadcastRow = {
   idempotency_key: string;
   event_id: string;
   admin?: BroadcastAdmin | BroadcastAdmin[] | null;
+};
+
+type DispatcherResult = {
+  success: boolean;
+  error: string | null;
+  result: Record<string, unknown> | null;
 };
 
 export async function GET(request: NextRequest) {
@@ -137,9 +150,12 @@ export async function POST(request: NextRequest) {
   try {
     internalHeaders = getInternalFunctionHeaders();
   } catch (error) {
-    const message = internalFunctionConfigError(error);
-    console.error("[admin broadcasts create] dispatcher config failed:", message);
-    return NextResponse.json({ error: message }, { status: 500 });
+    const correlationId = safeAdminErrorLog(
+      "admin_broadcasts_create_config_failed",
+      error,
+      { operation: "broadcast_create" },
+    );
+    return adminErrorResponse(BROADCAST_SEND_ERROR, 500, { correlationId });
   }
 
   const existing = await findBroadcastByIdempotency(supabase, idempotencyKey);
@@ -162,7 +178,17 @@ export async function POST(request: NextRequest) {
     });
   }
 
-  const preview = await getBroadcastPreview(supabase, audienceType);
+  let preview: Awaited<ReturnType<typeof getBroadcastPreview>>;
+  try {
+    preview = await getBroadcastPreview(supabase, audienceType);
+  } catch (error) {
+    const correlationId = safeAdminErrorLog(
+      "admin_broadcasts_create_preview_failed",
+      error,
+      { operation: "broadcast_create", audience_type: audienceType },
+    );
+    return adminErrorResponse(BROADCAST_SEND_ERROR, 500, { correlationId });
+  }
 
   const sentAt = new Date().toISOString();
   const eventId = `broadcast:${idempotencyKey}`;
@@ -197,21 +223,31 @@ export async function POST(request: NextRequest) {
         });
       }
     }
-    console.error("[admin broadcasts create]", insertError);
+    const correlationId = safeAdminErrorLog(
+      "admin_broadcasts_create_insert_failed",
+      insertError,
+      { operation: "broadcast_create" },
+    );
     return NextResponse.json(
-      { error: insertError?.message ?? "Broadcast create failed." },
+      { error: BROADCAST_SEND_ERROR, correlation_id: correlationId },
       { status: 500 },
     );
   }
 
   const broadcastId = inserted.id as string;
-  const dispatch = await invokeDispatcher(supabase, broadcastId, internalHeaders);
+  const dispatch = await invokeDispatcher(
+    supabase,
+    broadcastId,
+    internalHeaders,
+  );
   const broadcast = await fetchBroadcast(supabase, broadcastId);
   if (!broadcast) {
-    return NextResponse.json(
-      { error: "Broadcast dispatched, but reload failed." },
-      { status: 500 },
+    const correlationId = safeAdminErrorLog(
+      "admin_broadcasts_create_reload_failed",
+      "broadcast_reload_failed",
+      { operation: "broadcast_create" },
     );
+    return adminErrorResponse(BROADCAST_SEND_ERROR, 500, { correlationId });
   }
 
   await logAdminAction(supabase, {
@@ -231,12 +267,21 @@ export async function POST(request: NextRequest) {
       push_failure_count: broadcast.push_failure_count,
       push_skipped_count: broadcast.push_skipped_count,
       status: broadcast.status,
-      error_summary: broadcast.error_summary,
+      error_summary: safeAdminSummary(broadcast.error_summary),
       idempotency_key: broadcast.idempotency_key,
       event_id: broadcast.event_id,
       dispatcher_error: dispatch.error,
     },
   });
+
+  if (!dispatch.success) {
+    const correlationId = safeAdminErrorLog(
+      "admin_broadcasts_create_dispatch_failed",
+      dispatch.error,
+      { operation: "broadcast_create" },
+    );
+    return adminErrorResponse(BROADCAST_SEND_ERROR, 502, { correlationId });
+  }
 
   return NextResponse.json({
     broadcast: normalizeBroadcast(broadcast),
@@ -370,7 +415,9 @@ async function findBroadcastByIdempotency(
     .maybeSingle();
 
   if (error) {
-    console.warn("[admin broadcasts] idempotency lookup failed:", error.message);
+    safeAdminErrorLog("admin_broadcasts_idempotency_lookup_failed", error, {
+      operation: "broadcast_idempotency_lookup",
+    });
     return null;
   }
   return (data as unknown as BroadcastRow | null) ?? null;
@@ -390,7 +437,9 @@ async function fetchBroadcast(
     .maybeSingle();
 
   if (error) {
-    console.error("[admin broadcasts] reload failed:", error);
+    safeAdminErrorLog("admin_broadcasts_reload_failed", error, {
+      operation: "broadcast_reload",
+    });
     return null;
   }
   return (data as unknown as BroadcastRow | null) ?? null;
@@ -400,7 +449,7 @@ async function invokeDispatcher(
   supabase: SupabaseClient,
   broadcastId: string,
   internalHeaders: Record<string, string>,
-): Promise<{ success: boolean; error: string | null; result: unknown }> {
+): Promise<DispatcherResult> {
   const { data, error } = await supabase.functions.invoke(
     "broadcast_push_dispatcher",
     {
@@ -410,19 +459,55 @@ async function invokeDispatcher(
   );
 
   if (error) {
-    const message = error.message;
+    const safeCode = safeAdminErrorCode(error);
+    safeAdminErrorLog("admin_broadcasts_dispatcher_invoke_failed", error, {
+      operation: "broadcast_dispatch",
+    });
     await supabase
       .from("broadcasts")
       .update({
         status: "failed",
         completed_at: new Date().toISOString(),
-        error_summary: [`dispatcher_invoke_failed:${message}`],
+        error_summary: [`dispatcher_invoke_failed:${safeCode}`],
       })
       .eq("id", broadcastId);
-    return { success: false, error: message, result: data ?? null };
+    return {
+      success: false,
+      error: `dispatcher_invoke_failed:${safeCode}`,
+      result: safeDispatcherResult(data),
+    };
   }
 
-  return { success: true, error: null, result: data ?? null };
+  return { success: true, error: null, result: safeDispatcherResult(data) };
+}
+
+function safeDispatcherResult(data: unknown): Record<string, unknown> | null {
+  if (!data || typeof data !== "object") return null;
+  const record = data as Record<string, unknown>;
+  const result: Record<string, unknown> = {};
+  for (const key of [
+    "status",
+    "correlation_id",
+    "recipient_count",
+    "notification_inserted_count",
+    "notification_failed_count",
+    "push_success_count",
+    "push_failure_count",
+    "push_skipped_count",
+  ]) {
+    const value = record[key];
+    if (
+      typeof value === "string" ||
+      typeof value === "number" ||
+      typeof value === "boolean"
+    ) {
+      result[key] = value;
+    }
+  }
+  if (Array.isArray(record.errors)) {
+    result.error_count = record.errors.length;
+  }
+  return result;
 }
 
 function normalizeBroadcast(row: BroadcastRow) {
@@ -448,7 +533,7 @@ function normalizeBroadcast(row: BroadcastRow) {
     sent_at: row.sent_at,
     created_at: row.created_at,
     completed_at: row.completed_at,
-    error_summary: row.error_summary,
+    error_summary: safeAdminSummary(row.error_summary),
     idempotency_key: row.idempotency_key,
     event_id: row.event_id,
     admin,
