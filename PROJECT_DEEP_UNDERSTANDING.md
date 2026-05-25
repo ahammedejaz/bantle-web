@@ -4,6 +4,16 @@ Generated: 2026-05-19
 
 This document records a deep read of the local repository plus a read-only inspection of the connected Supabase project. It is meant to be the current operational map for future work in this codebase.
 
+## Pre-Launch Fix 7 Update — 2026-05-25
+
+Two scoped web/admin security fixes are shipped in commit `b60a498a6e938dd84bba1dc65353ad95527c7343` and awaiting Syed smoke verification:
+
+- Admin mutation CSRF/origin hardening: `requireAdmin(request)` now validates mutating requests against `request.nextUrl.origin` using `Origin` first and `Referer` as fallback before any user/profile/service-role work. `POST /admin/api/logout` applies the same guard because it does not call `requireAdmin`.
+- Public verify page token handling: `/verify` now strips auth query/hash params from the visible URL and shows success only after Supabase verification/session establishment succeeds through `verifyOtp`, `exchangeCodeForSession`, or access/refresh `setSession`. `type` alone and invalid/expired/already-used links no longer show false success.
+- `BANTLE-WEB-004` remains a separate Next.js major-upgrade pass. No packages were upgraded in Fix 7.
+
+No migrations, production data mutations, broadcasts, push notifications, or emails were performed during this pass.
+
 ## Pre-Launch Fix 2 Update — 2026-05-24
 
 Two scoped pre-launch fixes are shipped and awaiting Syed smoke verification:

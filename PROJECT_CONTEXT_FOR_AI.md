@@ -30,6 +30,14 @@ The old `BANTLE_WEB_PROJECT_DUMP.md` is useful historical context, but it predat
 - `/admin/*` uses Supabase cookie sessions, middleware gating, and server-side service-role API routes.
 - Admin Phases 1 through 8 are verified. Phase 9 dashboard analytics refresh is shipped awaiting Syed smoke verification.
 
+### Pre-Launch Fix 7 Update - 2026-05-25
+
+- Web/admin commit `b60a498a6e938dd84bba1dc65353ad95527c7343` shipped `BANTLE-WEB-005` and `BANTLE-WEB-006`, pending Syed smoke verification.
+- Admin mutation CSRF/origin guard: `requireAdmin(request)` now validates mutating requests against `request.nextUrl.origin` via `Origin` or `Referer` before user/profile/service-role work. `POST /admin/api/logout` uses the same guard because it does not call `requireAdmin`.
+- Public verify page: `/verify` strips auth query/hash params from the visible URL and only renders success after Supabase `verifyOtp`, `exchangeCodeForSession`, or access/refresh `setSession` succeeds. URL param presence and `type=signup` alone no longer show success.
+- `BANTLE-WEB-004` remains a separate Next.js major-upgrade pass. No package files were changed in Fix 7.
+- No migrations, production data mutations, broadcasts, push notifications, or emails were performed in this pass.
+
 ### Pre-Launch Fix 2 Update - 2026-05-24
 
 - Web/admin commit `a3b4fc7` updated platform activation/deactivation toast copy so persistent in-app notification failures and push-only failures are reported separately.
