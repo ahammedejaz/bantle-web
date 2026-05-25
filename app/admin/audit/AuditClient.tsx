@@ -22,6 +22,7 @@ const ACTION_OPTIONS = [
   { value: "listing_closed", label: "Listing closed" },
   { value: "deal_terminated", label: "Deal terminated" },
   { value: "broadcast_sent", label: "Broadcast sent" },
+  { value: "broadcast_retried", label: "Broadcast retried" },
 ];
 
 const RESOURCE_OPTIONS = [

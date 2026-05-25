@@ -18,6 +18,16 @@ This document records a deep read of the local repository plus a read-only inspe
 
 No migrations, production data mutations, admin mutation API calls, broadcasts, push notifications, or emails were performed.
 
+## Pre-Launch Fix 10 Update — 2026-05-25
+
+`BANTLE-WEB-012` and `BANTLE-WEB-016` are shipped and awaiting Syed smoke verification.
+
+- Broadcast retry audit rows now use `action_type = broadcast_retried`; original sends continue to use `broadcast_sent`.
+- The audit action filter includes `Broadcast retried`, while older audit rows still display through the existing generic label formatter.
+- The `test_syed` broadcast audience requires server-side `BANTLE_BROADCAST_TEST_USER_ID`. There is no hardcoded fallback user id in the production path; missing or malformed configuration fails closed before any broadcast row or dispatcher call.
+- Normal `all_eligible` broadcast preview/send behavior and retry dispatch behavior are unchanged.
+- No migrations, production data mutations, package changes, admin mutation API calls, broadcasts, push notifications, or emails were performed.
+
 ## Pre-Launch Fix 7 Update — 2026-05-25
 
 Two scoped web/admin security fixes were shipped in commit `b60a498a6e938dd84bba1dc65353ad95527c7343` and Syed smoke-tested Fix 7 successfully:
@@ -58,9 +68,9 @@ Phase 7 audit log viewer was verified by Syed. Phase 8 incident broadcast push w
 - Production migration `20260524000345_phase_8_incident_broadcasts.sql` added service-role-only `broadcasts` and `broadcast_recipients` tables plus `broadcast_incident` in `notifications_kind_check`.
 - Dedicated Edge Function `broadcast_push_dispatcher` creates/reuses persistent in-app notifications, sends Expo pushes one recipient/token per request on the `incident_broadcast` channel, clears stale push tokens on `DeviceNotRegistered`, and updates summary counts.
 - Broadcasts are incident-only: no marketing, no re-engagement, mandatory admin-only reason, exact confirmation phrase, and URL/marketing-copy validation.
-- Default audience is `all_eligible`; `test_syed` remains available for smoke verification only.
+- Default audience is `all_eligible`; `test_syed` remains available for smoke verification only and requires `BANTLE_BROADCAST_TEST_USER_ID`.
 - There is no 24-hour all-user cooldown. Admins may send repeated incident updates when operationally necessary.
-- Failed/partial broadcasts can be retried without creating a new broadcast row or duplicating existing notification rows.
+- Failed/partial broadcasts can be retried without creating a new broadcast row or duplicating existing notification rows; retry audit rows use `broadcast_retried`.
 - User-facing broadcast push and in-app notifications show the admin-entered title/body. Admin-only reason is not shown to users, and fallback copy is only for malformed payloads.
 - In-app broadcast row taps mark read and stay on `/notifications`; push banner taps open `/notifications` without stacking when already there.
 - Mobile push notification responses are consumed once with a central handler, in-memory and persisted recent response keys, and `clearLastNotificationResponseAsync()` when available, preventing stale Expo last-response navigation loops.

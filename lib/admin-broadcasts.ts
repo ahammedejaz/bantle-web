@@ -1,8 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 export const BROADCAST_CONFIRMATION_TEXT = "SEND INCIDENT BROADCAST";
-export const BROADCAST_TEST_USER_FALLBACK =
-  "b0103e79-885f-4ea8-a353-5a91c2db007c";
 
 export type BroadcastAudienceType = "test_syed" | "all_eligible";
 
@@ -22,6 +20,9 @@ type ProfileAudienceRow = {
   permanently_banned: boolean | null;
 };
 
+const UUID_RE =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 export function parseAudienceType(
   raw: string | null | undefined,
 ): BroadcastAudienceType | null {
@@ -30,9 +31,14 @@ export function parseAudienceType(
 }
 
 export function getTestBroadcastUserId(): string {
-  return (
-    process.env.BANTLE_BROADCAST_TEST_USER_ID ?? BROADCAST_TEST_USER_FALLBACK
-  );
+  const configured = process.env.BANTLE_BROADCAST_TEST_USER_ID?.trim();
+  if (!configured) {
+    throw new Error("Broadcast test recipient is not configured.");
+  }
+  if (!UUID_RE.test(configured)) {
+    throw new Error("Broadcast test recipient is not configured correctly.");
+  }
+  return configured;
 }
 
 export async function getBroadcastPreview(

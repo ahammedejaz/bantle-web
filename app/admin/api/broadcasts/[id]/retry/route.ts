@@ -87,7 +87,7 @@ export async function POST(request: NextRequest, { params }: RouteContext) {
 
   await logAdminAction(supabase, {
     admin_id: admin.id,
-    action_type: "broadcast_sent",
+    action_type: "broadcast_retried",
     target_resource_id: after.id,
     target_resource_type: "broadcast",
     reason: before.reason,

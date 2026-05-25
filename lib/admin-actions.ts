@@ -23,7 +23,8 @@ export type AdminActionType =
   | "platform_deleted"
   | "listing_closed"
   | "deal_terminated"
-  | "broadcast_sent";
+  | "broadcast_sent"
+  | "broadcast_retried";
 
 export interface AdminActionInput {
   admin_id: string;
