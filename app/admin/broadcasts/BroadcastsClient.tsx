@@ -22,6 +22,7 @@ import { useAdminToast } from "@/components/admin/AdminToastProvider";
 import { cn } from "@/lib/utils";
 
 const CONFIRMATION_TEXT = "SEND INCIDENT BROADCAST";
+const ALL_USERS_CONFIRMATION_TEXT = "SEND TO ALL";
 
 type AudienceType = "test_syed" | "all_eligible";
 
@@ -74,6 +75,7 @@ export function BroadcastsClient() {
   const [retryingId, setRetryingId] = useState<string | null>(null);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [confirmText, setConfirmText] = useState("");
+  const [allUsersConfirmText, setAllUsersConfirmText] = useState("");
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
   const attemptKeyRef = useRef<string | null>(null);
 
@@ -149,9 +151,16 @@ export function BroadcastsClient() {
   }, [fetchPreview]);
 
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
+  const previewMatchesAudience = preview?.audience_type === audienceType;
+  const requiresAllUsersConfirmation = audienceType === "all_eligible";
+  const canSendConfirmed =
+    confirmText === CONFIRMATION_TEXT &&
+    (!requiresAllUsersConfirmation ||
+      allUsersConfirmText === ALL_USERS_CONFIRMATION_TEXT);
   const canOpenConfirm =
     !formError &&
     !!preview &&
+    previewMatchesAudience &&
     !previewLoading &&
     !submitting;
 
@@ -159,6 +168,7 @@ export function BroadcastsClient() {
     if (!canOpenConfirm) return;
     attemptKeyRef.current = makeIdempotencyKey();
     setConfirmText("");
+    setAllUsersConfirmText("");
     setConfirmOpen(true);
   };
 
@@ -166,11 +176,14 @@ export function BroadcastsClient() {
     if (submitting) return;
     setConfirmOpen(false);
     setConfirmText("");
+    setAllUsersConfirmText("");
     attemptKeyRef.current = null;
   };
 
   const sendBroadcast = async () => {
-    if (confirmText !== CONFIRMATION_TEXT || !attemptKeyRef.current) return;
+    if (!canSendConfirmed || !attemptKeyRef.current || !previewMatchesAudience) {
+      return;
+    }
     setSubmitting(true);
     try {
       const response = await fetch("/admin/api/broadcasts", {
@@ -182,6 +195,12 @@ export function BroadcastsClient() {
           reason: reason.trim(),
           audience_type: audienceType,
           confirmation_text: confirmText,
+          all_eligible_confirmation_text: requiresAllUsersConfirmation
+            ? allUsersConfirmText
+            : undefined,
+          preview_recipient_count: requiresAllUsersConfirmation
+            ? preview?.recipient_count
+            : undefined,
           idempotency_key: attemptKeyRef.current,
         }),
       });
@@ -210,6 +229,7 @@ export function BroadcastsClient() {
       setReason("");
       setConfirmOpen(false);
       setConfirmText("");
+      setAllUsersConfirmText("");
       attemptKeyRef.current = null;
       await fetchBroadcasts();
       await fetchPreview();
@@ -318,7 +338,12 @@ export function BroadcastsClient() {
             <Field label="Audience">
               <select
                 value={audienceType}
-                onChange={(e) => setAudienceType(e.target.value as AudienceType)}
+                onChange={(e) => {
+                  setAudienceType(e.target.value as AudienceType);
+                  setPreview(null);
+                  setConfirmText("");
+                  setAllUsersConfirmText("");
+                }}
                 className="w-full rounded-button border border-line bg-cream px-3 py-2 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-teal-900"
               >
                 <option value="all_eligible">All eligible users</option>
@@ -445,8 +470,15 @@ export function BroadcastsClient() {
 
             {audienceType === "all_eligible" ? (
               <div className="mt-4 rounded-button border border-red-200 bg-red-50 p-3 text-sm text-red-900">
-                This will contact every eligible Bantle user. Do not continue
-                unless this is a genuine incident, service, or security notice.
+                <p>
+                  This will contact every eligible Bantle user. Do not continue
+                  unless this is a genuine incident, service, or security
+                  notice.
+                </p>
+                <p className="mt-2">
+                  The server will reject the send if the previewed count no
+                  longer matches.
+                </p>
               </div>
             ) : null}
 
@@ -467,6 +499,20 @@ export function BroadcastsClient() {
               />
             </label>
 
+            {audienceType === "all_eligible" ? (
+              <label className="mt-4 block">
+                <span className="text-xs uppercase tracking-[0.14em] text-red-800">
+                  Type all-user phrase
+                </span>
+                <input
+                  value={allUsersConfirmText}
+                  onChange={(e) => setAllUsersConfirmText(e.target.value)}
+                  placeholder={ALL_USERS_CONFIRMATION_TEXT}
+                  className="mt-1 w-full rounded-button border border-red-200 bg-cream px-3 py-2 text-sm text-ink placeholder:text-ink-muted focus:outline-none focus:ring-2 focus:ring-red-800"
+                />
+              </label>
+            ) : null}
+
             <div className="mt-5 flex justify-end gap-2">
               <button
                 type="button"
@@ -479,7 +525,7 @@ export function BroadcastsClient() {
               <button
                 type="button"
                 onClick={() => void sendBroadcast()}
-                disabled={confirmText !== CONFIRMATION_TEXT || submitting}
+                disabled={!canSendConfirmed || submitting}
                 className="inline-flex items-center gap-2 rounded-button bg-red-800 px-3 py-2 text-sm font-medium text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 <Send size={14} />
@@ -558,7 +604,8 @@ function AudienceNotice({ audienceType }: { audienceType: AudienceType }) {
     return (
       <div className="rounded-card border border-amber-200 bg-amber-50 p-3 text-sm text-amber-950">
         All eligible users will receive an in-app notification. Users with push
-        tokens will also receive a push.
+        tokens will also receive a push. Sending requires a matching preview
+        count and the all-user confirmation phrase.
       </div>
     );
   }

@@ -1,6 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 export const BROADCAST_CONFIRMATION_TEXT = "SEND INCIDENT BROADCAST";
+export const BROADCAST_ALL_USERS_CONFIRMATION_TEXT = "SEND TO ALL";
 
 export type BroadcastAudienceType = "test_syed" | "all_eligible";
 

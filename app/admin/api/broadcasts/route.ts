@@ -6,14 +6,13 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { requireAdmin } from "@/lib/admin-auth";
 import { logAdminAction } from "@/lib/admin-actions";
 import {
+  BROADCAST_ALL_USERS_CONFIRMATION_TEXT,
   BROADCAST_CONFIRMATION_TEXT,
   getBroadcastPreview,
   parseAudienceType,
   type BroadcastAudienceType,
 } from "@/lib/admin-broadcasts";
-import {
-  getInternalFunctionHeaders,
-} from "@/lib/admin-internal-functions";
+import { getInternalFunctionHeaders } from "@/lib/admin-internal-functions";
 import {
   adminErrorResponse,
   safeAdminErrorCode,
@@ -64,6 +63,17 @@ type DispatcherResult = {
   success: boolean;
   error: string | null;
   result: Record<string, unknown> | null;
+};
+
+type BroadcastRequestBody = {
+  title?: string;
+  body?: string;
+  reason?: string;
+  audience_type?: string;
+  confirmation_text?: string;
+  all_eligible_confirmation_text?: string;
+  preview_recipient_count?: unknown;
+  idempotency_key?: string;
 };
 
 export async function GET(request: NextRequest) {
@@ -127,14 +137,7 @@ export async function POST(request: NextRequest) {
   if ("error" in auth) return auth.error;
   const { admin, supabase } = auth;
 
-  let body: {
-    title?: string;
-    body?: string;
-    reason?: string;
-    audience_type?: string;
-    confirmation_text?: string;
-    idempotency_key?: string;
-  };
+  let body: BroadcastRequestBody;
   try {
     body = (await request.json()) as typeof body;
   } catch {
@@ -144,8 +147,14 @@ export async function POST(request: NextRequest) {
   const validation = validateBroadcastBody(body);
   if ("error" in validation) return validation.error;
 
-  const { title, body: messageBody, reason, audienceType, idempotencyKey } =
-    validation.value;
+  const {
+    title,
+    body: messageBody,
+    reason,
+    audienceType,
+    idempotencyKey,
+    previewRecipientCount,
+  } = validation.value;
   let internalHeaders: Record<string, string>;
   try {
     internalHeaders = getInternalFunctionHeaders();
@@ -188,6 +197,18 @@ export async function POST(request: NextRequest) {
       { operation: "broadcast_create", audience_type: audienceType },
     );
     return adminErrorResponse(BROADCAST_SEND_ERROR, 500, { correlationId });
+  }
+  if (
+    audienceType === "all_eligible" &&
+    previewRecipientCount !== preview.recipient_count
+  ) {
+    return NextResponse.json(
+      {
+        error:
+          "Audience count changed. Refresh the audience preview before sending.",
+      },
+      { status: 409 },
+    );
   }
 
   const sentAt = new Date().toISOString();
@@ -290,14 +311,7 @@ export async function POST(request: NextRequest) {
   });
 }
 
-function validateBroadcastBody(body: {
-  title?: string;
-  body?: string;
-  reason?: string;
-  audience_type?: string;
-  confirmation_text?: string;
-  idempotency_key?: string;
-}):
+function validateBroadcastBody(body: BroadcastRequestBody):
   | {
       value: {
         title: string;
@@ -305,6 +319,7 @@ function validateBroadcastBody(body: {
         reason: string;
         audienceType: BroadcastAudienceType;
         idempotencyKey: string;
+        previewRecipientCount: number | null;
       };
     }
   | { error: NextResponse } {
@@ -313,6 +328,9 @@ function validateBroadcastBody(body: {
   const reason = (body.reason ?? "").trim();
   const audienceType = parseAudienceType(body.audience_type);
   const idempotencyKey = (body.idempotency_key ?? "").trim();
+  const previewRecipientCount = parsePreviewRecipientCount(
+    body.preview_recipient_count,
+  );
 
   if (title.length < 5 || title.length > 80) {
     return {
@@ -381,6 +399,27 @@ function validateBroadcastBody(body: {
       ),
     };
   }
+  if (audienceType === "all_eligible") {
+    if (
+      body.all_eligible_confirmation_text !==
+      BROADCAST_ALL_USERS_CONFIRMATION_TEXT
+    ) {
+      return {
+        error: NextResponse.json(
+          { error: "All-user confirmation phrase does not match." },
+          { status: 400 },
+        ),
+      };
+    }
+    if (previewRecipientCount === null) {
+      return {
+        error: NextResponse.json(
+          { error: "Refresh the audience preview before sending to all users." },
+          { status: 400 },
+        ),
+      };
+    }
+  }
   if (!UUID_RE.test(idempotencyKey)) {
     return {
       error: NextResponse.json(
@@ -397,8 +436,20 @@ function validateBroadcastBody(body: {
       reason,
       audienceType,
       idempotencyKey,
+      previewRecipientCount,
     },
   };
+}
+
+function parsePreviewRecipientCount(raw: unknown): number | null {
+  if (typeof raw === "number" && Number.isSafeInteger(raw) && raw >= 0) {
+    return raw;
+  }
+  if (typeof raw === "string" && /^\d+$/.test(raw.trim())) {
+    const value = Number(raw);
+    return Number.isSafeInteger(value) ? value : null;
+  }
+  return null;
 }
 
 async function findBroadcastByIdempotency(

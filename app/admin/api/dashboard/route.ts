@@ -512,10 +512,34 @@ async function getLatestActions(supabase: SupabaseClient) {
     target_resource_type: action.target_resource_type,
     target_resource_id: action.target_resource_id,
     created_at: action.created_at,
-    admin: Array.isArray(action.admin)
-      ? (action.admin[0] ?? null)
-      : action.admin,
+    admin: normalizeLatestActionAdmin(action.admin),
   }));
+}
+
+function normalizeLatestActionAdmin(
+  rawAdmin: ProfileSummary | ProfileSummary[] | null,
+): ProfileSummary | null {
+  const admin = Array.isArray(rawAdmin) ? (rawAdmin[0] ?? null) : rawAdmin;
+  if (!admin) return null;
+
+  const trimmedDisplayName = admin.display_name?.trim() ?? "";
+  const displayName = trimmedDisplayName || null;
+  return {
+    display_name: displayName,
+    email: displayName ? null : maskEmailForAdminDisplay(admin.email),
+  };
+}
+
+function maskEmailForAdminDisplay(email?: string | null): string | null {
+  const trimmed = email?.trim();
+  if (!trimmed) return null;
+
+  const atIndex = trimmed.indexOf("@");
+  if (atIndex <= 0 || atIndex === trimmed.length - 1) return null;
+
+  const local = trimmed.slice(0, atIndex);
+  const domain = trimmed.slice(atIndex + 1);
+  return `${local[0]}***@${domain}`;
 }
 
 async function countOrThrow(
