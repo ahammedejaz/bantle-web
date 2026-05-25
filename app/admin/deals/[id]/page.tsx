@@ -6,17 +6,19 @@ export const metadata = {
   robots: { index: false, follow: false },
 };
 
-export default function AdminDealDetailPage({
+export default async function AdminDealDetailPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
+  const { id } = await params;
+
   return (
     <div className="px-4 md:px-8 py-8 md:py-12 max-w-5xl mx-auto">
       <Suspense
         fallback={<div className="text-ink-muted">Loading deal&hellip;</div>}
       >
-        <DealDetailClient dealId={params.id} />
+        <DealDetailClient dealId={id} />
       </Suspense>
     </div>
   );

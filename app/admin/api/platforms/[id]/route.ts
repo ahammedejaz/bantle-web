@@ -300,13 +300,14 @@ async function sendPlatformPushes(args: {
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   const auth = await requireAdmin(request);
   if ("error" in auth) return auth.error;
   const { admin, supabase } = auth;
 
-  const platformId = params.id;
+  const { id } = await params;
+  const platformId = id;
 
   let body: Record<string, unknown>;
   try {

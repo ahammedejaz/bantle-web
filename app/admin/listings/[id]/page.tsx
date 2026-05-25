@@ -6,17 +6,19 @@ export const metadata = {
   robots: { index: false, follow: false },
 };
 
-export default function AdminListingDetailPage({
+export default async function AdminListingDetailPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
+  const { id } = await params;
+
   return (
     <div className="px-4 md:px-8 py-8 md:py-12 max-w-5xl mx-auto">
       <Suspense
         fallback={<div className="text-ink-muted">Loading listing&hellip;</div>}
       >
-        <ListingDetailClient listingId={params.id} />
+        <ListingDetailClient listingId={id} />
       </Suspense>
     </div>
   );

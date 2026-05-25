@@ -10,7 +10,7 @@ export const metadata = {
 };
 
 export default async function AdminDashboardPage() {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
 
   const userClient = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,

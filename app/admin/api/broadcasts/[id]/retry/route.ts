@@ -36,17 +36,18 @@ type BroadcastRow = {
 };
 
 type RouteContext = {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 };
 
 export async function POST(request: NextRequest, { params }: RouteContext) {
   const auth = await requireAdmin(request);
   if ("error" in auth) return auth.error;
   const { admin, supabase } = auth;
+  const { id } = await params;
 
-  const broadcastId = params.id;
+  const broadcastId = id;
   if (!UUID_RE.test(broadcastId)) {
     return NextResponse.json({ error: "Invalid broadcast id." }, { status: 400 });
   }

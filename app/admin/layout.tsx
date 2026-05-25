@@ -22,7 +22,7 @@ export default async function AdminLayout({
   //
   // Exception: /admin/login renders this layout too, but the user
   // may not be authenticated yet. Handle that gracefully.
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const userClient = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,

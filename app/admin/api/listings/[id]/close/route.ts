@@ -45,11 +45,12 @@ const EMPTY_SUMMARY: NotificationSummary = {
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   const auth = await requireAdmin(request);
   if ("error" in auth) return auth.error;
   const { admin, supabase } = auth;
+  const { id } = await params;
 
   let body: { reason?: string };
   try {
@@ -66,7 +67,7 @@ export async function POST(
     );
   }
 
-  const listingId = params.id;
+  const listingId = id;
   const existing = await fetchListing(supabase, listingId);
   if (!existing) {
     return NextResponse.json({ error: "Listing not found" }, { status: 404 });

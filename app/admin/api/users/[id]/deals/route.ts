@@ -10,13 +10,14 @@ const PAGE_SIZE = 20;
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   const auth = await requireAdmin(request);
   if ("error" in auth) return auth.error;
   const { supabase } = auth;
 
-  const userId = params.id;
+  const { id } = await params;
+  const userId = id;
   const page = Math.max(
     1,
     parseInt(request.nextUrl.searchParams.get("page") ?? "1", 10),

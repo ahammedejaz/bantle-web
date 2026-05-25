@@ -8,11 +8,13 @@ export const metadata = {
   robots: { index: false, follow: false },
 };
 
-export default function AdminReportDetailPage({
+export default async function AdminReportDetailPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
+  const { id } = await params;
+
   return (
     <div className="px-4 md:px-8 py-8 md:py-12 max-w-4xl mx-auto">
       <Link
@@ -25,7 +27,7 @@ export default function AdminReportDetailPage({
       <Suspense
         fallback={<div className="text-ink-muted">Loading report&hellip;</div>}
       >
-        <ReportDetailClient reportId={params.id} />
+        <ReportDetailClient reportId={id} />
       </Suspense>
     </div>
   );

@@ -32,13 +32,14 @@ interface OtherReportRow {
 
 export async function GET(
   _request: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   const auth = await requireAdmin(_request);
   if ("error" in auth) return auth.error;
   const { supabase } = auth;
 
-  const reportId = params.id;
+  const { id } = await params;
+  const reportId = id;
 
   const { data: report, error: reportError } = await supabase
     .from("user_reports")

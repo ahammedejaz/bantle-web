@@ -16,13 +16,14 @@ const TEMP_BAN_DAYS = 7;
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   const auth = await requireAdmin(request);
   if ("error" in auth) return auth.error;
   const { admin, supabase } = auth;
 
-  const userId = params.id;
+  const { id } = await params;
+  const userId = id;
 
   // Defense in depth: prevent admin from banning themselves.
   if (userId === admin.id) {

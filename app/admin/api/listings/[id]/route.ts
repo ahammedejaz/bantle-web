@@ -39,13 +39,14 @@ type ListingDetail = {
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   const auth = await requireAdmin(request);
   if ("error" in auth) return auth.error;
   const { supabase } = auth;
 
-  const listingId = params.id;
+  const { id } = await params;
+  const listingId = id;
 
   const { data, error } = await supabase
     .from("listings")

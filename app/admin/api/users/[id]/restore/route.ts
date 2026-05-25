@@ -13,13 +13,14 @@ import { logAdminAction } from "@/lib/admin-actions";
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   const auth = await requireAdmin(request);
   if ("error" in auth) return auth.error;
   const { admin, supabase } = auth;
 
-  const userId = params.id;
+  const { id } = await params;
+  const userId = id;
 
   let body: { type?: string; reason?: string };
   try {

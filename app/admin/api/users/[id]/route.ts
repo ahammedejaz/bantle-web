@@ -5,13 +5,14 @@ import { requireAdmin } from "@/lib/admin-auth";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   const auth = await requireAdmin(request);
   if ("error" in auth) return auth.error;
   const { supabase } = auth;
 
-  const userId = params.id;
+  const { id } = await params;
+  const userId = id;
 
   const { data: user, error: userError } = await supabase
     .from("profiles")

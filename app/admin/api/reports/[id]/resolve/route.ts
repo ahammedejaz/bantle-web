@@ -34,13 +34,14 @@ const TEMP_BAN_DAYS = 7;
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   const auth = await requireAdmin(request);
   if ("error" in auth) return auth.error;
   const { admin, supabase } = auth;
 
-  const reportId = params.id;
+  const { id } = await params;
+  const reportId = id;
 
   let body: { action?: string; reason?: string };
   try {

@@ -63,11 +63,12 @@ const EMPTY_SUMMARY: NotificationSummary = {
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   const auth = await requireAdmin(request);
   if ("error" in auth) return auth.error;
   const { admin, supabase } = auth;
+  const { id } = await params;
 
   let body: { reason?: string };
   try {
@@ -84,7 +85,7 @@ export async function POST(
     );
   }
 
-  const dealId = params.id;
+  const dealId = id;
   const existing = await fetchDeal(supabase, dealId);
   if (!existing) {
     return NextResponse.json({ error: "Deal not found" }, { status: 404 });
