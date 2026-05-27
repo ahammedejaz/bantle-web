@@ -26,7 +26,13 @@ yarn-debug.log*
 yarn-error.log*
 
 # local env files
+.env
 .env*.local
+
+# local database backups
+database-backups/*.sql
+database-backups/*.dump
+!database-backups/README.md
 
 # vercel
 .vercel
