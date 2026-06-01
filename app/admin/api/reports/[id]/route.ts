@@ -30,6 +30,17 @@ interface OtherReportRow {
   created_at: string;
 }
 
+interface ReportAttachmentRow {
+  id: string;
+  storage_bucket: string;
+  storage_path: string;
+  mime_type: string;
+  size_bytes: number;
+  width: number | null;
+  height: number | null;
+  created_at: string;
+}
+
 export async function GET(
   _request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
@@ -84,9 +95,54 @@ export async function GET(
     otherReports = (others as OtherReportRow[]) ?? [];
   }
 
+  const { data: attachmentRows, error: attachmentError } = await supabase
+    .from("user_report_attachments")
+    .select(
+      "id, storage_bucket, storage_path, mime_type, size_bytes, width, height, created_at",
+    )
+    .eq("report_id", reportId)
+    .order("created_at", { ascending: true });
+
+  if (attachmentError) {
+    console.error(
+      "[admin report detail] evidence metadata failed:",
+      attachmentError.message,
+    );
+  }
+
+  const attachments = await Promise.all(
+    ((attachmentRows as ReportAttachmentRow[] | null) ?? []).map(async (row) => {
+      const { data: signedUrlData, error: signedUrlError } =
+        await supabase.storage
+          .from(row.storage_bucket)
+          .createSignedUrl(row.storage_path, 15 * 60);
+
+      if (signedUrlError) {
+        console.warn(
+          "[admin report detail] evidence signed URL failed:",
+          row.id,
+        );
+      }
+
+      return {
+        id: row.id,
+        mime_type: row.mime_type,
+        size_bytes: row.size_bytes,
+        width: row.width,
+        height: row.height,
+        created_at: row.created_at,
+        signed_url: signedUrlData?.signedUrl ?? null,
+        signed_url_expires_in_seconds: signedUrlData?.signedUrl
+          ? 15 * 60
+          : null,
+      };
+    }),
+  );
+
   return NextResponse.json({
     report,
     conversation_messages: conversationMessages,
     other_reports_against_reported: otherReports,
+    attachments,
   });
 }

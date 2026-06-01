@@ -41,6 +41,17 @@ interface OtherReport {
   created_at: string;
 }
 
+interface ReportAttachment {
+  id: string;
+  mime_type: string;
+  size_bytes: number;
+  width: number | null;
+  height: number | null;
+  created_at: string;
+  signed_url: string | null;
+  signed_url_expires_in_seconds: number | null;
+}
+
 interface ReportDetailData {
   report: {
     id: string;
@@ -57,6 +68,7 @@ interface ReportDetailData {
   };
   conversation_messages: ConversationMessage[];
   other_reports_against_reported: OtherReport[];
+  attachments?: ReportAttachment[];
 }
 
 interface ReportDetailClientProps {
@@ -74,6 +86,13 @@ function fmtDate(iso: string | null | undefined): string {
     hour: "2-digit",
     minute: "2-digit",
   });
+}
+
+function formatBytes(bytes: number): string {
+  if (!Number.isFinite(bytes) || bytes <= 0) return "—";
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
 export function ReportDetailClient({ reportId }: ReportDetailClientProps) {
@@ -120,7 +139,13 @@ export function ReportDetailClient({ reportId }: ReportDetailClientProps) {
   }
   if (!data) return null;
 
-  const { report, conversation_messages: messages, other_reports_against_reported: others } = data;
+  const {
+    report,
+    conversation_messages: messages,
+    other_reports_against_reported: others,
+    attachments,
+  } = data;
+  const reportAttachments = attachments ?? [];
   const statusDisplay = getStatusDisplay(report.status);
   const resolutionLabel = getResolutionLabel(report.resolution_action);
   const reportedBanned =
@@ -187,6 +212,67 @@ export function ReportDetailClient({ reportId }: ReportDetailClientProps) {
           </p>
         </section>
       ) : null}
+
+      {/* Evidence */}
+      <section className="mt-6 bg-cream-card border border-line rounded-card p-4">
+        <div className="flex flex-wrap items-start justify-between gap-3 mb-3">
+          <div>
+            <p className="text-xs uppercase tracking-[0.14em] text-teal-600">
+              Evidence ({reportAttachments.length})
+            </p>
+            <p className="text-xs text-ink-muted mt-1">
+              Signed image links expire after 15 minutes. Refresh to renew.
+            </p>
+          </div>
+        </div>
+
+        {reportAttachments.length === 0 ? (
+          <p className="text-sm text-ink-muted">No evidence attached.</p>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {reportAttachments.map((attachment) => (
+              <div
+                key={attachment.id}
+                className="border border-line rounded-card bg-white overflow-hidden"
+              >
+                {attachment.signed_url ? (
+                  <a
+                    href={attachment.signed_url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="block bg-cream"
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={attachment.signed_url}
+                      alt="Report evidence"
+                      className="w-full h-44 object-cover"
+                    />
+                  </a>
+                ) : (
+                  <div className="h-44 bg-cream flex items-center justify-center px-4 text-center">
+                    <p className="text-sm text-ink-muted">
+                      Image unavailable. Refresh the report to retry.
+                    </p>
+                  </div>
+                )}
+                <div className="p-3 text-xs text-ink-muted space-y-1">
+                  <p className="font-medium text-ink">
+                    {attachment.mime_type}
+                  </p>
+                  <p>
+                    {formatBytes(attachment.size_bytes)}
+                    {attachment.width && attachment.height
+                      ? ` · ${attachment.width}x${attachment.height}`
+                      : ""}
+                  </p>
+                  <p>Uploaded {fmtDate(attachment.created_at)}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
 
       {/* Parties */}
       <section className="mt-6 grid gap-4 md:grid-cols-2">

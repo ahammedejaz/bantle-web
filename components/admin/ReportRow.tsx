@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Clock } from "lucide-react";
+import { Clock, Paperclip } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getStatusDisplay } from "./reportStatus";
 
@@ -13,6 +13,7 @@ export interface ReportListItem {
   status: string;
   resolved_at: string | null;
   resolution_action: string | null;
+  evidence_count?: number;
   reporter: {
     id: string;
     display_name: string | null;
@@ -104,6 +105,12 @@ export function ReportRow({ report }: ReportRowProps) {
         >
           {statusDisplay.label}
         </span>
+        {report.evidence_count ? (
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs border bg-emerald-50 text-emerald-900 border-emerald-200">
+            <Paperclip size={12} />
+            {report.evidence_count} evidence
+          </span>
+        ) : null}
         <span className="inline-flex items-center gap-1 text-xs text-ink-muted ml-auto">
           <Clock size={12} />
           {timeAgo(report.created_at)}

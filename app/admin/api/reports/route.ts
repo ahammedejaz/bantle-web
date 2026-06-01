@@ -54,8 +54,36 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "Server error" }, { status: 500 });
   }
 
+  const reports = data ?? [];
+  const reportIds = reports.map((report) => report.id);
+  const evidenceCounts = new Map<string, number>();
+
+  if (reportIds.length > 0) {
+    const { data: attachments, error: attachmentsError } = await supabase
+      .from("user_report_attachments")
+      .select("report_id")
+      .in("report_id", reportIds);
+
+    if (attachmentsError) {
+      console.error(
+        "[admin reports list] evidence count failed:",
+        attachmentsError.message,
+      );
+    } else {
+      for (const attachment of attachments ?? []) {
+        evidenceCounts.set(
+          attachment.report_id,
+          (evidenceCounts.get(attachment.report_id) ?? 0) + 1,
+        );
+      }
+    }
+  }
+
   return NextResponse.json({
-    reports: data ?? [],
+    reports: reports.map((report) => ({
+      ...report,
+      evidence_count: evidenceCounts.get(report.id) ?? 0,
+    })),
     total: count ?? 0,
     page,
     page_size: PAGE_SIZE,
