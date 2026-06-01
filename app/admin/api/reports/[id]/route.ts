@@ -20,6 +20,7 @@ interface MessageRow {
   created_at: string;
   sender_id: string | null;
   sender: { display_name: string | null } | null;
+  attachments?: ChatMessageAttachment[];
 }
 
 interface OtherReportRow {
@@ -39,6 +40,29 @@ interface ReportAttachmentRow {
   width: number | null;
   height: number | null;
   created_at: string;
+}
+
+interface ChatMessageAttachmentRow {
+  id: string;
+  message_id: string;
+  storage_bucket: string;
+  storage_path: string;
+  mime_type: string;
+  size_bytes: number;
+  width: number | null;
+  height: number | null;
+  created_at: string;
+}
+
+interface ChatMessageAttachment {
+  id: string;
+  mime_type: string;
+  size_bytes: number;
+  width: number | null;
+  height: number | null;
+  created_at: string;
+  signed_url: string | null;
+  signed_url_expires_in_seconds: number | null;
 }
 
 export async function GET(
@@ -80,6 +104,71 @@ export async function GET(
       .order("created_at", { ascending: true })
       .limit(100);
     conversationMessages = (messages as unknown as MessageRow[]) ?? [];
+
+    const messageIds = conversationMessages.map((message) => message.id);
+    if (messageIds.length > 0) {
+      const { data: chatAttachmentRows, error: chatAttachmentError } =
+        await supabase
+          .from("message_attachments")
+          .select(
+            "id, message_id, storage_bucket, storage_path, mime_type, size_bytes, width, height, created_at",
+          )
+          .in("message_id", messageIds)
+          .order("created_at", { ascending: true });
+
+      if (chatAttachmentError) {
+        console.error(
+          "[admin report detail] chat image metadata failed:",
+          chatAttachmentError.message,
+        );
+      }
+
+      const attachmentsByMessage = new Map<string, ChatMessageAttachment[]>();
+      const signedChatAttachments = await Promise.all(
+        ((chatAttachmentRows as ChatMessageAttachmentRow[] | null) ?? []).map(
+          async (row) => {
+            const { data: signedUrlData, error: signedUrlError } =
+              await supabase.storage
+                .from(row.storage_bucket)
+                .createSignedUrl(row.storage_path, 15 * 60);
+
+            if (signedUrlError) {
+              console.warn(
+                "[admin report detail] chat image signed URL failed:",
+                row.id,
+              );
+            }
+
+            return {
+              messageId: row.message_id,
+              attachment: {
+                id: row.id,
+                mime_type: row.mime_type,
+                size_bytes: row.size_bytes,
+                width: row.width,
+                height: row.height,
+                created_at: row.created_at,
+                signed_url: signedUrlData?.signedUrl ?? null,
+                signed_url_expires_in_seconds: signedUrlData?.signedUrl
+                  ? 15 * 60
+                  : null,
+              } satisfies ChatMessageAttachment,
+            };
+          },
+        ),
+      );
+
+      for (const item of signedChatAttachments) {
+        const existing = attachmentsByMessage.get(item.messageId) ?? [];
+        existing.push(item.attachment);
+        attachmentsByMessage.set(item.messageId, existing);
+      }
+
+      conversationMessages = conversationMessages.map((message) => ({
+        ...message,
+        attachments: attachmentsByMessage.get(message.id) ?? [],
+      }));
+    }
   }
 
   const reportedId = typedReport.reported?.id ?? null;

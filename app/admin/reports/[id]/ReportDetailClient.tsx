@@ -31,6 +31,7 @@ interface ConversationMessage {
   created_at: string;
   sender_id: string | null;
   sender: { display_name: string | null } | null;
+  attachments?: ChatMessageAttachment[];
 }
 
 interface OtherReport {
@@ -42,6 +43,17 @@ interface OtherReport {
 }
 
 interface ReportAttachment {
+  id: string;
+  mime_type: string;
+  size_bytes: number;
+  width: number | null;
+  height: number | null;
+  created_at: string;
+  signed_url: string | null;
+  signed_url_expires_in_seconds: number | null;
+}
+
+interface ChatMessageAttachment {
   id: string;
   mime_type: string;
   size_bytes: number;
@@ -368,19 +380,70 @@ export function ReportDetailClient({ reportId }: ReportDetailClientProps) {
               {messages.length === 0 ? (
                 <p className="text-sm text-ink-muted">No messages.</p>
               ) : (
-                messages.map((m) => (
-                  <div
-                    key={m.id}
-                    className="text-sm border border-line rounded-button p-2"
-                  >
-                    <p className="text-xs text-ink-muted mb-1">
-                      {m.sender?.display_name ?? "(deleted)"} ·{" "}
-                      {fmtDate(m.created_at)}
-                      {m.kind !== "text" ? ` · ${m.kind}` : ""}
-                    </p>
-                    <p className="text-ink whitespace-pre-wrap">{m.text}</p>
-                  </div>
-                ))
+                messages.map((m) => {
+                  const chatAttachments = m.attachments ?? [];
+                  return (
+                    <div
+                      key={m.id}
+                      className="text-sm border border-line rounded-button p-2"
+                    >
+                      <p className="text-xs text-ink-muted mb-1">
+                        {m.sender?.display_name ?? "(deleted)"} ·{" "}
+                        {fmtDate(m.created_at)}
+                        {m.kind !== "text" ? ` · ${m.kind}` : ""}
+                      </p>
+                      <p className="text-ink whitespace-pre-wrap">{m.text}</p>
+                      {chatAttachments.length > 0 ? (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
+                          {chatAttachments.map((attachment) => (
+                            <div
+                              key={attachment.id}
+                              className="border border-line rounded-button bg-white overflow-hidden"
+                            >
+                              {attachment.signed_url ? (
+                                <a
+                                  href={attachment.signed_url}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  className="block bg-cream"
+                                >
+                                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                                  <img
+                                    src={attachment.signed_url}
+                                    alt="Chat image"
+                                    className="w-full h-36 object-cover"
+                                  />
+                                </a>
+                              ) : (
+                                <div className="h-36 bg-cream flex items-center justify-center px-4 text-center">
+                                  <p className="text-xs text-ink-muted">
+                                    Image unavailable. Refresh the report to
+                                    retry.
+                                  </p>
+                                </div>
+                              )}
+                              <div className="p-2 text-[11px] text-ink-muted space-y-0.5">
+                                <p className="font-medium text-ink">
+                                  {attachment.mime_type}
+                                </p>
+                                <p>
+                                  {formatBytes(attachment.size_bytes)}
+                                  {attachment.width && attachment.height
+                                    ? ` · ${attachment.width}x${attachment.height}`
+                                    : ""}
+                                </p>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      ) : m.kind === "image" ? (
+                        <p className="text-xs text-ink-muted mt-2">
+                          Image attachment unavailable.
+                        </p>
+                      ) : null}
+                    </div>
+                  );
+                })
               )}
             </div>
           ) : null}
