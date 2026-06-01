@@ -5,6 +5,7 @@ import * as Dialog from "@radix-ui/react-dialog";
 import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Platform } from "./PlatformRow";
+import type { PlatformCategory } from "@/lib/platform-categories";
 
 export type EditorMode = "create" | "edit";
 
@@ -12,12 +13,12 @@ interface PlatformEditorDialogProps {
   open: boolean;
   mode: EditorMode;
   platform: Platform | null;
+  categories: PlatformCategory[];
   onClose: () => void;
   onSuccess: (message: string) => void;
   onError: (message: string) => void;
 }
 
-const CATEGORIES = ["music", "video", "cloud", "work"] as const;
 const SLUG_RE = /^[a-z0-9_]+$/;
 const HEX_RE = /^#[0-9A-Fa-f]{6}$/;
 
@@ -34,7 +35,7 @@ interface FormState {
 const EMPTY_FORM: FormState = {
   id: "",
   label: "",
-  category: "music",
+  category: "",
   default_monthly_price: "",
   brand_color: "#1ED760",
   brand_initials: "",
@@ -60,7 +61,12 @@ interface FieldErrors {
   display_order?: string;
 }
 
-function validate(form: FormState, mode: EditorMode): FieldErrors {
+function validate(
+  form: FormState,
+  mode: EditorMode,
+  categories: PlatformCategory[],
+  platform: Platform | null,
+): FieldErrors {
   const errs: FieldErrors = {};
   if (mode === "create") {
     if (!form.id || !SLUG_RE.test(form.id) || form.id.length < 2 || form.id.length > 40) {
@@ -71,8 +77,14 @@ function validate(form: FormState, mode: EditorMode): FieldErrors {
   if (!form.label.trim() || form.label.length > 60) {
     errs.label = "Label is required (max 60 chars)";
   }
-  if (!CATEGORIES.includes(form.category as (typeof CATEGORIES)[number])) {
-    errs.category = "Pick a category";
+  const category = categories.find((c) => c.id === form.category);
+  if (!category) {
+    errs.category = "Pick an existing category";
+  } else if (
+    category.is_active === false &&
+    form.category !== platform?.category
+  ) {
+    errs.category = "Pick an active category";
   }
   const price = Number(form.default_monthly_price);
   if (!Number.isInteger(price) || price < 1 || price > 100000) {
@@ -96,6 +108,7 @@ export function PlatformEditorDialog({
   open,
   mode,
   platform,
+  categories,
   onClose,
   onSuccess,
   onError,
@@ -111,6 +124,7 @@ export function PlatformEditorDialog({
   // Initialize / reset form when the dialog opens with a new mode/target.
   useEffect(() => {
     if (!open) return;
+    const firstActiveCategory = categories.find((c) => c.is_active)?.id ?? "";
     if (mode === "edit" && platform) {
       setForm({
         id: platform.id,
@@ -123,11 +137,11 @@ export function PlatformEditorDialog({
       });
       slugTouchedRef.current = true; // immutable in edit mode anyway
     } else {
-      setForm(EMPTY_FORM);
+      setForm({ ...EMPTY_FORM, category: firstActiveCategory });
       slugTouchedRef.current = false;
     }
     setErrors({});
-  }, [open, mode, platform]);
+  }, [categories, open, mode, platform]);
 
   const handleLabelChange = (next: string) => {
     setForm((prev) => {
@@ -159,7 +173,7 @@ export function PlatformEditorDialog({
   };
 
   const handleSubmit = async () => {
-    const fieldErrs = validate(form, mode);
+    const fieldErrs = validate(form, mode, categories, platform);
     if (Object.keys(fieldErrs).length > 0) {
       setErrors(fieldErrs);
       return;
@@ -221,6 +235,11 @@ export function PlatformEditorDialog({
   const previewBg = HEX_RE.test(form.brand_color)
     ? form.brand_color
     : "#999999";
+  const categoryOptions = categories.filter(
+    (c) => c.is_active || c.id === form.category,
+  );
+  const currentCategoryLabel =
+    categories.find((c) => c.id === form.category)?.label ?? form.category;
 
   return (
     <Dialog.Root
@@ -282,7 +301,7 @@ export function PlatformEditorDialog({
                 {form.label || "Platform name"}
               </p>
               <p className="text-xs text-ink-muted">
-                {form.category} ·{" "}
+                {currentCategoryLabel || "No category"} ·{" "}
                 {form.default_monthly_price
                   ? `₹${form.default_monthly_price}/mo`
                   : "—"}
@@ -332,9 +351,13 @@ export function PlatformEditorDialog({
                 disabled={submitting}
                 className={inputClass}
               >
-                {CATEGORIES.map((c) => (
-                  <option key={c} value={c}>
-                    {c}
+                {categoryOptions.length === 0 ? (
+                  <option value="">No active categories</option>
+                ) : null}
+                {categoryOptions.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.label}
+                    {c.is_active ? "" : " (inactive)"}
                   </option>
                 ))}
               </select>

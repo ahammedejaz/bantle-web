@@ -19,8 +19,6 @@ import {
   safeAdminWarning,
 } from "@/lib/admin-safe-errors";
 
-const VALID_CATEGORIES = ["music", "video", "cloud", "work"] as const;
-type Category = (typeof VALID_CATEGORIES)[number];
 const HEX_RE = /^#[0-9A-Fa-f]{6}$/;
 
 type Transition = "activated" | "deactivated";
@@ -46,6 +44,7 @@ type PlatformNotificationSummary = {
 type PlatformRow = {
   id: string;
   label: string;
+  category: string;
   is_active: boolean | null;
 };
 
@@ -62,6 +61,26 @@ const EMPTY_SUMMARY: PlatformNotificationSummary = {
 
 function normalizedActive(row: Pick<PlatformRow, "is_active">): boolean {
   return row.is_active !== false;
+}
+
+async function validateCategoryForUpdate(args: {
+  supabase: SupabaseClient;
+  nextCategory: string;
+  currentCategory: string;
+}): Promise<string | null> {
+  const { supabase, nextCategory, currentCategory } = args;
+  const { data, error } = await supabase
+    .from("platform_categories")
+    .select("id, is_active")
+    .eq("id", nextCategory)
+    .maybeSingle();
+
+  if (error) throw error;
+  if (!data) return "category must match an existing platform category";
+  if (nextCategory !== currentCategory && data.is_active === false) {
+    return "category is inactive";
+  }
+  return null;
 }
 
 function roleForImpact(impact: RecipientImpact): string {
@@ -349,7 +368,7 @@ export async function PATCH(
   // future audit improvements (before/after diff) can extend the payload.
   const { data: existing, error: fetchError } = await supabase
     .from("platforms")
-    .select("id,label,is_active")
+    .select("id,label,category,is_active")
     .eq("id", platformId)
     .maybeSingle();
 
@@ -377,13 +396,30 @@ export async function PATCH(
   }
 
   if (typeof body.category === "string") {
-    if (!VALID_CATEGORIES.includes(body.category as Category)) {
-      return NextResponse.json(
-        { error: `category must be one of: ${VALID_CATEGORIES.join(", ")}` },
-        { status: 400 },
+    const nextCategory = body.category.trim();
+    let categoryError: string | null;
+    try {
+      categoryError = await validateCategoryForUpdate({
+        supabase,
+        nextCategory,
+        currentCategory: previousPlatform.category,
+      });
+    } catch (error) {
+      const correlationId = safeAdminErrorLog(
+        "admin_platform_category_validate_failed",
+        error,
+        { operation: "platform_update" },
+      );
+      return adminErrorResponse(
+        "Platform category could not be validated.",
+        500,
+        { correlationId },
       );
     }
-    updates.category = body.category;
+    if (categoryError) {
+      return NextResponse.json({ error: categoryError }, { status: 400 });
+    }
+    updates.category = nextCategory;
   }
 
   if ("default_monthly_price" in body) {

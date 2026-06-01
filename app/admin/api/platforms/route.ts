@@ -5,6 +5,7 @@
 // the right UX for a small catalog the admin curates by hand.
 
 import { type NextRequest, NextResponse } from "next/server";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { requireAdmin } from "@/lib/admin-auth";
 import { logAdminAction } from "@/lib/admin-actions";
 import {
@@ -12,10 +13,24 @@ import {
   safeAdminErrorLog,
 } from "@/lib/admin-safe-errors";
 
-const VALID_CATEGORIES = ["music", "video", "cloud", "work"] as const;
-type Category = (typeof VALID_CATEGORIES)[number];
 const SLUG_RE = /^[a-z0-9_]+$/;
 const HEX_RE = /^#[0-9A-Fa-f]{6}$/;
+
+async function validateActiveCategory(
+  supabase: SupabaseClient,
+  category: string,
+): Promise<string | null> {
+  const { data, error } = await supabase
+    .from("platform_categories")
+    .select("id, is_active")
+    .eq("id", category)
+    .maybeSingle();
+
+  if (error) throw error;
+  if (!data) return "category must match an existing platform category";
+  if (data.is_active === false) return "category is inactive";
+  return null;
+}
 
 export async function GET(request: NextRequest) {
   const auth = await requireAdmin(request);
@@ -72,7 +87,8 @@ export async function POST(request: NextRequest) {
   const id =
     typeof body.id === "string" ? body.id.trim().toLowerCase() : "";
   const label = typeof body.label === "string" ? body.label.trim() : "";
-  const category = typeof body.category === "string" ? body.category : "";
+  const category =
+    typeof body.category === "string" ? body.category.trim() : "";
   const default_monthly_price = Number(body.default_monthly_price);
   const brand_color =
     typeof body.brand_color === "string" ? body.brand_color.trim() : "";
@@ -98,11 +114,21 @@ export async function POST(request: NextRequest) {
       { status: 400 },
     );
   }
-  if (!VALID_CATEGORIES.includes(category as Category)) {
-    return NextResponse.json(
-      { error: `category must be one of: ${VALID_CATEGORIES.join(", ")}` },
-      { status: 400 },
+  let categoryError: string | null;
+  try {
+    categoryError = await validateActiveCategory(supabase, category);
+  } catch (error) {
+    const correlationId = safeAdminErrorLog(
+      "admin_platform_category_validate_failed",
+      error,
+      { operation: "platform_create" },
     );
+    return adminErrorResponse("Platform category could not be validated.", 500, {
+      correlationId,
+    });
+  }
+  if (categoryError) {
+    return NextResponse.json({ error: categoryError }, { status: 400 });
   }
   if (
     !Number.isInteger(default_monthly_price) ||

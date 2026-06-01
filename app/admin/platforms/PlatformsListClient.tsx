@@ -3,13 +3,14 @@
 import { useCallback, useEffect, useState } from "react";
 import { Plus } from "lucide-react";
 import { useAdminToast } from "@/components/admin/AdminToastProvider";
+import { PlatformCategoriesPanel } from "@/components/admin/PlatformCategoriesPanel";
 import { PlatformRow, type Platform } from "@/components/admin/PlatformRow";
 import {
   PlatformEditorDialog,
   type EditorMode,
 } from "@/components/admin/PlatformEditorDialog";
+import type { PlatformCategory } from "@/lib/platform-categories";
 
-type CategoryKey = "music" | "video" | "cloud" | "work";
 type PlatformToggleResponse = {
   notification_summary?: {
     recipient_count?: number;
@@ -18,16 +19,10 @@ type PlatformToggleResponse = {
   };
 };
 
-const CATEGORY_GROUPS: Array<{ key: CategoryKey; label: string }> = [
-  { key: "music", label: "Music" },
-  { key: "video", label: "Video" },
-  { key: "cloud", label: "Cloud" },
-  { key: "work", label: "Work" },
-];
-
 export function PlatformsListClient() {
   const toast = useAdminToast();
   const [platforms, setPlatforms] = useState<Platform[]>([]);
+  const [categories, setCategories] = useState<PlatformCategory[]>([]);
   const [loading, setLoading] = useState(true);
   const [editorOpen, setEditorOpen] = useState(false);
   const [editorMode, setEditorMode] = useState<EditorMode>("create");
@@ -36,13 +31,26 @@ export function PlatformsListClient() {
   const fetchPlatforms = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await fetch("/admin/api/platforms");
-      if (!res.ok) {
-        const text = await res.text();
-        throw new Error(text || `HTTP ${res.status}`);
+      const [platformsRes, categoriesRes] = await Promise.all([
+        fetch("/admin/api/platforms"),
+        fetch("/admin/api/platform-categories"),
+      ]);
+      if (!platformsRes.ok) {
+        const text = await platformsRes.text();
+        throw new Error(text || `HTTP ${platformsRes.status}`);
       }
-      const data = (await res.json()) as { platforms: Platform[] };
-      setPlatforms(data.platforms);
+      if (!categoriesRes.ok) {
+        const text = await categoriesRes.text();
+        throw new Error(text || `HTTP ${categoriesRes.status}`);
+      }
+      const platformsData = (await platformsRes.json()) as {
+        platforms: Platform[];
+      };
+      const categoriesData = (await categoriesRes.json()) as {
+        categories: PlatformCategory[];
+      };
+      setPlatforms(platformsData.platforms);
+      setCategories(categoriesData.categories);
     } catch (e) {
       const message =
         e instanceof Error ? e.message : "Failed to load platforms.";
@@ -139,16 +147,46 @@ export function PlatformsListClient() {
     toast.show(message, "error");
   };
 
-  // Group platforms by category.
-  const grouped = new Map<CategoryKey, Platform[]>();
-  for (const group of CATEGORY_GROUPS) grouped.set(group.key, []);
+  // Group platforms by managed category. Unknown categories are kept visible
+  // defensively instead of being dropped.
+  const categoryById = new Map(categories.map((c) => [c.id, c]));
+  const grouped = new Map<string, Platform[]>();
+  for (const category of categories) grouped.set(category.id, []);
   for (const platform of platforms) {
-    const bucket = grouped.get(platform.category as CategoryKey);
-    if (bucket) bucket.push(platform);
+    const bucket = grouped.get(platform.category);
+    if (bucket) {
+      bucket.push(platform);
+    } else {
+      grouped.set(platform.category, [platform]);
+    }
   }
+  const categoryGroups = [
+    ...categories.map((category) => ({
+      key: category.id,
+      label: category.label,
+      inactive: category.is_active === false,
+      items: grouped.get(category.id) ?? [],
+    })),
+    ...Array.from(grouped.entries())
+      .filter(([categoryId]) => !categoryById.has(categoryId))
+      .map(([categoryId, items]) => ({
+        key: categoryId,
+        label: `${categoryId} (unknown)`,
+        inactive: true,
+        items,
+      })),
+  ];
 
   return (
     <div>
+      <PlatformCategoriesPanel
+        categories={categories}
+        platforms={platforms}
+        onChanged={fetchPlatforms}
+        onSuccess={(message) => toast.show(message, "success")}
+        onError={(message) => toast.show(message, "error")}
+      />
+
       <div className="flex items-center justify-between mb-6">
         <span className="text-xs text-ink-muted">
           {loading
@@ -171,13 +209,18 @@ export function PlatformsListClient() {
         <div className="text-sm text-ink-muted">Loading platforms&hellip;</div>
       ) : (
         <div className="space-y-8">
-          {CATEGORY_GROUPS.map((group) => {
-            const items = grouped.get(group.key) ?? [];
+          {categoryGroups.map((group) => {
+            const items = group.items;
             return (
               <section key={group.key}>
                 <h2 className="text-xs uppercase tracking-[0.14em] text-teal-600 mb-3">
                   {group.label}{" "}
                   <span className="text-ink-muted">({items.length})</span>
+                  {group.inactive ? (
+                    <span className="ml-2 normal-case tracking-normal text-ink-muted">
+                      inactive
+                    </span>
+                  ) : null}
                 </h2>
                 {items.length === 0 ? (
                   <div className="border border-line rounded-card bg-cream-card p-4 text-sm text-ink-muted text-center">
@@ -205,6 +248,7 @@ export function PlatformsListClient() {
         open={editorOpen}
         mode={editorMode}
         platform={editorTarget}
+        categories={categories}
         onClose={() => setEditorOpen(false)}
         onSuccess={handleEditorSuccess}
         onError={handleEditorError}
