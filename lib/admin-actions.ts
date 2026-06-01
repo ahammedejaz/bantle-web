@@ -24,7 +24,9 @@ export type AdminActionType =
   | "listing_closed"
   | "deal_terminated"
   | "broadcast_sent"
-  | "broadcast_retried";
+  | "broadcast_retried"
+  | "user_verification_updated"
+  | "verification_settings_updated";
 
 export interface AdminActionInput {
   admin_id: string;

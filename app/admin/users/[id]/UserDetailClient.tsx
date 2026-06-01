@@ -10,6 +10,7 @@ import {
 } from "@/components/admin/userStatus";
 import { UserActionPanel } from "@/components/admin/UserActionPanel";
 import { UserDetailTabs } from "@/components/admin/UserDetailTabs";
+import { VerificationSettingsPanel } from "@/components/admin/VerificationSettingsPanel";
 
 interface UserDetail {
   user: {
@@ -22,6 +23,8 @@ interface UserDetail {
     is_verified: boolean | null;
     rating_avg: number | null;
     rating_count: number | null;
+    verification_override: "verified" | "unverified" | null;
+    verified_manually_at: string | null;
     banned_until: string | null;
     banned_reason: string | null;
     banned_by: string | null;
@@ -213,6 +216,9 @@ export function UserDetailClient({ userId }: { userId: string }) {
 
       {/* Action panel */}
       <UserActionPanel user={user} onActionComplete={fetchDetail} />
+
+      {/* Verification thresholds */}
+      <VerificationSettingsPanel onSaved={fetchDetail} />
 
       {/* Tabbed activity */}
       <UserDetailTabs userId={userId} counts={counts} />
