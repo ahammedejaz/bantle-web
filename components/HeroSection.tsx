@@ -12,13 +12,13 @@ export function HeroSection() {
               Coming soon · Made in India
             </p>
             <h1 className="font-serif italic text-4xl sm:text-5xl md:text-6xl text-teal-900 leading-[1.05] tracking-tightish text-balance">
-              Coordinate your household&rsquo;s subscriptions.
+              Coordinate subscription sharing and access.
             </h1>
             <p className="mt-6 text-lg leading-8 text-ink-muted max-w-xl">
-              Bantle helps roommates, family and partners split the cost of
-              the family plans you already share &mdash; Spotify, YouTube
-              Premium, Apple One and more. Keep the savings. Skip the
-              awkward maths.
+              Bantle helps people in India coordinate monthly sharing and
+              one-time access for subscriptions directly with each other.
+              Payment happens outside Bantle; access details are confirmed
+              in chat.
             </p>
             <div className="mt-8">
               <ComingSoonBadges />
@@ -54,9 +54,24 @@ function AppPreviewMock() {
           <p className="text-xs mt-1 text-teal-200">+12% vs last year</p>
         </div>
         <div className="px-5 py-4 flex flex-col gap-3">
-          <MockListing platform="Spotify" colour="#1ED760" price="₹40" />
-          <MockListing platform="YouTube Premium" colour="#FF0000" price="₹60" />
-          <MockListing platform="Apple One" colour="#000000" price="₹125" />
+          <MockListing
+            platform="Spotify"
+            colour="#1ED760"
+            detail="2 slots open"
+            price="₹40/mo"
+          />
+          <MockListing
+            platform="YouTube Premium"
+            colour="#FF0000"
+            detail="6 months access"
+            price="₹500 one-time"
+          />
+          <MockListing
+            platform="Apple One"
+            colour="#000000"
+            detail="1 slot open"
+            price="₹125/mo"
+          />
         </div>
         <div className="mt-auto border-t border-line px-4 py-3 flex items-center justify-between">
           <MockNavItem icon={<Home className="h-4 w-4" />} label="Home" active />
@@ -99,10 +114,12 @@ function MockNavItem({
 function MockListing({
   platform,
   colour,
+  detail,
   price,
 }: {
   platform: string;
   colour: string;
+  detail: string;
   price: string;
 }) {
   return (
@@ -116,9 +133,11 @@ function MockListing({
       </span>
       <div className="flex-1 min-w-0">
         <p className="text-[13px] text-ink truncate">{platform}</p>
-        <p className="text-[11px] text-ink-muted">2 slots open</p>
+        <p className="text-[11px] text-ink-muted">{detail}</p>
       </div>
-      <p className="text-[13px] font-medium text-teal-900">{price}/mo</p>
+      <p className="text-[13px] font-medium text-teal-900 text-right">
+        {price}
+      </p>
     </div>
   );
 }

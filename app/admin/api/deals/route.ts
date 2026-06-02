@@ -24,8 +24,19 @@ type ListingSummary = {
   id: string;
   title: string | null;
   platform: string | null;
+  listing_type?: string | null;
   status: string | null;
   archived_at: string | null;
+};
+
+type DealTermsSnapshot = {
+  terms_type: string | null;
+  price_amount: number | null;
+  price_period: string | null;
+  duration_months: number | null;
+  access_duration_months: number | null;
+  access_type: string | null;
+  access_notes_snapshot: string | null;
 };
 
 type DealListRow = {
@@ -45,6 +56,7 @@ type DealListRow = {
   termination_source: string | null;
   created_at: string | null;
   listing: ListingSummary | ListingSummary[] | null;
+  terms_snapshot: DealTermsSnapshot | DealTermsSnapshot[] | null;
   host: ProfileSummary | ProfileSummary[] | null;
   buyer: ProfileSummary | ProfileSummary[] | null;
 };
@@ -111,7 +123,8 @@ export async function GET(request: NextRequest) {
     .from("deals")
     .select(
       `id,listing_id,host_id,buyer_id,conversation_id,status,agreed_price,duration_months,started_at,ends_at,terminated_at,terminated_by,termination_reason,termination_source,created_at,
-       listing:listings!deals_listing_id_fkey(id,title,platform,status,archived_at),
+       listing:listings!deals_listing_id_fkey(id,title,platform,listing_type,status,archived_at),
+       terms_snapshot:deal_terms_snapshots(terms_type,price_amount,price_period,duration_months,access_duration_months,access_type,access_notes_snapshot),
        host:profiles!deals_host_id_fkey(id,display_name,email,deleted_at,banned_until,permanently_banned,is_admin),
        buyer:profiles!deals_buyer_id_fkey(id,display_name,email,deleted_at,banned_until,permanently_banned,is_admin)`,
       { count: "exact" },
@@ -237,6 +250,9 @@ function normalizeDeal(row: DealListRow) {
     listing: Array.isArray(row.listing)
       ? (row.listing[0] ?? null)
       : row.listing,
+    terms_snapshot: Array.isArray(row.terms_snapshot)
+      ? (row.terms_snapshot[0] ?? null)
+      : row.terms_snapshot,
     host: Array.isArray(row.host) ? (row.host[0] ?? null) : row.host,
     buyer: Array.isArray(row.buyer) ? (row.buyer[0] ?? null) : row.buyer,
   };

@@ -5,7 +5,7 @@ import { CONTACT_EMAIL } from "@/lib/constants";
 export const metadata = {
   title: "Frequently asked questions",
   description:
-    "Common questions about Bantle: what it is, how household subscription coordination works, what we do about trust and safety, account management, and supported devices.",
+    "Common questions about Bantle: monthly sharing, one-time access, safety, account management, and why payment happens outside Bantle.",
 };
 
 interface QA {
@@ -26,13 +26,11 @@ const sections: Section[] = [
         q: "What is Bantle?",
         a: (
           <p>
-            Bantle is an Indian mobile app that helps your household
-            coordinate the family-plan subscriptions you already share —
-            Spotify Family, YouTube Premium Family, Apple One, Microsoft
-            365 Family, and the like. The host adds the plan, invites the
-            members of the household onto it, and Bantle handles the
-            monthly reminders and the split. Any payment moves directly
-            between members outside Bantle.
+            Bantle is an Indian mobile app for coordinating subscription
+            access. Hosts can list monthly sharing or one-time access for
+            a remaining subscription period, then both sides confirm
+            terms in chat. Any payment moves directly between users
+            outside Bantle.
           </p>
         ),
       },
@@ -40,10 +38,10 @@ const sections: Section[] = [
         q: "Is Bantle free to use?",
         a: (
           <p>
-            Yes. Adding plans, inviting your household, running monthly
-            settlements and the full lifecycle of a household plan are all
-            free. Bantle doesn&apos;t charge a transaction fee, doesn&apos;t
-            take a percentage of your split, and doesn&apos;t show ads.
+            Yes. Adding listings, chatting, proposing deals and accepting
+            deals are free. Bantle doesn&apos;t charge a transaction fee,
+            doesn&apos;t take a percentage of your arrangement, and
+            doesn&apos;t show ads.
           </p>
         ),
       },
@@ -71,20 +69,17 @@ const sections: Section[] = [
     ],
   },
   {
-    heading: "How household coordination works",
+    heading: "How coordination works",
     items: [
       {
         q: "Which subscriptions can I coordinate on Bantle?",
         a: (
           <p>
-            Any family or household plan that you have the right to
-            coordinate among the members of your own household. Common
-            ones today include Spotify Family, YouTube Premium Family,
-            Apple One, Microsoft 365 Family, Amazon Prime, JioCinema
-            Premium, Disney+ Hotstar Super, YouTube Music Family,
-            SonyLIV Premium, Zee5 Premium and Audible Family. Bantle does
-            not verify provider compliance — read the provider&apos;s
-            terms before you add a plan.
+            Any subscription access that you have the right to
+            coordinate and that does not violate the provider&apos;s terms.
+            Bantle supports monthly sharing and one-time access listings,
+            but does not verify provider compliance — read the
+            provider&apos;s terms before you add a listing.
           </p>
         ),
       },
@@ -119,15 +114,27 @@ const sections: Section[] = [
         ),
       },
       {
+        q: "What is one-time access?",
+        a: (
+          <p>
+            One-time access means a host is offering access for the
+            remaining period shown, for a one-time price. It is not an
+            account sale or ownership transfer. Bantle does not verify the
+            remaining duration, process payments, or guarantee access.
+            Confirm the details directly in chat before paying outside
+            Bantle.
+          </p>
+        ),
+      },
+      {
         q: "How do payments work?",
         a: (
           <p>
-            Bantle never holds money. When the subscription bills the
-            host, Bantle reminds every other member of what they owe and
-            who to coordinate with. Payment happens directly between
-            members outside Bantle by a method they mutually choose.
-            Bantle does not process or verify payments, and members
-            should confirm access details directly before paying.
+            Bantle never holds money. For monthly sharing or one-time
+            access, payment happens directly between users outside Bantle
+            by a method they mutually choose. Bantle does not process or
+            verify payments, guarantee access, or guarantee duration.
+            Confirm access details directly before paying.
           </p>
         ),
       },

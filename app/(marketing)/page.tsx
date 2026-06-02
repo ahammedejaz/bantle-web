@@ -12,7 +12,7 @@ import { ComingSoonBadges } from "@/components/ComingSoonBadges";
 import { BRAND_NAME, SITE_DESCRIPTION } from "@/lib/constants";
 
 export const metadata = {
-  title: `${BRAND_NAME} — coordinate your household's subscriptions.`,
+  title: `${BRAND_NAME} — coordinate subscription access.`,
   description: SITE_DESCRIPTION,
 };
 
@@ -37,24 +37,24 @@ function WhyBantle() {
             Why Bantle
           </p>
           <h2 className="font-serif text-3xl md:text-4xl text-teal-900 leading-tight tracking-tightish text-balance">
-            Built for the people who already share your fridge.
+            Built for direct subscription coordination.
           </h2>
         </div>
         <div className="grid gap-6 md:grid-cols-3">
           <FeatureCard
             icon={HandCoins}
             title="Save real money"
-            body="A family Spotify plan in India costs around ₹179 a month. Split across six household members, that's under ₹30 each. Repeat for YouTube Premium, Apple One and Microsoft 365. The maths quietly adds up to thousands a year."
+            body="Coordinate monthly sharing or one-time access for subscriptions you already manage. Clear prices, durations and notes help both sides know what they are discussing before money moves outside Bantle."
           />
           <FeatureCard
             icon={HeartHandshake}
             title="Coordinate, don't negotiate"
-            body="Bantle is for households that already share a roof — roommates, family, partners. No stranger search, no marketplace. Just a calm place to track who pays for what and when the next renewal lands."
+            body="Listings, chat and deal states keep the arrangement clear. Monthly sharing stays monthly; one-time access shows the one-time price and months remaining without turning Bantle into a payment service."
           />
           <FeatureCard
             icon={ShieldCheck}
             title="Stay in control"
-            body="Bantle never touches your money. You and your housemates coordinate payment directly outside Bantle. No balances to chase, no fees to anyone."
+            body="Bantle never touches your money and does not verify payment, access or duration. Users confirm access details directly before paying outside Bantle."
           />
         </div>
       </div>
@@ -66,18 +66,18 @@ function HowItWorks() {
   const steps = [
     {
       icon: ListChecks,
-      title: "Add the family plan you already share",
-      body: "Pick the plan you're hosting for the household — Spotify Family, YouTube Premium Family, Apple One, Microsoft 365 Family, and so on. Bantle remembers the slots, the per-person cost, and the renewal date so nobody has to.",
+      title: "Add monthly sharing or one-time access",
+      body: "Pick the subscription you are coordinating, choose monthly sharing or one-time access, and enter the price, duration, access method and notes that the other person should confirm in chat.",
     },
     {
       icon: MessageCircle,
-      title: "Invite your household",
-      body: "Send your roommates, family or partner an invite from the app. Each member confirms their slot, agrees on what they'll pay, and signs in with email — quick, no SMS, no phone hassle.",
+      title: "Confirm details in chat",
+      body: "Use chat to confirm access, duration, price and terms directly. Bantle requires safety acknowledgements before proposal and acceptance, but does not guarantee the arrangement.",
     },
     {
       icon: HandCoins,
-      title: "Coordinate each monthly split",
-      body: "When the bill lands, Bantle reminds everyone what they owe. Settlement happens directly between household members outside Bantle. Bantle never holds money, never takes a cut.",
+      title: "Coordinate outside Bantle",
+      body: "Payment happens outside Bantle by whatever method users mutually choose. Bantle does not collect, process, verify or insure payments, and does not provide refunds or compensation.",
     },
   ];
 
@@ -89,7 +89,7 @@ function HowItWorks() {
             How it works
           </p>
           <h2 className="font-serif text-3xl md:text-4xl text-teal-900 leading-tight tracking-tightish text-balance">
-            Three steps from one bill to a cleanly split household.
+            Three steps from listed terms to a clear conversation.
           </h2>
         </div>
         <ol className="grid gap-10 md:grid-cols-3">
@@ -138,25 +138,23 @@ function TrustSection() {
           </div>
           <div className="space-y-5">
             <p className="text-[16px] leading-8 text-ink">
-              Subscription sharing already happens in every Indian household
-              &mdash; between siblings, flatmates, parents and partners
-              &mdash; but everywhere outside Bantle it&apos;s a WhatsApp
-              thread that nobody updates and a payment somebody always
-              forgets. We built Bantle to make that pattern reliable for
-              the people who already live with each other.
+              Subscription coordination already happens across India,
+              often through chat threads where price, access duration and
+              renewal timing get lost. We built Bantle to make those
+              details clearer before users coordinate directly.
             </p>
             <p className="text-[16px] leading-8 text-ink">
               That means email verification on every account, gentle
-              monthly reminders, and a clear separation between coordination
-              and money. We host the structure. Your household does the
-              splitting.
+              reminders, type-aware listing terms, and a clear separation
+              between coordination and money. We host the structure. Users
+              confirm the arrangement directly.
             </p>
             <ul className="grid gap-3 mt-6">
               {[
-                "Email-verified members on every plan",
-                "Built for household members who already know each other",
-                "Free to use — Bantle doesn't earn from your splits",
-                "No payment handling — direct between members",
+                "Email-verified accounts",
+                "Monthly sharing and one-time access terms",
+                "Free to use — Bantle doesn't earn from your arrangements",
+                "No payment handling — direct between users",
               ].map((line) => (
                 <li
                   key={line}
@@ -185,9 +183,9 @@ function ComingSoonCTA() {
           Be the first to know when we launch.
         </h2>
         <p className="mt-5 text-lg leading-8 text-cream/80 max-w-2xl mx-auto">
-          Bantle is opening up to Indian households in early access. Drop
-          us a line if you&apos;d like to be one of the first invites, or
-          bookmark the store badges below.
+          Bantle is opening up in early access. Drop us a line if
+          you&apos;d like to be one of the first invites, or bookmark the
+          store badges below.
         </p>
         <div className="mt-10">
           <ComingSoonBadges align="center" />

@@ -10,7 +10,7 @@ import { CURRENT_VERSION, EFFECTIVE_DATE_DISPLAY } from "@/lib/tos";
 export const metadata = {
   title: "Terms of service",
   description:
-    "The terms that govern your use of Bantle. We're a household coordination tool; arrangements and any payments happen directly between household members.",
+    "The terms that govern your use of Bantle. We coordinate monthly sharing and one-time access; arrangements and payments happen directly between users.",
 };
 
 export default function TermsPage() {
@@ -45,20 +45,20 @@ export default function TermsPage() {
         <section>
           <h2>2. What Bantle is</h2>
           <p>
-            Bantle is a coordination tool for members of the same
-            household to track and split the cost of family-plan
-            subscriptions they already share. Each plan in Bantle is
-            created by a host (the person who pays the underlying
-            subscription provider), populated with members from the
-            host&apos;s household, and used to coordinate monthly
-            settlement among those members.
+            Bantle is a coordination tool for subscription access. Users
+            can coordinate monthly sharing or one-time access for a
+            remaining subscription period. Each listing is created by a
+            host who describes the subscription, price, access duration
+            and access notes; users then coordinate directly in chat.
+          </p>
+          <p>
+            One-time access means access for the period shown. It is not
+            account selling, ownership transfer, or a remaining duration
+            confirmed by Bantle. Users must confirm access, duration,
+            price and terms directly before paying outside Bantle.
           </p>
           <p>Bantle is not:</p>
           <ul>
-            <li>
-              a marketplace for finding strangers to share subscriptions
-              with;
-            </li>
             <li>
               an agent, broker, payment intermediary, payment processor or
               insurer for any subscription arrangement;
@@ -77,26 +77,24 @@ export default function TermsPage() {
           <p>
             Bantle does not facilitate, encourage or assist any violation
             of a subscription provider&apos;s terms of service. Each user
-            is solely responsible for ensuring that the way their
-            household coordinates a particular plan is permitted by the
-            relevant provider.
+            is solely responsible for ensuring that the way they
+            coordinate monthly sharing or one-time access is permitted by
+            the relevant provider.
           </p>
         </section>
 
         <section>
           <h2>3. Your attestations</h2>
           <p>
-            By using Bantle to create or join a coordination plan, you
+            By using Bantle to create or join a coordination listing, you
             attest each of the following on each occasion that you do so:
           </p>
           <ul>
             <li>
-              <strong>Household membership.</strong> Every member you
-              invite to a plan you host, or every plan you accept an
-              invite to, is a member of your household — that is, a
-              person residing at the same residential address as you, or
-              a family member who qualifies under the relevant
-              subscription provider&apos;s definition of household.
+              <strong>Accurate listing terms.</strong> If you host a
+              listing, the monthly price, one-time price, months
+              remaining, access method, access notes and other details you
+              provide are accurate to the best of your knowledge.
             </li>
             <li>
               <strong>Authority.</strong> If you are the host of a plan,
@@ -107,16 +105,10 @@ export default function TermsPage() {
             <li>
               <strong>Provider compliance.</strong> You have read, and
               will continue to comply with, the terms of service of each
-              underlying subscription provider whose plan you coordinate
-              through Bantle. You will not use Bantle to coordinate a
-              plan in a way that you know or reasonably suspect violates
-              those terms.
-            </li>
-            <li>
-              <strong>No stranger sharing.</strong> You will not use
-              Bantle to find, invite or coordinate with persons who are
-              not members of your household. Bantle is not provided for,
-              and is not designed for, that purpose.
+              underlying subscription provider whose access you
+              coordinate through Bantle. You will not use Bantle to
+              coordinate access in a way that you know or reasonably
+              suspect violates those terms.
             </li>
             <li>
               <strong>No commercial access.</strong> You will not use
@@ -128,8 +120,7 @@ export default function TermsPage() {
           <p>
             We may, but are not required to, ask you to re-confirm these
             attestations periodically inside the Service, especially when
-            you add a new plan or invite a new member to an existing
-            plan.
+            you add a new listing, propose a deal or accept a deal.
           </p>
         </section>
 
@@ -201,13 +192,12 @@ export default function TermsPage() {
           <p>The following are not allowed on Bantle:</p>
           <ul>
             <li>
-              Using the Service to share subscriptions with persons
-              outside your household, in violation of the attestations
-              above.
-            </li>
-            <li>
               Commercialising or sublicensing access to a subscription
               provider&apos;s services through Bantle.
+            </li>
+            <li>
+              Describing one-time access as account sale, ownership
+              transfer, or any access assurance confirmed by Bantle.
             </li>
             <li>
               Sharing account credentials (passwords, OTPs, security
@@ -217,7 +207,7 @@ export default function TermsPage() {
             <li>
               Processing or attempting to process payments inside Bantle.
               Bantle does not handle money; settlement happens directly
-              between household members outside Bantle.
+              between users outside Bantle.
             </li>
             <li>
               Fraud, impersonation, identity theft or attempts to deceive
@@ -256,15 +246,14 @@ export default function TermsPage() {
         </section>
 
         <section>
-          <h2>7. Plans and settlements between household members</h2>
+          <h2>7. Listings, deals and direct coordination</h2>
           <p>
             Any coordination plan you create or join through Bantle is an
-            arrangement between you and the other household members on
-            that plan. Bantle is not a party to that arrangement. Bantle
-            does not pre-approve, guarantee, insure or underwrite any
-            plan. We provide the coordination tools to help your
-            household keep track of who has paid what; the arrangement
-            itself is yours.
+            arrangement between you and the other user. Bantle is not a
+            party to that arrangement. Bantle does not pre-approve,
+            verify, guarantee, insure or underwrite any listing, deal,
+            access duration or payment. We provide coordination tools; the
+            arrangement itself is yours.
           </p>
           <p>
             We may, at our discretion, help mediate behavioural disputes
@@ -278,16 +267,17 @@ export default function TermsPage() {
             That acknowledgement confirms that Bantle does not process or
             verify payments, does not guarantee access or subscription
             duration, and is not responsible for scams, failed access,
-            refunds, losses or disputes. Members must confirm access
-            details directly with each other before paying. Any payment is
-            made outside Bantle at the member&apos;s own risk.
+            refunds, losses or disputes. Users must confirm access
+            details, duration, price and terms directly with each other
+            before paying. Any payment is made outside Bantle at the
+            user&apos;s own risk.
           </p>
         </section>
 
         <section>
           <h2>8. Payments</h2>
           <p>
-            All payments between household members happen{" "}
+            All payments between users happen{" "}
             <strong>outside</strong> Bantle by a method you mutually
             agree on. Bantle never collects, holds, routes, processes or
             verifies money on your behalf. Bantle does not guarantee
@@ -296,7 +286,7 @@ export default function TermsPage() {
             erroneous transfers, scams, failed access, losses or refunds.
             Such disputes are resolved through your bank, payment
             provider, appropriate legal channels, or directly between the
-            household members involved.
+            users involved.
           </p>
         </section>
 

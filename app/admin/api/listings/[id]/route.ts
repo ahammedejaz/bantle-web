@@ -24,9 +24,15 @@ type ListingDetail = {
   platform: string;
   category: string;
   description: string | null;
+  listing_type: string;
   monthly_price: number;
   slots_total: number;
   duration_months: number;
+  terms_type?: string | null;
+  one_time_price?: number | null;
+  access_duration_months?: number | null;
+  access_type?: string | null;
+  access_notes?: string | null;
   status: string | null;
   archived_at: string | null;
   created_at: string | null;
@@ -35,6 +41,17 @@ type ListingDetail = {
   closed_by: string | null;
   closed_at: string | null;
   host: HostSummary | null;
+  terms?: ListingTerms | ListingTerms[] | null;
+};
+
+type ListingTerms = {
+  terms_type: string | null;
+  monthly_price: number | null;
+  one_time_price: number | null;
+  duration_months: number | null;
+  access_duration_months: number | null;
+  access_type: string | null;
+  access_notes: string | null;
 };
 
 export async function GET(
@@ -51,8 +68,9 @@ export async function GET(
   const { data, error } = await supabase
     .from("listings")
     .select(
-      `id,user_id,title,platform,category,description,monthly_price,slots_total,duration_months,status,archived_at,created_at,updated_at,closed_reason,closed_by,closed_at,
-       host:profiles!listings_user_id_fkey(id,display_name,email,deleted_at,banned_until,banned_reason,permanently_banned,rating_avg,rating_count,is_admin)`,
+      `id,user_id,title,platform,category,description,listing_type,monthly_price,slots_total,duration_months,status,archived_at,created_at,updated_at,closed_reason,closed_by,closed_at,
+       host:profiles!listings_user_id_fkey(id,display_name,email,deleted_at,banned_until,banned_reason,permanently_banned,rating_avg,rating_count,is_admin),
+       terms:listing_terms(terms_type,monthly_price,one_time_price,duration_months,access_duration_months,access_type,access_notes)`,
     )
     .eq("id", listingId)
     .maybeSingle();
@@ -114,6 +132,7 @@ async function getDeals(
     .from("deals")
     .select(
       `id,status,agreed_price,duration_months,started_at,ends_at,terminated_at,created_at,host_id,buyer_id,
+       terms_snapshot:deal_terms_snapshots(terms_type,price_amount,price_period,duration_months,access_duration_months,access_type,access_notes_snapshot),
        host:profiles!deals_host_id_fkey(id,display_name,email,deleted_at),
        buyer:profiles!deals_buyer_id_fkey(id,display_name,email,deleted_at)`,
     )
@@ -171,8 +190,17 @@ async function getHostReportCounts(supabase: SupabaseClient, hostId: string) {
 }
 
 function normalizeListing(row: ListingDetail): ListingDetail {
+  const terms = Array.isArray(row.terms) ? (row.terms[0] ?? null) : row.terms;
   return {
     ...row,
     host: Array.isArray(row.host) ? (row.host[0] ?? null) : row.host,
+    terms_type: terms?.terms_type ?? row.listing_type ?? "monthly",
+    monthly_price: terms?.monthly_price ?? row.monthly_price,
+    one_time_price: terms?.one_time_price ?? null,
+    duration_months: terms?.duration_months ?? row.duration_months,
+    access_duration_months: terms?.access_duration_months ?? null,
+    access_type: terms?.access_type ?? null,
+    access_notes: terms?.access_notes ?? null,
+    terms: null,
   };
 }

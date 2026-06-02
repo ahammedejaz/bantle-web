@@ -1,8 +1,8 @@
 export const BRAND_NAME = "Bantle";
-export const TAGLINE = "Share subscription costs.";
+export const TAGLINE = "Coordinate subscription access.";
 export const SITE_URL = "https://bantle.in";
 export const SITE_DESCRIPTION =
-  "Bantle helps your household coordinate the family-plan subscriptions you already share — Spotify, YouTube Premium, Apple One, Microsoft 365 and more. Built for roommates, family and partners. Payments stay outside Bantle, directly between household members.";
+  "Bantle helps people in India coordinate monthly subscription sharing and one-time access directly with each other. Payments stay outside Bantle; Bantle does not process payments, verify payments, or guarantee access.";
 
 export const CONTACT_EMAIL = "support@bantle.in";
 export const FEEDBACK_EMAIL = "feedback@bantle.in";

@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useAdminToast } from "./AdminToastProvider";
+import { dealTermsSummary, dealTermsType } from "@/lib/adminTerms";
 import { cn } from "@/lib/utils";
 
 interface DealRow {
@@ -13,6 +14,15 @@ interface DealRow {
   ends_at: string | null;
   terminated_at: string | null;
   created_at: string | null;
+  terms_snapshot: {
+    terms_type: string | null;
+    price_amount: number | null;
+    price_period: string | null;
+    duration_months: number | null;
+    access_duration_months: number | null;
+    access_type: string | null;
+    access_notes_snapshot: string | null;
+  } | null;
   host_id: string | null;
   buyer_id: string | null;
   host: { display_name: string | null } | null;
@@ -139,6 +149,7 @@ export function UserDealsTab({ userId }: { userId: string }) {
         {deals.map((deal) => {
           const cp = counterpartyName(deal, userId);
           const status = statusDisplay(deal.status);
+          const isOneTime = dealTermsType(deal) === "one_time";
           return (
             <div
               key={deal.id}
@@ -164,10 +175,8 @@ export function UserDealsTab({ userId }: { userId: string }) {
                     <span className="font-medium">{cp.name}</span>
                   </p>
                   <p className="text-xs text-ink-muted mt-1">
-                    ₹{deal.agreed_price}
-                    {deal.duration_months
-                      ? ` · ${deal.duration_months} mo`
-                      : ""}
+                    {isOneTime ? "One-time access" : "Monthly sharing"} ·{" "}
+                    {dealTermsSummary(deal)}
                   </p>
                 </div>
                 <div className="text-right text-xs text-ink-muted shrink-0">

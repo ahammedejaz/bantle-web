@@ -32,9 +32,10 @@ export default function RefundPolicyPage() {
           <p>
             Bantle does not collect, process, hold, verify or transmit
             money on behalf of any member. When you and another member
-            agree on a split, all payments happen directly between the
-            two of you outside Bantle by a method you mutually choose.
-            Bantle is not in the money flow at any point.
+            agree on monthly sharing or one-time access, all payments
+            happen directly between the two of you outside Bantle by a
+            method you mutually choose. Bantle is not in the money flow at
+            any point.
           </p>
         </section>
 
@@ -83,6 +84,12 @@ export default function RefundPolicyPage() {
             scams, losses or failed access, guarantee that the other
             member will refund you, or act as an arbitrator with binding
             authority over your dispute.
+          </p>
+          <p>
+            For one-time access, Bantle also does not verify the remaining
+            access period or guarantee that the access will continue for
+            the months shown. Confirm details directly in chat before
+            paying outside Bantle.
           </p>
         </section>
 

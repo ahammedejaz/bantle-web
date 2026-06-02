@@ -4,56 +4,56 @@ import { PageHeader } from "@/components/PageHeader";
 export const metadata = {
   title: "How it works",
   description:
-    "From adding your family plan to splitting next month's bill — here's exactly how Bantle helps your household coordinate subscriptions in six steps.",
+    "How Bantle helps users coordinate monthly sharing and one-time access while payment and access confirmation stay outside Bantle.",
 };
 
 const steps = [
   {
     n: 1,
-    title: "Add the plan you're hosting",
+    title: "Add what you're coordinating",
     body: [
-      "Open Bantle and add the family-plan subscription you (or someone in your household) already pay for — Spotify Family, YouTube Premium Family, Apple One, Microsoft 365 Family, Amazon Prime, and the other plans Bantle supports. Tell us how many slots the plan covers, the monthly cost, and when it renews.",
-      "Bantle isn't a marketplace and won't show your plan to strangers. The plan is private to your household and only the people you explicitly invite can see it.",
+      "Open Bantle and add the subscription access you are coordinating. Choose monthly sharing for recurring access or one-time access for a remaining subscription period.",
+      "Monthly sharing captures monthly price, slots and commitment. One-time access captures one-time price, months remaining, access method and access notes.",
     ],
   },
   {
     n: 2,
-    title: "Invite your household",
+    title: "Confirm provider rules and access details",
     body: [
-      "Send an invite to each member of your household who uses (or wants to use) the plan — your roommates, family or partner. They sign in with email, accept the invite, and claim their slot. No SMS, no phone hassle.",
-      "By inviting somebody to your plan you're confirming they live in your household, the way the underlying subscription provider expects. Bantle isn't here to verify household composition for you — that part stays your responsibility.",
+      "Before listing or joining, check the underlying provider's terms. Bantle is not affiliated with providers and does not verify whether your arrangement is allowed.",
+      "For one-time access, the host must list accurate remaining access details. The buyer should confirm those details directly in chat before paying outside Bantle.",
     ],
   },
   {
     n: 3,
-    title: "Agree on how the bill splits",
+    title: "Talk in chat",
     body: [
-      "By default Bantle splits the monthly cost evenly across active slots. If your household wants a different arrangement — say the host pays a smaller share because they manage the master account — you can adjust the split per member.",
-      "Whatever you decide, it's locked in once everyone confirms, and shown the same way on every member's app. No more chasing screenshots of the actual bill.",
+      "Use Bantle chat to confirm access, duration, price, rules and timing. Keep the arrangement clear before either side coordinates outside Bantle.",
+      "Bantle keeps monthly sharing and one-time access labels separate so one-time prices are never shown as monthly prices.",
     ],
   },
   {
     n: 4,
-    title: "Coordinate each monthly split",
+    title: "Propose and accept with a safety acknowledgement",
     body: [
-      "When the subscription bills the host's card, Bantle nudges every other member of the plan with what they owe and who to coordinate with. Settlement happens directly between household members outside Bantle.",
-      "Bantle never holds, routes, processes, verifies or insures the money. If a payment problem happens, resolve it with your payment provider, your bank, appropriate legal channels, or directly with the other member.",
+      "Before a proposal or acceptance completes, Bantle asks users to acknowledge that payment happens outside Bantle and Bantle does not process payments or guarantee access.",
+      "The deal records the monthly or one-time terms for moderation context, but that record is not payment verification or access verification.",
     ],
   },
   {
     n: 5,
-    title: "Get reminded at renewal",
+    title: "Coordinate payment outside Bantle",
     body: [
-      "A few days before the subscription's annual or monthly renewal, Bantle prompts the host to confirm whether the plan is continuing. If it is, everyone's slots roll forward. If it isn't, the plan closes cleanly and the housemates can decide whether to move to a different one.",
-      "The point of the reminder is to avoid the silent renewal that nobody noticed and nobody settled — the failure mode that turns a household subscription into a quiet grudge.",
+      "Users choose their own outside-Bantle method. Bantle does not collect, hold, route, verify, insure or reverse payments.",
+      "If something goes wrong, resolve it with the other user, your payment provider, your bank or appropriate legal channels. Bantle does not provide refunds or compensation.",
     ],
   },
   {
     n: 6,
-    title: "Adjust when your household changes",
+    title: "Use reports and ratings if something goes wrong",
     body: [
-      "Roommates move out, partners move in, family compositions shift. When that happens you can reassign slots, change the per-member split, or close the plan from inside the app. Past settlement history stays intact so nobody has to remember whether September was settled.",
-      "If a member leaves the household, drop them from the plan and add the new person. Bantle handles the bookkeeping; you handle the doorbell.",
+      "If a user misrepresents access, pressures you, or behaves badly, use in-app reports so moderation can review the listing, chat and deal context.",
+      "Ratings remain a user signal. They do not mean Bantle confirmed payment, access or provider compliance.",
     ],
   },
 ];
@@ -63,8 +63,8 @@ export default function HowItWorksPage() {
     <>
       <PageHeader
         eyebrow="How it works"
-        title="From one family plan to a cleanly split household, in six steps."
-        intro="Bantle coordinates the family-plan subscriptions you already share with the people you already live with. Discovery, listings and stranger chat aren't part of the product — coordination is."
+        title="From listed terms to direct coordination, in six steps."
+        intro="Bantle coordinates monthly sharing and one-time access. Payment and access confirmation happen directly between users outside Bantle."
       />
       <article className="container-x py-12 md:py-16 prose-bantle max-w-3xl">
         <ol className="not-prose space-y-12">
@@ -98,21 +98,18 @@ export default function HowItWorksPage() {
         <section className="mt-16">
           <h2>A note on subscription provider terms</h2>
           <p>
-            Almost every family-plan subscription assumes that the people
-            on the plan live in the same household. The exact wording
-            varies between providers and changes over time — Spotify
-            verifies addresses periodically, YouTube Premium has tightened
-            its household checks, Apple One requires Family Sharing
-            membership, and so on. Bantle does not police those rules and
-            cannot tell whether your specific household qualifies under
-            any given provider&apos;s terms.
+            Subscription provider rules vary and change over time. Some
+            plans require household membership, some require family-group
+            membership, and many prohibit commercialisation or credential
+            sharing. Bantle does not police those rules and cannot tell
+            whether your specific arrangement qualifies under any given
+            provider&apos;s terms.
           </p>
           <p>
-            By using Bantle you confirm that the members on each plan are
-            members of your household and that you have read the relevant
-            provider&apos;s terms of service. If your sharing arrangement
-            doesn&apos;t qualify, please don&apos;t use Bantle to
-            coordinate it. See our{" "}
+            By using Bantle you confirm that you have read the relevant
+            provider&apos;s terms of service and that you will not use
+            Bantle to coordinate access in a way that violates them. See
+            our{" "}
             <Link href="/terms">terms of service</Link> and{" "}
             <Link href="/community-guidelines">community guidelines</Link>{" "}
             for the full version.

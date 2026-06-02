@@ -5,29 +5,29 @@ import { CONTACT_EMAIL } from "@/lib/constants";
 export const metadata = {
   title: "About",
   description:
-    "Bantle is a small, India-first team building a calmer way for households to split the family-plan subscriptions they already share.",
+    "Bantle is a small, India-first team building a clearer way to coordinate monthly sharing and one-time access for subscriptions.",
 };
 
 const principles = [
   {
     title: "Money is personal",
-    body: "We don't process or verify your payments. We don't earn a percentage of your splits. Every rupee moves directly between household members outside Bantle.",
+    body: "We don't process or verify your payments. We don't earn a percentage of your arrangements. Every rupee moves directly between users outside Bantle.",
   },
   {
-    title: "Household over marketplace",
-    body: "Bantle is for people who already live together — roommates, family, partners. We're not a stranger marketplace. The trust signals we lean on are the ones you already built when you signed your rent agreement.",
+    title: "Coordination over processing",
+    body: "Bantle keeps listing terms, chat and deal states clear. It does not become a payment processor, payment checker, access checker or provider-rule judge.",
   },
   {
     title: "India first",
-    body: "We're built around rupee-aware pricing, familiar chat habits and Indian household workflows. We don't pretend to be global. We work for the way Indians already share things — within families, within flats, within partners.",
+    body: "We're built around rupee-aware pricing, familiar chat habits and Indian support expectations. We don't pretend to be global. We work for the way Indians already coordinate subscriptions directly.",
   },
   {
     title: "Simple beats clever",
-    body: "There is no matching algorithm doing magic behind the scenes. You add a plan, you invite your housemates, you split the bill. That's the entire product.",
+    body: "There is no matching algorithm doing magic behind the scenes. You add monthly sharing or one-time access terms, confirm in chat, and coordinate directly. That's the product.",
   },
   {
-    title: "Sharing is normal",
-    body: "Family plans were designed to be shared. Splitting one with the people you live with isn't a hack or a trick — it's how every provider intended the family tier to work. Bantle just keeps the maths honest.",
+    title: "Provider rules matter",
+    body: "Every provider has its own access rules. Bantle does not verify compliance, so users must confirm that their arrangement is allowed before coordinating it.",
   },
 ];
 
@@ -36,45 +36,41 @@ export default function AboutPage() {
     <>
       <PageHeader
         eyebrow="About"
-        title="A calmer way for households to share subscription costs."
-        intro="Bantle exists because most Indian households already pay for the same family plans twice — once by you, once by someone else under the same roof. Family plans were always meant to be shared. We just keep the maths honest."
+        title="A clearer way to coordinate subscription access."
+        intro="Bantle exists because subscription coordination usually happens in messy chats. We keep monthly sharing and one-time access terms visible, while payment and access confirmation stay direct between users."
       />
       <article className="container-x py-12 md:py-16 prose-bantle max-w-3xl">
         <section>
           <h2>Our story</h2>
           <p>
-            Bantle started with a small, slightly embarrassing observation
-            at home. Our family was paying for four different Spotify
-            accounts even though one Family plan would have covered all of
-            us. The problem was never access — it was coordination. Who
-            pays this month, when does it renew, did anyone settle for
-            September, why is the bill on someone&apos;s personal card.
+            Bantle started with a small observation: subscription
+            coordination already happens in India, but the important
+            details are scattered across chats. Price, duration, access
+            rules, renewal timing and safety expectations are often
+            unclear at the exact moment someone is deciding whether to
+            coordinate directly.
           </p>
           <p>
-            That pattern is everywhere in urban India. Flatmates each pay
-            for their own YouTube Premium. Couples maintain parallel Apple
-            One subscriptions on different cards. Siblings end up paying
-            full price for Microsoft 365 because somebody forgot to add
-            them to the family plan. The money lost across a year is real,
-            usually thousands of rupees, occasionally tens of thousands.
+            That pattern is everywhere in urban India. Some people want
+            monthly sharing for an ongoing slot. Others want one-time
+            access for a remaining subscription period. In both cases, the
+            practical need is the same: clear terms, chat context, and a
+            reminder that payment happens outside Bantle.
           </p>
           <p>
-            Bantle is a coordination tool for that exact situation. It
-            isn&apos;t a marketplace for finding strangers to share with —
-            most family plans aren&apos;t designed for that, and the
-            providers are increasingly strict about it. Bantle is for the
-            people you already live with: roommates, family, partners.
-            Add the plan, invite the people on it, and coordinate each
-            month directly outside Bantle. The whole thing is meant to
-            feel as natural as splitting a Zomato order.
+            Bantle is a coordination tool for that exact situation. Add
+            the listing, keep monthly sharing and one-time access labels
+            separate, confirm terms in chat, and coordinate directly
+            outside Bantle. The app does not process payments, verify
+            payments, or guarantee access.
           </p>
           <p>
             Bantle is built and maintained by a small independent team
             focused on shipping useful tools for India. We&apos;re not
             venture funded, we don&apos;t sell ads, and we don&apos;t take
-            a cut of your splits. The plan is simple: keep the app free
-            and unobtrusive, and let it grow because the people on it want
-            to bring more of their own household on it.
+            a cut of your arrangements. The plan is simple: keep the app
+            free and unobtrusive, and let it grow because the people on it
+            want clearer subscription coordination.
           </p>
         </section>
 
@@ -104,10 +100,10 @@ export default function AboutPage() {
             knowing what it offers. Bantle, by design, does not:
           </p>
           <ul>
-            <li>Process, verify or hold payments — settlements happen directly between household members outside Bantle.</li>
+            <li>Process, verify or hold payments — payment happens directly between users outside Bantle.</li>
             <li>Sell, rent, or hand off your data to advertisers or brokers.</li>
-            <li>Match you with strangers or run any kind of marketplace — Bantle is for the people you already live with.</li>
-            <li>Verify whether the subscription you&apos;re sharing complies with the provider&apos;s terms — that&apos;s on you and the rest of your household.</li>
+            <li>Verify remaining access duration, provider compliance or payment status.</li>
+            <li>Guarantee access, refunds, compensation or dispute outcomes.</li>
           </ul>
         </section>
 

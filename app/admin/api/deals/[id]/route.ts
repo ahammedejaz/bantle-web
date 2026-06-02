@@ -20,10 +20,21 @@ type ListingSummary = {
   title: string | null;
   platform: string | null;
   category: string | null;
+  listing_type?: string | null;
   monthly_price: number | null;
   status: string | null;
   archived_at: string | null;
   closed_at?: string | null;
+};
+
+type DealTermsSnapshot = {
+  terms_type: string | null;
+  price_amount: number | null;
+  price_period: string | null;
+  duration_months: number | null;
+  access_duration_months: number | null;
+  access_type: string | null;
+  access_notes_snapshot: string | null;
 };
 
 type DealDetail = {
@@ -43,6 +54,7 @@ type DealDetail = {
   termination_source: string | null;
   created_at: string | null;
   listing: ListingSummary | ListingSummary[] | null;
+  terms_snapshot: DealTermsSnapshot | DealTermsSnapshot[] | null;
   host: ProfileSummary | ProfileSummary[] | null;
   buyer: ProfileSummary | ProfileSummary[] | null;
 };
@@ -62,7 +74,8 @@ export async function GET(
     .from("deals")
     .select(
       `id,listing_id,host_id,buyer_id,conversation_id,status,agreed_price,duration_months,started_at,ends_at,terminated_at,terminated_by,termination_reason,termination_source,created_at,
-       listing:listings!deals_listing_id_fkey(id,user_id,title,platform,category,monthly_price,status,archived_at,closed_at),
+       listing:listings!deals_listing_id_fkey(id,user_id,title,platform,category,listing_type,monthly_price,status,archived_at,closed_at),
+       terms_snapshot:deal_terms_snapshots(terms_type,price_amount,price_period,duration_months,access_duration_months,access_type,access_notes_snapshot),
        host:profiles!deals_host_id_fkey(id,display_name,email,deleted_at,banned_until,permanently_banned,is_admin),
        buyer:profiles!deals_buyer_id_fkey(id,display_name,email,deleted_at,banned_until,permanently_banned,is_admin)`,
     )
@@ -78,7 +91,7 @@ export async function GET(
   }
 
   const deal = normalizeDeal(data as unknown as DealDetail);
-  const [conversation, recentMessages, ratings, auditEntries] =
+  const [conversation, recentMessages, ratings, auditEntries, disclaimers] =
     await Promise.all([
       deal.conversation_id
         ? getConversation(supabase, deal.conversation_id)
@@ -88,6 +101,7 @@ export async function GET(
         : [],
       getRatings(supabase, deal.id),
       getAuditEntries(supabase, deal.id),
+      getDisclaimerAcceptances(supabase, deal.id),
     ]);
 
   return NextResponse.json({
@@ -99,6 +113,7 @@ export async function GET(
     recent_messages: recentMessages,
     ratings,
     audit_entries: auditEntries,
+    disclaimer_acceptances: disclaimers,
   });
 }
 
@@ -165,12 +180,36 @@ async function getAuditEntries(supabase: SupabaseClient, dealId: string) {
   return data ?? [];
 }
 
+async function getDisclaimerAcceptances(
+  supabase: SupabaseClient,
+  dealId: string,
+) {
+  const { data, error } = await supabase
+    .from("deal_disclaimer_acceptances")
+    .select(
+      "id,user_id,deal_id,listing_id,action,disclaimer_version,listing_type_snapshot,deal_type_snapshot,accepted_at",
+    )
+    .eq("deal_id", dealId)
+    .order("accepted_at", { ascending: true });
+  if (error) {
+    console.warn(
+      "[admin deal detail] disclaimer acceptances failed:",
+      error.message,
+    );
+    return [];
+  }
+  return data ?? [];
+}
+
 function normalizeDeal(row: DealDetail) {
   return {
     ...row,
     listing: Array.isArray(row.listing)
       ? (row.listing[0] ?? null)
       : row.listing,
+    terms_snapshot: Array.isArray(row.terms_snapshot)
+      ? (row.terms_snapshot[0] ?? null)
+      : row.terms_snapshot,
     host: Array.isArray(row.host) ? (row.host[0] ?? null) : row.host,
     buyer: Array.isArray(row.buyer) ? (row.buyer[0] ?? null) : row.buyer,
   };

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { AlertTriangle, ChevronRight } from "lucide-react";
 import { ArchivedBadge, ListingStatusBadge } from "./ListingStatusBadge";
+import { listingTermsSummary, listingTypeLabel } from "@/lib/adminTerms";
 
 export interface ListingListItem {
   id: string;
@@ -10,9 +11,15 @@ export interface ListingListItem {
   title: string;
   platform: string;
   category: string;
+  listing_type: string;
   monthly_price: number;
+  one_time_price?: number | null;
   slots_total: number;
   duration_months: number;
+  terms_type?: string | null;
+  access_duration_months?: number | null;
+  access_type?: string | null;
+  access_notes?: string | null;
   status: string | null;
   archived_at: string | null;
   created_at: string | null;
@@ -81,8 +88,12 @@ export function ListingRow({ listing }: { listing: ListingListItem }) {
             {listing.platform} · {listing.category} · {hostLabel(listing.host)}
           </p>
           <p className="text-xs text-ink-muted mt-1">
-            Rs. {listing.monthly_price}/mo · {listing.duration_months} mo ·{" "}
-            {listing.slots_available ?? "?"}/{listing.slots_total} slots
+            {listingTypeLabel(listing)} · {listingTermsSummary(listing)} ·{" "}
+            {listing.listing_type === "one_time"
+              ? "1 access spot"
+              : `${listing.slots_available ?? "?"}/${
+                  listing.slots_total
+                } slots`}
           </p>
           {listing.closed_at ? (
             <p className="text-xs text-amber-900 mt-2">

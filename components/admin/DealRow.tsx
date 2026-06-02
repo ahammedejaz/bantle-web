@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import { DealStatusBadge } from "./DealStatusBadge";
+import { dealTermsSummary, dealTermsType } from "@/lib/adminTerms";
 
 export interface DealListItem {
   id: string;
@@ -20,10 +21,20 @@ export interface DealListItem {
   termination_reason: string | null;
   termination_source: string | null;
   created_at: string | null;
+  terms_snapshot: {
+    terms_type: string | null;
+    price_amount: number | null;
+    price_period: string | null;
+    duration_months: number | null;
+    access_duration_months: number | null;
+    access_type: string | null;
+    access_notes_snapshot: string | null;
+  } | null;
   listing: {
     id: string;
     title: string | null;
     platform: string | null;
+    listing_type?: string | null;
     status: string | null;
     archived_at: string | null;
   } | null;
@@ -59,6 +70,7 @@ function profileLabel(profile: ProfileSummary | null): string {
 }
 
 export function DealRow({ deal }: { deal: DealListItem }) {
+  const isOneTime = dealTermsType(deal) === "one_time";
   return (
     <Link
       href={`/admin/deals/${deal.id}`}
@@ -81,8 +93,8 @@ export function DealRow({ deal }: { deal: DealListItem }) {
             {profileLabel(deal.host)} · Buyer: {profileLabel(deal.buyer)}
           </p>
           <p className="text-xs text-ink-muted mt-1">
-            Rs. {deal.agreed_price}
-            {deal.duration_months ? ` · ${deal.duration_months} mo` : ""}
+            {isOneTime ? "One-time access" : "Monthly sharing"} ·{" "}
+            {dealTermsSummary(deal)}
             {deal.started_at ? ` · started ${fmtDate(deal.started_at)}` : ""}
             {deal.ends_at ? ` · ends ${fmtDate(deal.ends_at)}` : ""}
           </p>

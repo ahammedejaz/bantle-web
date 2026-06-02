@@ -5,7 +5,7 @@ import { CONTACT_EMAIL, POLICY_EFFECTIVE_DATE } from "@/lib/constants";
 export const metadata = {
   title: "Community guidelines",
   description:
-    "What we expect from every Bantle member: honest profiles, honoured deals, civil chat, and no off-platform shenanigans.",
+    "What we expect from every Bantle member: honest listing terms, honoured deals, civil chat, and clear outside-Bantle coordination.",
 };
 
 export default function CommunityGuidelinesPage() {
@@ -27,13 +27,15 @@ export default function CommunityGuidelinesPage() {
             </li>
             <li>
               Listings should accurately describe the subscription, how
-              many slots are genuinely available, and the realistic price
-              per person. Do not advertise more slots than you have.
+              many slots are genuinely available, the realistic monthly
+              price, or the one-time price and months remaining for
+              one-time access. Do not advertise more slots or longer
+              access than you have.
             </li>
             <li>
-              If something changes during a deal — the master account
-              changes hands, the plan is moved, the household size grows
-              — tell your sharing partner promptly.
+              If something changes during a deal — access changes, the
+              plan is moved, a renewal fails, or the remaining access
+              period changes — tell your sharing partner promptly.
             </li>
           </ul>
         </section>
@@ -69,8 +71,8 @@ export default function CommunityGuidelinesPage() {
             </li>
             <li>
               Maintain access to the shared plan for the agreed duration.
-              Hosts don&apos;t change passwords or quietly drop sharers
-              mid-deal.
+              Hosts don&apos;t quietly drop sharers mid-deal or
+              misrepresent one-time access duration.
             </li>
             <li>
               Communicate proactively if your circumstances change.
@@ -86,9 +88,9 @@ export default function CommunityGuidelinesPage() {
           <ul>
             <li>
               Don&apos;t pressure other members to move conversations to
-              WhatsApp, Telegram or Instagram before a deal is agreed.
-              In-app chat exists so we can act on reports if something goes
-              wrong.
+              WhatsApp, Telegram or Instagram before access details,
+              duration, price and terms are confirmed. In-app chat exists
+              so we can act on reports if something goes wrong.
             </li>
             <li>
               Don&apos;t try to circumvent our identity, ratings or report
@@ -97,8 +99,8 @@ export default function CommunityGuidelinesPage() {
             </li>
             <li>
               Payment or contact details exchanged inside a Bantle chat
-              are for the specific deal. Don&apos;t use them as a lead
-              list for unrelated solicitation.
+              are for the specific deal. Don&apos;t use them for unrelated
+              solicitation.
             </li>
           </ul>
         </section>
@@ -107,9 +109,10 @@ export default function CommunityGuidelinesPage() {
           <h2>5. No unrelated offers</h2>
           <ul>
             <li>
-              Bantle is for sharing subscription plans. It is not a place
-              to offer account credentials, lifetime accounts, pirated
-              streams, or anything else outside that scope.
+              Bantle is for monthly sharing and one-time access
+              coordination. It is not a place to offer credentials,
+              pirated streams, unrelated digital goods, or anything else
+              outside that scope.
             </li>
             <li>
               Recruitment, MLM pitches, crypto schemes, course bundles and
@@ -122,7 +125,7 @@ export default function CommunityGuidelinesPage() {
           <h2>6. No illegal content</h2>
           <p>
             Child sexual abuse material, content that endangers minors,
-            scams, fraudulent listings, stolen-credential sales, content
+            scams, fraudulent listings, stolen credentials, content
             inciting violence, or anything that would violate Indian law
             is grounds for immediate, permanent removal and may be
             reported to law enforcement.

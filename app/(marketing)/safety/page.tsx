@@ -5,7 +5,7 @@ import { CONTACT_EMAIL } from "@/lib/constants";
 export const metadata = {
   title: "Safety",
   description:
-    "How Bantle helps you keep your household's subscription coordination tidy, your account in your control, and any misuse easy to report. Bantle is a coordination tool — money flows happen outside it.",
+    "How Bantle helps keep monthly sharing and one-time access coordination clear, with payment and access confirmation outside Bantle.",
 };
 
 export default function SafetyPage() {
@@ -14,24 +14,23 @@ export default function SafetyPage() {
       <PageHeader
         eyebrow="Trust &amp; safety"
         title="A quiet, layered approach to keeping Bantle safe."
-        intro="Bantle's strongest safety signal isn't a verification badge — it's the fact that everyone on a plan already lives with each other. Email verification, blocks, reports and ratings handle the edge cases."
+        intro="Bantle keeps subscription coordination explicit: email verification, listing terms, chat, blocks, reports, ratings and mandatory deal safety acknowledgements all support safer direct coordination."
       />
       <article className="container-x py-12 md:py-16 prose-bantle max-w-3xl">
         <section>
-          <h2>Trust starts with your household</h2>
+          <h2>Trust starts with clear terms</h2>
           <p>
-            Bantle is designed for the people you already live with —
-            roommates, family, partners. The single most important safety
-            principle on Bantle is that you should not be coordinating a
-            subscription with somebody you wouldn&apos;t hand a spare key
-            to. Most subscription providers also require it, and the entire
-            structure of the app assumes it.
+            Bantle is designed to make subscription arrangements explicit
+            before anyone coordinates outside the app. Monthly sharing
+            shows the monthly price and commitment. One-time access shows
+            the one-time price, months remaining, access method and access
+            notes.
           </p>
           <p>
-            That means we don&apos;t lean on heavy identity checks the way
-            a stranger-marketplace would have to. Instead we focus on
-            keeping each household&apos;s data tidy, each member&apos;s
-            account in their own control, and any misuse easy to surface.
+            Bantle does not verify payment, access, or duration. The safer
+            pattern is to confirm access details directly in chat before
+            paying outside Bantle, and to avoid any arrangement that
+            appears to violate the provider&apos;s rules.
           </p>
         </section>
 
@@ -50,9 +49,10 @@ export default function SafetyPage() {
               passwords.
             </li>
             <li>
-              <strong>Household-only invites.</strong> Members join a plan
-              only when the host explicitly invites them by email. There
-              is no public feed of plans for strangers to browse and join.
+              <strong>Deal safety acknowledgement.</strong> Before a deal
+              is proposed or accepted, Bantle reminds users that payment
+              happens outside Bantle and that Bantle does not verify or
+              guarantee payment, access or duration.
             </li>
             <li>
               <strong>Ratings over time.</strong> If a household member
@@ -91,12 +91,11 @@ export default function SafetyPage() {
         </section>
 
         <section>
-          <h2>Red flags inside a household plan</h2>
+          <h2>Red flags before coordinating</h2>
           <p>
-            Most Bantle plans quietly settle every month and never need
-            our attention. A small number turn awkward. Here&apos;s what
-            to watch for, especially when a household composition is in
-            flux:
+            Most Bantle arrangements should be simple and explicit. Watch
+            for anything that contradicts the listing or avoids direct
+            confirmation:
           </p>
           <ul>
             <li>
@@ -112,6 +111,10 @@ export default function SafetyPage() {
             <li>
               Requests for payment or access details that do not match
               what you already confirmed directly with the other member.
+            </li>
+            <li>
+              One-time access where the host refuses to confirm months
+              remaining, access method, access notes, or provider rules.
             </li>
             <li>
               Pressure to share OTPs, account passwords, or your primary
@@ -130,9 +133,9 @@ export default function SafetyPage() {
           <h2>If something goes wrong</h2>
           <ol>
             <li>
-              <strong>Pause the plan.</strong> If somebody on your plan is
-              behaving badly, pause the plan or remove the slot before
-              more money moves.
+              <strong>Pause before paying.</strong> If details do not
+              match or a user pressures you, stop coordinating before more
+              money moves outside Bantle.
             </li>
             <li>
               <strong>File a report.</strong> Open the chat or plan, tap
@@ -159,9 +162,10 @@ export default function SafetyPage() {
           <p>
             Bantle does not hold, route, process, verify or insure your
             payments. Every rupee that changes hands moves directly
-            between household members outside Bantle. If a payment
-            dispute occurs — wrong amount sent, duplicate transfer,
-            refund needed, failed access or suspected scam — those are
+            between users outside Bantle. If a payment dispute occurs —
+            wrong amount sent, duplicate transfer, refund needed, failed
+            access, unclear one-time access duration or suspected scam —
+            those are
             resolved with your payment provider, your bank, appropriate
             legal channels, or directly between the members involved.
           </p>

@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useAdminToast } from "./AdminToastProvider";
+import { listingTermsSummary, listingTypeLabel } from "@/lib/adminTerms";
 import { cn } from "@/lib/utils";
 
 interface ListingRow {
@@ -9,9 +10,15 @@ interface ListingRow {
   title: string;
   platform: string;
   category: string;
+  listing_type: string;
   monthly_price: number;
+  one_time_price?: number | null;
   slots_total: number;
   duration_months: number;
+  terms_type?: string | null;
+  access_duration_months?: number | null;
+  access_type?: string | null;
+  access_notes?: string | null;
   status: string | null;
   created_at: string | null;
   archived_at: string | null;
@@ -110,7 +117,7 @@ export function UserListingsTab({ userId }: { userId: string }) {
             <tr className="border-b border-line text-xs text-ink-muted uppercase tracking-[0.1em]">
               <th className="text-left px-4 py-2 font-normal">Title</th>
               <th className="text-left px-4 py-2 font-normal">Platform</th>
-              <th className="text-right px-4 py-2 font-normal">Price/mo</th>
+              <th className="text-left px-4 py-2 font-normal">Terms</th>
               <th className="text-right px-4 py-2 font-normal">Slots</th>
               <th className="text-left px-4 py-2 font-normal">Status</th>
               <th className="text-left px-4 py-2 font-normal">Created</th>
@@ -126,11 +133,16 @@ export function UserListingsTab({ userId }: { userId: string }) {
                 >
                   <td className="px-4 py-3 text-ink">{listing.title}</td>
                   <td className="px-4 py-3 text-ink-muted">{listing.platform}</td>
-                  <td className="px-4 py-3 text-right text-ink">
-                    ₹{listing.monthly_price}
+                  <td className="px-4 py-3 text-ink">
+                    <p>{listingTypeLabel(listing)}</p>
+                    <p className="text-xs text-ink-muted mt-0.5">
+                      {listingTermsSummary(listing)}
+                    </p>
                   </td>
                   <td className="px-4 py-3 text-right text-ink">
-                    {listing.slots_total}
+                    {listing.listing_type === "one_time"
+                      ? "1"
+                      : listing.slots_total}
                   </td>
                   <td className="px-4 py-3">
                     <span

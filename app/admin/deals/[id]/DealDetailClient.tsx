@@ -9,6 +9,7 @@ import {
   type DealTerminateResponse,
 } from "@/components/admin/DealTerminateModal";
 import { DealStatusBadge } from "@/components/admin/DealStatusBadge";
+import { dealTermsSummary, dealTermsType } from "@/lib/adminTerms";
 
 interface ProfileSummary {
   id: string;
@@ -26,6 +27,7 @@ interface ListingSummary {
   title: string | null;
   platform: string | null;
   category: string | null;
+  listing_type?: string | null;
   monthly_price: number | null;
   status: string | null;
   archived_at: string | null;
@@ -48,6 +50,15 @@ interface DealDetail {
   termination_reason: string | null;
   termination_source: string | null;
   created_at: string | null;
+  terms_snapshot: {
+    terms_type: string | null;
+    price_amount: number | null;
+    price_period: string | null;
+    duration_months: number | null;
+    access_duration_months: number | null;
+    access_type: string | null;
+    access_notes_snapshot: string | null;
+  } | null;
   listing: ListingSummary | null;
   host: ProfileSummary | null;
   buyer: ProfileSummary | null;
@@ -84,6 +95,18 @@ interface AuditEntry {
   created_at: string | null;
 }
 
+interface DisclaimerAcceptance {
+  id: string;
+  user_id: string | null;
+  deal_id: string | null;
+  listing_id: string | null;
+  action: string;
+  disclaimer_version: string;
+  listing_type_snapshot: string;
+  deal_type_snapshot: string;
+  accepted_at: string | null;
+}
+
 interface DealDetailResponse {
   deal: DealDetail;
   listing: ListingSummary | null;
@@ -100,6 +123,7 @@ interface DealDetailResponse {
   recent_messages: MessageRow[];
   ratings: RatingRow[];
   audit_entries: AuditEntry[];
+  disclaimer_acceptances: DisclaimerAcceptance[];
 }
 
 function fmtDate(iso: string | null | undefined): string {
@@ -192,6 +216,7 @@ export function DealDetailClient({ dealId }: { dealId: string }) {
     deal.termination_source === "admin" && !!deal.terminated_at;
   const canTerminate = deal.status === "pending" || deal.status === "active";
   const listingTitle = listing?.title ?? "Listing unavailable";
+  const oneTimeDeal = dealTermsType(deal) === "one_time";
 
   return (
     <div>
@@ -214,9 +239,9 @@ export function DealDetailClient({ dealId }: { dealId: string }) {
               {listingTitle}
             </h1>
             <p className="text-sm text-ink-muted mt-2">
-              {listing?.platform ?? "Unknown platform"} · Rs.{" "}
-              {deal.agreed_price}
-              {deal.duration_months ? ` · ${deal.duration_months} mo` : ""}
+              {listing?.platform ?? "Unknown platform"} ·{" "}
+              {oneTimeDeal ? "One-time access" : "Monthly sharing"} ·{" "}
+              {dealTermsSummary(deal)}
             </p>
             <p className="text-xs text-ink-muted mt-1 font-mono break-all">
               {deal.id}
@@ -289,13 +314,52 @@ export function DealDetailClient({ dealId }: { dealId: string }) {
               </Link>
               <p className="text-xs text-ink-muted mt-1">
                 {listing.platform ?? "Unknown platform"} ·{" "}
-                {listing.status ?? "unknown"}
+                {listing.listing_type === "one_time"
+                  ? "One-time access"
+                  : "Monthly sharing"}{" "}
+                · {listing.status ?? "unknown"}
               </p>
             </>
           ) : (
             <p className="text-sm text-ink-muted">Listing missing.</p>
           )}
         </div>
+      </section>
+
+      <section className="mb-6">
+        <h2 className="font-serif italic text-2xl text-teal-900 mb-3">
+          Deal disclaimer evidence
+        </h2>
+        {data.disclaimer_acceptances.length === 0 ? (
+          <EmptyBlock>No disclaimer acceptance records found.</EmptyBlock>
+        ) : (
+          <div className="space-y-3">
+            {data.disclaimer_acceptances.map((acceptance) => (
+              <div
+                key={acceptance.id}
+                className="bg-cream-card border border-line rounded-card p-4"
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium text-ink">
+                      {acceptance.action} · v{acceptance.disclaimer_version}
+                    </p>
+                    <p className="text-xs text-ink-muted mt-1">
+                      Listing: {acceptance.listing_type_snapshot} · Deal:{" "}
+                      {acceptance.deal_type_snapshot}
+                    </p>
+                    <p className="text-xs text-ink-muted mt-1 font-mono break-all">
+                      User {acceptance.user_id ?? "unknown"}
+                    </p>
+                  </div>
+                  <p className="text-xs text-ink-muted shrink-0">
+                    {fmtDate(acceptance.accepted_at)}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </section>
 
       <section className="mb-6">

@@ -12,6 +12,11 @@ import {
   ArchivedBadge,
   ListingStatusBadge,
 } from "@/components/admin/ListingStatusBadge";
+import {
+  dealTermsSummary,
+  listingTermsSummary,
+  listingTypeLabel,
+} from "@/lib/adminTerms";
 import { cn } from "@/lib/utils";
 
 interface ProfileSummary {
@@ -34,10 +39,16 @@ interface ListingDetail {
   platform: string;
   category: string;
   description: string | null;
+  listing_type: string;
   monthly_price: number;
+  one_time_price?: number | null;
   slots_total: number;
   slots_available: number | null;
   duration_months: number;
+  terms_type?: string | null;
+  access_duration_months?: number | null;
+  access_type?: string | null;
+  access_notes?: string | null;
   status: string | null;
   archived_at: string | null;
   created_at: string | null;
@@ -57,6 +68,15 @@ interface DealRow {
   ends_at: string | null;
   terminated_at: string | null;
   created_at: string | null;
+  terms_snapshot: {
+    terms_type: string | null;
+    price_amount: number | null;
+    price_period: string | null;
+    duration_months: number | null;
+    access_duration_months: number | null;
+    access_type: string | null;
+    access_notes_snapshot: string | null;
+  } | null;
   host_id: string | null;
   buyer_id: string | null;
   host: ProfileSummary | ProfileSummary[] | null;
@@ -209,6 +229,10 @@ export function ListingDetailClient({ listingId }: { listingId: string }) {
     (deal) => deal.status === "active",
   ).length;
   const canClose = listing.status === "active";
+  const listingNotes =
+    listing.listing_type === "one_time"
+      ? listing.access_notes ?? listing.description
+      : listing.description;
 
   return (
     <div>
@@ -228,8 +252,8 @@ export function ListingDetailClient({ listingId }: { listingId: string }) {
               {listing.title}
             </h1>
             <p className="text-sm text-ink-muted mt-2">
-              {listing.platform} · {listing.category} · Rs.{" "}
-              {listing.monthly_price}/mo · {listing.duration_months} mo
+              {listing.platform} · {listing.category} ·{" "}
+              {listingTypeLabel(listing)} · {listingTermsSummary(listing)}
             </p>
             <p className="text-xs text-ink-muted mt-1 font-mono break-all">
               {listing.id}
@@ -263,8 +287,12 @@ export function ListingDetailClient({ listingId }: { listingId: string }) {
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
         <CountBlock
-          label="Slots"
-          value={`${listing.slots_available ?? "?"}/${listing.slots_total}`}
+          label={listing.listing_type === "one_time" ? "Access spots" : "Slots"}
+          value={
+            listing.listing_type === "one_time"
+              ? "1"
+              : `${listing.slots_available ?? "?"}/${listing.slots_total}`
+          }
         />
         <CountBlock label="Active deals" value={activeDealCount} />
         <CountBlock label="Pending deals" value={pendingDealCount} />
@@ -336,14 +364,25 @@ export function ListingDetailClient({ listingId }: { listingId: string }) {
         </div>
       </section>
 
-      {listing.description ? (
+      {listingNotes ? (
         <section className="mb-6 bg-cream-card border border-line rounded-card p-4">
           <p className="text-xs uppercase tracking-[0.14em] text-teal-600 mb-2">
-            Description
+            {listing.listing_type === "one_time"
+              ? "Access notes"
+              : "Description"}
           </p>
           <p className="text-sm text-ink whitespace-pre-wrap">
-            {listing.description}
+            {listingNotes}
           </p>
+        </section>
+      ) : null}
+
+      {listing.listing_type === "one_time" && listing.access_type ? (
+        <section className="mb-6 bg-cream-card border border-line rounded-card p-4">
+          <p className="text-xs uppercase tracking-[0.14em] text-teal-600 mb-2">
+            One-time access method
+          </p>
+          <p className="text-sm text-ink">{listing.access_type}</p>
         </section>
       ) : null}
 
@@ -493,8 +532,7 @@ function DealCard({ deal }: { deal: DealRow }) {
           </p>
         </div>
         <div className="text-right text-xs text-ink-muted shrink-0">
-          <p>Rs. {deal.agreed_price}</p>
-          {deal.duration_months ? <p>{deal.duration_months} mo</p> : null}
+          <p>{dealTermsSummary(deal)}</p>
           {deal.started_at ? <p>Started {fmtDate(deal.started_at)}</p> : null}
           {deal.ends_at ? <p>Ends {fmtDate(deal.ends_at)}</p> : null}
           {deal.terminated_at ? (
