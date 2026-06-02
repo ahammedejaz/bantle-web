@@ -11,7 +11,7 @@ export const metadata = {
 const principles = [
   {
     title: "Money is personal",
-    body: "We don't process your payments. We don't earn a percentage of your splits. Every rupee moves directly between household members on the UPI app they already use.",
+    body: "We don't process or verify your payments. We don't earn a percentage of your splits. Every rupee moves directly between household members outside Bantle.",
   },
   {
     title: "Household over marketplace",
@@ -19,7 +19,7 @@ const principles = [
   },
   {
     title: "India first",
-    body: "We're built around UPI, WhatsApp-style chat habits and rupee-aware pricing. We don't pretend to be global. We work for the way Indians already share things — within families, within flats, within partners.",
+    body: "We're built around rupee-aware pricing, familiar chat habits and Indian household workflows. We don't pretend to be global. We work for the way Indians already share things — within families, within flats, within partners.",
   },
   {
     title: "Simple beats clever",
@@ -64,9 +64,9 @@ export default function AboutPage() {
             most family plans aren&apos;t designed for that, and the
             providers are increasingly strict about it. Bantle is for the
             people you already live with: roommates, family, partners.
-            Add the plan, invite the people on it, settle each month on
-            UPI. The whole thing is meant to feel as natural as splitting
-            a Zomato order.
+            Add the plan, invite the people on it, and coordinate each
+            month directly outside Bantle. The whole thing is meant to
+            feel as natural as splitting a Zomato order.
           </p>
           <p>
             Bantle is built and maintained by a small independent team
@@ -104,7 +104,7 @@ export default function AboutPage() {
             knowing what it offers. Bantle, by design, does not:
           </p>
           <ul>
-            <li>Process or hold payments — settlements are UPI to UPI between household members.</li>
+            <li>Process, verify or hold payments — settlements happen directly between household members outside Bantle.</li>
             <li>Sell, rent, or hand off your data to advertisers or brokers.</li>
             <li>Match you with strangers or run any kind of marketplace — Bantle is for the people you already live with.</li>
             <li>Verify whether the subscription you&apos;re sharing complies with the provider&apos;s terms — that&apos;s on you and the rest of your household.</li>

@@ -38,7 +38,7 @@ export const metadata: Metadata = {
     "Apple One family share",
     "Microsoft 365 family",
     "OTT sharing India",
-    "UPI subscription split",
+    "subscription coordination India",
   ],
   authors: [{ name: BRAND_NAME }],
   openGraph: {

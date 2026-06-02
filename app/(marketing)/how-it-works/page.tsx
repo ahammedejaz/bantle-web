@@ -34,10 +34,10 @@ const steps = [
   },
   {
     n: 4,
-    title: "Settle each month over UPI",
+    title: "Coordinate each monthly split",
     body: [
-      "When the subscription bills the host's card, Bantle nudges every other member of the plan with what they owe and where to send it. Settlement happens directly on PhonePe, Google Pay, Paytm or any UPI app you already use.",
-      "Bantle never holds, routes or insures the money. UPI in India is faster, cheaper and more familiar than any in-app wallet we could build, and the dispute mechanisms inside UPI apps are already mature.",
+      "When the subscription bills the host's card, Bantle nudges every other member of the plan with what they owe and who to coordinate with. Settlement happens directly between household members outside Bantle.",
+      "Bantle never holds, routes, processes, verifies or insures the money. If a payment problem happens, resolve it with your payment provider, your bank, appropriate legal channels, or directly with the other member.",
     ],
   },
   {

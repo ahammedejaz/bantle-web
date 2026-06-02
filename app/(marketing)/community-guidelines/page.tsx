@@ -63,8 +63,9 @@ export default function CommunityGuidelinesPage() {
           <h2>3. Honour your deals</h2>
           <ul>
             <li>
-              Pay your share on or before the date you agreed on. Most UPI
-              apps support recurring payments — use them.
+              Settle your share on or before the date you agreed on,
+              using whatever outside-Bantle method both members confirmed
+              directly.
             </li>
             <li>
               Maintain access to the shared plan for the agreed duration.
@@ -95,20 +96,20 @@ export default function CommunityGuidelinesPage() {
               or inflate your own ratings.
             </li>
             <li>
-              UPI handles exchanged inside a Bantle chat are for the
-              specific deal. Don&apos;t use them as a lead list for
-              unrelated solicitation.
+              Payment or contact details exchanged inside a Bantle chat
+              are for the specific deal. Don&apos;t use them as a lead
+              list for unrelated solicitation.
             </li>
           </ul>
         </section>
 
         <section>
-          <h2>5. No selling outside scope</h2>
+          <h2>5. No unrelated offers</h2>
           <ul>
             <li>
               Bantle is for sharing subscription plans. It is not a place
-              to sell account credentials, lifetime accounts, pirated
-              streams, or anything else.
+              to offer account credentials, lifetime accounts, pirated
+              streams, or anything else outside that scope.
             </li>
             <li>
               Recruitment, MLM pitches, crypto schemes, course bundles and

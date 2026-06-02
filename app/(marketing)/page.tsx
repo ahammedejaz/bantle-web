@@ -4,7 +4,6 @@ import {
   HeartHandshake,
   ShieldCheck,
   MessageCircle,
-  Wallet,
   ListChecks,
 } from "lucide-react";
 import { HeroSection } from "@/components/HeroSection";
@@ -55,7 +54,7 @@ function WhyBantle() {
           <FeatureCard
             icon={ShieldCheck}
             title="Stay in control"
-            body="Bantle never touches your money. You and your housemates settle in rupees on whatever UPI app you already use. No wallets to top up, no balances to chase, no fees to anyone."
+            body="Bantle never touches your money. You and your housemates coordinate payment directly outside Bantle. No balances to chase, no fees to anyone."
           />
         </div>
       </div>
@@ -76,9 +75,9 @@ function HowItWorks() {
       body: "Send your roommates, family or partner an invite from the app. Each member confirms their slot, agrees on what they'll pay, and signs in with email — quick, no SMS, no phone hassle.",
     },
     {
-      icon: Wallet,
-      title: "Split each month over UPI",
-      body: "When the bill lands, Bantle reminds everyone what they owe. Settlement happens directly between you on PhonePe, Google Pay or any UPI app. Bantle never holds money, never takes a cut.",
+      icon: HandCoins,
+      title: "Coordinate each monthly split",
+      body: "When the bill lands, Bantle reminds everyone what they owe. Settlement happens directly between household members outside Bantle. Bantle never holds money, never takes a cut.",
     },
   ];
 
@@ -157,7 +156,7 @@ function TrustSection() {
                 "Email-verified members on every plan",
                 "Built for household members who already know each other",
                 "Free to use — Bantle doesn't earn from your splits",
-                "No payment handling — UPI directly between members",
+                "No payment handling — direct between members",
               ].map((line) => (
                 <li
                   key={line}

@@ -110,8 +110,8 @@ export default function SafetyPage() {
               arithmetic is about to get fuzzy.
             </li>
             <li>
-              Requests for payment to a UPI handle that doesn&apos;t match
-              the one shared earlier in the plan.
+              Requests for payment or access details that do not match
+              what you already confirmed directly with the other member.
             </li>
             <li>
               Pressure to share OTPs, account passwords, or your primary
@@ -157,21 +157,23 @@ export default function SafetyPage() {
         <section>
           <h2>Important: Bantle is coordination only</h2>
           <p>
-            Bantle does not hold, route or insure your payments. Every
-            rupee that changes hands moves directly between household
-            members on UPI. If a payment dispute occurs — wrong amount
-            sent, duplicate transfer, refund needed — those are resolved
-            inside your UPI app&apos;s own dispute process, with your
-            bank, or directly between the members involved.
+            Bantle does not hold, route, process, verify or insure your
+            payments. Every rupee that changes hands moves directly
+            between household members outside Bantle. If a payment
+            dispute occurs — wrong amount sent, duplicate transfer,
+            refund needed, failed access or suspected scam — those are
+            resolved with your payment provider, your bank, appropriate
+            legal channels, or directly between the members involved.
           </p>
           <p>
             What we can do: act on behavioural issues, suspend or remove
             accounts that violate our{" "}
             <Link href="/community-guidelines">community guidelines</Link>,
             and make sure repeat offenders don&apos;t get a second chance.
-            What we can&apos;t do: reverse a UPI transfer, refund your
-            money, or guarantee the outcome of any specific household
-            arrangement.
+            What we can&apos;t do: reverse a transfer, refund or
+            compensate you, verify a payment, guarantee access or
+            subscription duration, or guarantee the outcome of any
+            specific household arrangement.
           </p>
         </section>
       </article>

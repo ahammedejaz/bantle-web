@@ -31,8 +31,8 @@ const sections: Section[] = [
             Spotify Family, YouTube Premium Family, Apple One, Microsoft
             365 Family, and the like. The host adds the plan, invites the
             members of the household onto it, and Bantle handles the
-            monthly reminders and the split. Money moves directly between
-            members on UPI.
+            monthly reminders and the split. Any payment moves directly
+            between members outside Bantle.
           </p>
         ),
       },
@@ -124,9 +124,10 @@ const sections: Section[] = [
           <p>
             Bantle never holds money. When the subscription bills the
             host, Bantle reminds every other member of what they owe and
-            who to pay. Settlement happens directly on PhonePe, Google
-            Pay, Paytm or any UPI app you already use — the same way
-            you&apos;d send anyone else money.
+            who to coordinate with. Payment happens directly between
+            members outside Bantle by a method they mutually choose.
+            Bantle does not process or verify payments, and members
+            should confirm access details directly before paying.
           </p>
         ),
       },
@@ -149,9 +150,11 @@ const sections: Section[] = [
             The host can remove the slot at any time and rebalance the
             split across the remaining members. Bantle can also act on
             behavioural reports if there&apos;s a pattern across multiple
-            plans. Bantle cannot recover a UPI payment — that&apos;s
-            handled via your UPI app&apos;s dispute mechanism or directly
-            between the members involved.
+            plans. Bantle cannot recover a payment, refund or compensate
+            you, verify whether payment happened, or guarantee access.
+            Disputes are handled with your payment provider, your bank,
+            appropriate legal channels, or directly between the members
+            involved.
           </p>
         ),
       },

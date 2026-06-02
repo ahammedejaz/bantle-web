@@ -10,7 +10,7 @@ import { CURRENT_VERSION, EFFECTIVE_DATE_DISPLAY } from "@/lib/tos";
 export const metadata = {
   title: "Terms of service",
   description:
-    "The terms that govern your use of Bantle. We're a household coordination tool; subscription deals and payments happen between household members.",
+    "The terms that govern your use of Bantle. We're a household coordination tool; arrangements and any payments happen directly between household members.",
 };
 
 export default function TermsPage() {
@@ -60,7 +60,7 @@ export default function TermsPage() {
               with;
             </li>
             <li>
-              an agent, broker, escrow service, payment processor or
+              an agent, broker, payment intermediary, payment processor or
               insurer for any subscription arrangement;
             </li>
             <li>
@@ -119,8 +119,8 @@ export default function TermsPage() {
               and is not designed for, that purpose.
             </li>
             <li>
-              <strong>No commercial resale.</strong> You will not use
-              Bantle to resell, sublicense or commercialise access to a
+              <strong>No commercial access.</strong> You will not use
+              Bantle to sublicense or commercialise access to a
               subscription provider&apos;s services in any way that is
               not expressly permitted by the relevant provider.
             </li>
@@ -142,7 +142,8 @@ export default function TermsPage() {
             </li>
             <li>
               <strong>Accurate information.</strong> Your name, email and
-              UPI handle should be your real ones.
+              any contact or payment details you choose to share should be
+              accurate and belong to you.
             </li>
             <li>
               <strong>Security.</strong> Account security is your
@@ -205,8 +206,8 @@ export default function TermsPage() {
               above.
             </li>
             <li>
-              Buying, selling, reselling or sublicensing access to a
-              subscription provider&apos;s services through Bantle.
+              Commercialising or sublicensing access to a subscription
+              provider&apos;s services through Bantle.
             </li>
             <li>
               Sharing account credentials (passwords, OTPs, security
@@ -216,7 +217,7 @@ export default function TermsPage() {
             <li>
               Processing or attempting to process payments inside Bantle.
               Bantle does not handle money; settlement happens directly
-              between household members on UPI.
+              between household members outside Bantle.
             </li>
             <li>
               Fraud, impersonation, identity theft or attempts to deceive
@@ -271,19 +272,31 @@ export default function TermsPage() {
             access disputes), but we are under no obligation to do so and
             any mediation we provide is informal and non-binding.
           </p>
+          <p>
+            Before a member proposes, accepts or confirms a deal in the
+            App, Bantle may require an explicit safety acknowledgement.
+            That acknowledgement confirms that Bantle does not process or
+            verify payments, does not guarantee access or subscription
+            duration, and is not responsible for scams, failed access,
+            refunds, losses or disputes. Members must confirm access
+            details directly with each other before paying. Any payment is
+            made outside Bantle at the member&apos;s own risk.
+          </p>
         </section>
 
         <section>
           <h2>8. Payments</h2>
           <p>
             All payments between household members happen{" "}
-            <strong>outside</strong> Bantle, via UPI or any other method
-            you mutually agree on. Bantle never collects, holds or routes
-            money on your behalf. Bantle is not liable for payment
-            disputes, missed payments, erroneous transfers or refunds.
-            Such disputes are resolved through the relevant UPI
-            app&apos;s dispute mechanism, your bank, or directly between
-            the household members involved.
+            <strong>outside</strong> Bantle by a method you mutually
+            agree on. Bantle never collects, holds, routes, processes or
+            verifies money on your behalf. Bantle does not guarantee
+            access, subscription duration, refunds or compensation, and
+            is not liable for payment disputes, missed payments,
+            erroneous transfers, scams, failed access, losses or refunds.
+            Such disputes are resolved through your bank, payment
+            provider, appropriate legal channels, or directly between the
+            household members involved.
           </p>
         </section>
 
@@ -351,8 +364,10 @@ export default function TermsPage() {
             and non-infringement. Bantle does not warrant that the
             Service will be uninterrupted or error-free, that any
             household coordination will result in a successful split,
-            or that any subscription provider will permit a particular
-            sharing arrangement.
+            that a member will provide access for any particular
+            duration, that a member will refund you, or that any
+            subscription provider will permit a particular sharing
+            arrangement.
           </p>
         </section>
 

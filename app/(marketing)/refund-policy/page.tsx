@@ -30,10 +30,10 @@ export default function RefundPolicyPage() {
         <section>
           <h2>2. We do not handle money between users</h2>
           <p>
-            Bantle does not collect, process, hold, escrow or transmit
+            Bantle does not collect, process, hold, verify or transmit
             money on behalf of any member. When you and another member
-            agree on a split, all payments happen directly between the two
-            of you through UPI or any other method you mutually choose.
+            agree on a split, all payments happen directly between the
+            two of you outside Bantle by a method you mutually choose.
             Bantle is not in the money flow at any point.
           </p>
         </section>
@@ -47,15 +47,14 @@ export default function RefundPolicyPage() {
           </p>
           <ul>
             <li>
-              <strong>Wrong amount or duplicate UPI transfer.</strong> Raise
-              a dispute inside your UPI app (PhonePe, Google Pay, Paytm,
-              and so on) — they have their own resolution flows backed by
-              NPCI.
+              <strong>Wrong amount or duplicate transfer.</strong> Raise
+              a dispute through your payment provider or bank. Their
+              dispute and reversal processes are outside Bantle.
             </li>
             <li>
               <strong>Refund agreed between members.</strong> If both
-              parties agree on a refund, settle it directly on UPI in the
-              other direction. There is nothing Bantle needs to do.
+              parties agree on a refund, settle it directly outside
+              Bantle. There is nothing Bantle needs to process.
             </li>
             <li>
               <strong>Refund disputed.</strong> Both members can use direct
@@ -78,8 +77,10 @@ export default function RefundPolicyPage() {
             on the platform.
           </p>
           <p>
-            We cannot reverse a UPI transfer, recover money that has
-            already been sent between members, guarantee that the other
+            We cannot reverse a transfer, recover money that has already
+            been sent between members, verify whether a payment happened,
+            guarantee access or subscription duration, compensate you for
+            scams, losses or failed access, guarantee that the other
             member will refund you, or act as an arbitrator with binding
             authority over your dispute.
           </p>
