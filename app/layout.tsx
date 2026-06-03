@@ -32,14 +32,20 @@ export const metadata: Metadata = {
   description: SITE_DESCRIPTION,
   keywords: [
     "Bantle",
-    "household subscription coordination India",
-    "family plan coordination India",
+    "household subscription coordination",
+    "family plan coordination",
     "subscription access coordination",
-    "household plan coordination",
-    "direct subscription coordination",
     "subscription coordination India",
+    "Bantle app",
   ],
+  applicationName: BRAND_NAME,
+  creator: BRAND_NAME,
+  publisher: BRAND_NAME,
+  category: "technology",
   authors: [{ name: BRAND_NAME }],
+  alternates: {
+    canonical: "/",
+  },
   openGraph: {
     type: "website",
     locale: "en_IN",
@@ -56,6 +62,17 @@ export const metadata: Metadata = {
   robots: {
     index: true,
     follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
+  },
+  icons: {
+    icon: "/icon.svg",
+    apple: "/apple-icon.svg",
   },
 };
 

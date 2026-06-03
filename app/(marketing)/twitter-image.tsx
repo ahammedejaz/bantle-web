@@ -5,7 +5,7 @@ export const alt = "Bantle — coordinate household subscription access clearly.
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
-export default async function OGImage() {
+export default async function TwitterImage() {
   return new ImageResponse(
     (
       <div

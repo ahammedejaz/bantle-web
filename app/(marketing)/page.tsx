@@ -1,28 +1,97 @@
+import Image from "next/image";
 import Link from "next/link";
 import {
+  Ban,
+  CircleHelp,
+  FileCheck2,
   HandCoins,
   HeartHandshake,
-  ShieldCheck,
-  MessageCircle,
   ListChecks,
+  MessageCircle,
+  ShieldCheck,
 } from "lucide-react";
 import { HeroSection } from "@/components/HeroSection";
 import { FeatureCard } from "@/components/FeatureCard";
 import { ComingSoonBadges } from "@/components/ComingSoonBadges";
-import { BRAND_NAME, SITE_DESCRIPTION } from "@/lib/constants";
+import {
+  BRAND_NAME,
+  CONTACT_EMAIL,
+  SITE_DESCRIPTION,
+  SITE_URL,
+} from "@/lib/constants";
 
 export const metadata = {
-  title: `${BRAND_NAME} — coordinate subscription access.`,
+  title: "Household subscription coordination in India",
   description: SITE_DESCRIPTION,
+  alternates: {
+    canonical: "/",
+  },
 };
+
+const appPreviewScreens = [
+  {
+    src: "/images/app-screens/home-overview.png",
+    alt: "Bantle home screen with search, categories, and a safety banner",
+    title: "Home overview",
+    width: 760,
+    height: 527,
+  },
+  {
+    src: "/images/app-screens/listing-details.png",
+    alt: "Bantle listing details fields for plan, duration, price, and slots",
+    title: "Listing details",
+    width: 760,
+    height: 487,
+  },
+  {
+    src: "/images/app-screens/deals-overview.png",
+    alt: "Bantle deals screen with status tabs and a direct-payment reminder",
+    title: "Deal timeline",
+    width: 760,
+    height: 376,
+  },
+  {
+    src: "/images/app-screens/settings.png",
+    alt: "Bantle settings screen with account, notification, and support options",
+    title: "Settings",
+    width: 491,
+    height: 760,
+  },
+];
+
+const structuredData = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: BRAND_NAME,
+    url: SITE_URL,
+    email: CONTACT_EMAIL,
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: BRAND_NAME,
+    url: SITE_URL,
+    description: SITE_DESCRIPTION,
+    inLanguage: "en-IN",
+  },
+];
 
 export default function Home() {
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(structuredData).replace(/</g, "\\u003c"),
+        }}
+      />
       <HeroSection />
       <WhyBantle />
       <HowItWorks />
-      <TrustSection />
+      <AppPreview />
+      <SafetyAndLimits />
+      <FAQPreview />
       <ComingSoonCTA />
     </>
   );
@@ -37,24 +106,24 @@ function WhyBantle() {
             Why Bantle
           </p>
           <h2 className="font-serif text-3xl md:text-4xl text-teal-900 leading-tight tracking-tightish text-balance">
-            Built for clear, direct coordination.
+            A clearer place for direct coordination.
           </h2>
         </div>
         <div className="grid gap-6 md:grid-cols-3">
           <FeatureCard
-            icon={HandCoins}
+            icon={FileCheck2}
             title="Keep terms visible"
-            body="Coordinate monthly sharing or one-time access for subscriptions you already manage. Clear listing terms and chat context help both sides understand what they are discussing."
+            body="Add the access type, expected duration, pricing notes, slots, and safety context in one place before anyone coordinates directly."
           />
           <FeatureCard
             icon={HeartHandshake}
-            title="Coordinate directly"
-            body="Listings, chat and deal states keep the arrangement clear. Bantle provides structure while users confirm access, provider rules and any outside-Bantle payment directly."
+            title="Coordinate with context"
+            body="Listings, chat, and deal states keep both sides aligned while users confirm access, provider rules, and timing themselves."
           />
           <FeatureCard
             icon={ShieldCheck}
-            title="Stay in control"
-            body="Bantle never touches money and does not verify payment, access or duration. Users stay responsible for following each provider's household or family-plan rules."
+            title="Stay within the rules"
+            body="Bantle reminds users to follow each provider's household or family-plan rules and keeps money handling outside the app."
           />
         </div>
       </div>
@@ -66,18 +135,18 @@ function HowItWorks() {
   const steps = [
     {
       icon: ListChecks,
-      title: "Add monthly sharing or one-time access",
-      body: "Pick the subscription access you are coordinating, choose monthly sharing or one-time access, and add the safe notes the other person should confirm in chat.",
+      title: "Add the access you coordinate",
+      body: "Choose monthly sharing or one-time access, then add the details another person should review before the arrangement moves forward.",
     },
     {
       icon: MessageCircle,
       title: "Confirm details in chat",
-      body: "Use chat to confirm access, provider rules, timing and expectations directly. Bantle requires safety acknowledgements before proposal and acceptance, but does not guarantee the arrangement.",
+      body: "Use Bantle chat to confirm provider rules, access, duration, timing, and expectations directly with the other user.",
     },
     {
       icon: HandCoins,
-      title: "Coordinate outside Bantle",
-      body: "Payment happens outside Bantle by whatever method users mutually choose. Bantle does not collect, process, verify or insure payments, and does not provide refunds or compensation.",
+      title: "Handle payments outside Bantle",
+      body: "Users choose their own outside-Bantle payment method. Bantle does not collect, route, verify, insure, or reverse payments.",
     },
   ];
 
@@ -89,26 +158,31 @@ function HowItWorks() {
             How it works
           </p>
           <h2 className="font-serif text-3xl md:text-4xl text-teal-900 leading-tight tracking-tightish text-balance">
-            Three steps from listed terms to a clear conversation.
+            From clear terms to a direct conversation.
           </h2>
         </div>
         <ol className="grid gap-10 md:grid-cols-3">
-          {steps.map((step, i) => (
-            <li key={step.title} className="flex flex-col gap-4">
-              <span
-                aria-hidden="true"
-                className="inline-flex items-center justify-center h-10 w-10 rounded-full border border-teal-900 text-teal-900 font-medium"
-              >
-                {i + 1}
-              </span>
-              <h3 className="font-serif text-xl text-teal-900">
-                {step.title}
-              </h3>
-              <p className="text-[15px] leading-7 text-ink-muted">
-                {step.body}
-              </p>
-            </li>
-          ))}
+          {steps.map((step, i) => {
+            const Icon = step.icon;
+
+            return (
+              <li key={step.title} className="flex flex-col gap-4">
+                <span
+                  aria-hidden="true"
+                  className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-teal-900 text-teal-900 font-medium"
+                >
+                  {i + 1}
+                </span>
+                <Icon className="h-5 w-5 text-teal-700" strokeWidth={1.8} />
+                <h3 className="font-serif text-xl text-teal-900">
+                  {step.title}
+                </h3>
+                <p className="text-[15px] leading-7 text-ink-muted">
+                  {step.body}
+                </p>
+              </li>
+            );
+          })}
         </ol>
         <div className="mt-12">
           <Link
@@ -123,46 +197,100 @@ function HowItWorks() {
   );
 }
 
-function TrustSection() {
+function AppPreview() {
   return (
     <section className="border-t border-line">
       <div className="container-x py-16 md:py-24">
-        <div className="grid gap-10 md:grid-cols-2 md:gap-16 md:items-start">
+        <div className="grid gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:items-start">
           <div>
             <p className="text-xs uppercase tracking-[0.14em] text-teal-600 mb-4">
-              Trust
+              App preview
             </p>
             <h2 className="font-serif text-3xl md:text-4xl text-teal-900 leading-tight tracking-tightish text-balance">
-              Built for India, by Indians.
+              A public preview of the current mobile layout.
             </h2>
+            <p className="mt-5 text-[16px] leading-8 text-ink-muted max-w-xl">
+              These actual Bantle UI screens focus on the surfaces that keep
+              coordination clear: terms, status, settings, and safety
+              reminders.
+            </p>
           </div>
-          <div className="space-y-5">
-            <p className="text-[16px] leading-8 text-ink">
-              Subscription coordination already happens across India,
-              often through chat threads where plan terms, access
-              expectations and renewal timing get lost. We built Bantle to make those
-              details clearer before users coordinate directly.
+          <div className="grid gap-4 sm:grid-cols-2">
+            {appPreviewScreens.map((screen) => (
+              <figure
+                key={screen.src}
+                className="overflow-hidden rounded-[24px] border border-line bg-white shadow-[0_18px_54px_rgba(0,60,52,0.10)]"
+              >
+                <Image
+                  src={screen.src}
+                  alt={screen.alt}
+                  width={screen.width}
+                  height={screen.height}
+                  className="h-auto w-full"
+                  sizes="(min-width: 1024px) 280px, (min-width: 640px) 44vw, 90vw"
+                />
+                <figcaption className="border-t border-line px-4 py-3 text-sm font-medium text-teal-900">
+                  {screen.title}
+                </figcaption>
+              </figure>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function SafetyAndLimits() {
+  const safetyNotes = [
+    "Users coordinate directly with people they already trust.",
+    "Every arrangement should follow the provider's household or family-plan rules.",
+    "Bantle keeps terms, chat, and updates organized for moderation context.",
+  ];
+  const limits = [
+    "Bantle does not collect, hold, route, verify, insure, or reverse payments.",
+    "Bantle does not promise access, duration, refunds, compensation, scam recovery, or dispute outcomes.",
+    "Bantle is not affiliated with subscription providers and does not decide whether a plan arrangement is allowed.",
+  ];
+
+  return (
+    <section className="bg-cream-card border-t border-line">
+      <div className="container-x py-16 md:py-24">
+        <div className="grid gap-10 md:grid-cols-2 md:gap-16">
+          <div>
+            <p className="text-xs uppercase tracking-[0.14em] text-teal-600 mb-4">
+              Safety and transparency
             </p>
-            <p className="text-[16px] leading-8 text-ink">
-              That means email verification on every account, gentle
-              reminders, type-aware listing terms, and a clear separation
-              between coordination and money. We host the structure. Users
-              confirm the arrangement directly.
-            </p>
-            <ul className="grid gap-3 mt-6">
-              {[
-                "Email-verified accounts",
-                "Monthly sharing and one-time access terms",
-                "Free to use — Bantle doesn't earn from your arrangements",
-                "No payment handling — users coordinate directly",
-              ].map((line) => (
-                <li
-                  key={line}
-                  className="flex items-start gap-3 text-[15px] text-ink"
-                >
+            <h2 className="font-serif text-3xl md:text-4xl text-teal-900 leading-tight tracking-tightish text-balance">
+              Built around clear responsibilities.
+            </h2>
+            <ul className="mt-8 grid gap-4">
+              {safetyNotes.map((note) => (
+                <li key={note} className="flex gap-3 text-[15px] leading-7">
+                  <ShieldCheck
+                    className="mt-1 h-5 w-5 shrink-0 text-teal-700"
+                    strokeWidth={1.8}
+                  />
+                  <span>{note}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div className="rounded-card border border-line bg-white p-6 md:p-8">
+            <div className="flex items-center gap-3">
+              <span className="inline-flex h-10 w-10 items-center justify-center rounded-button bg-teal-100 text-teal-900">
+                <Ban className="h-5 w-5" strokeWidth={1.8} />
+              </span>
+              <h3 className="font-serif text-2xl text-teal-900">
+                What Bantle does not do
+              </h3>
+            </div>
+            <ul className="mt-6 grid gap-4">
+              {limits.map((line) => (
+                <li key={line} className="flex gap-3 text-[15px] leading-7">
                   <span
                     aria-hidden="true"
-                    className="mt-2 h-1.5 w-1.5 rounded-full bg-teal-600 shrink-0"
+                    className="mt-3 h-1.5 w-1.5 shrink-0 rounded-full bg-teal-600"
                   />
                   <span>{line}</span>
                 </li>
@@ -175,17 +303,75 @@ function TrustSection() {
   );
 }
 
+function FAQPreview() {
+  const faqs = [
+    {
+      q: "Is Bantle a payment app?",
+      a: "No. Any payment is coordinated directly between users outside Bantle.",
+    },
+    {
+      q: "Can every subscription be coordinated?",
+      a: "No. Users must check and follow each provider's household or family-plan rules.",
+    },
+    {
+      q: "Does Bantle promise access?",
+      a: "No. Users confirm access, duration, and expectations directly with each other.",
+    },
+  ];
+
+  return (
+    <section className="border-t border-line">
+      <div className="container-x py-16 md:py-24">
+        <div className="max-w-2xl mb-10">
+          <p className="text-xs uppercase tracking-[0.14em] text-teal-600 mb-4">
+            FAQ
+          </p>
+          <h2 className="font-serif text-3xl md:text-4xl text-teal-900 leading-tight tracking-tightish text-balance">
+            The important boundaries are visible upfront.
+          </h2>
+        </div>
+        <div className="grid gap-5 md:grid-cols-3">
+          {faqs.map((item) => (
+            <article
+              key={item.q}
+              className="rounded-card border border-line bg-white p-6"
+            >
+              <CircleHelp
+                className="h-5 w-5 text-teal-700"
+                strokeWidth={1.8}
+              />
+              <h3 className="mt-4 font-serif text-xl text-teal-900">
+                {item.q}
+              </h3>
+              <p className="mt-3 text-[15px] leading-7 text-ink-muted">
+                {item.a}
+              </p>
+            </article>
+          ))}
+        </div>
+        <div className="mt-10">
+          <Link
+            href="/faq"
+            className="text-teal-600 underline underline-offset-2 hover:text-teal-900 text-[15px]"
+          >
+            Read all questions →
+          </Link>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function ComingSoonCTA() {
   return (
     <section className="bg-teal-900 text-cream border-t border-teal-800">
       <div className="container-x py-16 md:py-24 text-center">
         <h2 className="font-serif italic text-3xl md:text-5xl tracking-tightish text-balance max-w-3xl mx-auto">
-          Be the first to know when we launch.
+          Be the first to know when Bantle opens.
         </h2>
         <p className="mt-5 text-lg leading-8 text-cream/80 max-w-2xl mx-auto">
-          Bantle is opening up in early access. Drop us a line if
-          you&apos;d like to be one of the first invites, or bookmark the
-          store badges below.
+          Bantle is opening up in early access. Request access if you want
+          launch updates, or bookmark the store badges below.
         </p>
         <div className="mt-10">
           <ComingSoonBadges align="center" />
