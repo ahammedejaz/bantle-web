@@ -35,7 +35,7 @@ export default function CommunityGuidelinesPage() {
             <li>
               If something changes during a deal — access changes, the
               plan is moved, a renewal fails, or the remaining access
-              period changes — tell your sharing partner promptly.
+              period changes — tell the other household member promptly.
             </li>
           </ul>
         </section>

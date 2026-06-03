@@ -50,7 +50,7 @@ export default async function OGImage() {
               maxWidth: "920px",
             }}
           >
-            Share subscription costs. Keep your savings.
+            Coordinate household access. Keep your savings.
           </div>
           <div
             style={{
@@ -60,7 +60,7 @@ export default async function OGImage() {
               maxWidth: "880px",
             }}
           >
-            Find trusted neighbours to split family plans for Spotify,
+            Manage household subscription arrangements for Spotify,
             YouTube Premium, Apple One and more.
           </div>
         </div>

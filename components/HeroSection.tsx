@@ -12,13 +12,12 @@ export function HeroSection() {
               Coming soon · Made in India
             </p>
             <h1 className="font-serif italic text-4xl sm:text-5xl md:text-6xl text-teal-900 leading-[1.05] tracking-tightish text-balance">
-              Coordinate subscription sharing and access.
+              Coordinate household subscription access.
             </h1>
             <p className="mt-6 text-lg leading-8 text-ink-muted max-w-xl">
-              Bantle helps people in India coordinate monthly sharing and
-              one-time access for subscriptions directly with each other.
-              Payment happens outside Bantle; access details are confirmed
-              in chat.
+              Bantle helps people in India coordinate monthly household
+              arrangements and one-time access directly with people they
+              already trust. Payments and access are handled outside Bantle.
             </p>
             <div className="mt-8">
               <ComingSoonBadges />

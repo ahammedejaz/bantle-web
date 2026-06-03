@@ -13,7 +13,7 @@ export const EFFECTIVE_DATE = "2026-05-14";
 export const EFFECTIVE_DATE_DISPLAY = "14 May 2026";
 
 export const CHANGES_FROM_PREVIOUS = [
-  "Reframed Bantle as a household coordination tool, not a marketplace for finding strangers",
+  "Reframed Bantle as a household coordination tool, not a stranger-discovery network",
   "Added user attestations that every member of a coordination plan belongs to the same household",
   "Strengthened user responsibility for complying with each provider's terms of service",
   "Removed phone verification references — Bantle uses email verification",

@@ -22,8 +22,8 @@ export function Footer() {
               Bantle
             </Link>
             <p className="mt-4 text-[15px] leading-7 text-cream/80 max-w-xs">
-              {TAGLINE} Keep your savings. A discovery and chat app for
-              sharing family plans in India.
+              {TAGLINE} Keep your savings. A coordination and chat app for
+              household subscription arrangements in India.
             </p>
             <p className="mt-6 text-sm text-cream/60">
               Reach us at{" "}

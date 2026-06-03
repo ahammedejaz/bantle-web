@@ -91,10 +91,10 @@ const sections: Section[] = [
             subscription tier was designed for people living at the same
             address. Providers verify this in different ways &mdash;
             Spotify and YouTube Premium do address checks, Apple One
-            requires Family Sharing, and so on. A stranger marketplace
-            for these plans tends to violate provider terms, end with
-            forced sign-outs, and put both sides in an awkward position.
-            Bantle is built for the case the providers intend.
+            requires Family Sharing, and so on. A stranger-discovery model
+            for these plans tends to violate provider terms, end with forced
+            sign-outs, and put both sides in an awkward position. Bantle is
+            built for the case the providers intend.
           </p>
         ),
       },
