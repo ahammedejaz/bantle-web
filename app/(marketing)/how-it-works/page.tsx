@@ -36,7 +36,7 @@ const steps = [
     n: 4,
     title: "Propose and accept with a safety acknowledgement",
     body: [
-      "Before a proposal or acceptance completes, Bantle asks users to acknowledge that payment happens outside Bantle and Bantle does not process payments or guarantee access.",
+      "Before a proposal or acceptance completes, Bantle asks users to acknowledge that payment happens outside Bantle and Bantle does not process payments or promise access.",
       "The deal records the monthly or one-time terms for moderation context, but that record is not payment verification or access verification.",
     ],
   },

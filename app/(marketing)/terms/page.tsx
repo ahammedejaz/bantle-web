@@ -249,7 +249,7 @@ export default function TermsPage() {
             Any coordination plan you create or join through Bantle is an
             arrangement between you and the other user. Bantle is not a
             party to that arrangement. Bantle does not pre-approve,
-            verify, guarantee, insure or underwrite any listing, deal,
+            verify, promise, insure or underwrite any listing, deal,
             access duration or payment. We provide coordination tools; the
             arrangement itself is yours.
           </p>
@@ -263,7 +263,7 @@ export default function TermsPage() {
             Before a member proposes, accepts or confirms a deal in the
             App, Bantle may require an explicit safety acknowledgement.
             That acknowledgement confirms that Bantle does not process or
-            verify payments, does not guarantee access or subscription
+            verify payments, does not promise access or subscription
             duration, and is not responsible for scams, failed access,
             refunds, losses or disputes. Users must confirm access
             details, duration, price and terms directly with each other
@@ -278,7 +278,7 @@ export default function TermsPage() {
             All payments between users happen{" "}
             <strong>outside</strong> Bantle by a method you mutually
             agree on. Bantle never collects, holds, routes, processes or
-            verifies money on your behalf. Bantle does not guarantee
+            verifies money on your behalf. Bantle does not promise
             access, subscription duration, refunds or compensation, and
             is not liable for payment disputes, missed payments,
             erroneous transfers, scams, failed access, losses or refunds.

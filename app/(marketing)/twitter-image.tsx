@@ -1,7 +1,7 @@
 import { ImageResponse } from "next/og";
 
 export const runtime = "edge";
-export const alt = "Bantle — coordinate household subscription access clearly.";
+export const alt = "Bantle — household subscription access coordination.";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -50,7 +50,7 @@ export default async function TwitterImage() {
               maxWidth: "920px",
             }}
           >
-            Coordinate household subscription access clearly.
+            Household subscription access coordination.
           </div>
           <div
             style={{
@@ -61,7 +61,7 @@ export default async function TwitterImage() {
             }}
           >
             Keep household and family-plan details, chat and updates clear.
-            Users coordinate payments directly outside Bantle.
+            Users follow provider rules and coordinate payments outside Bantle.
           </div>
         </div>
 

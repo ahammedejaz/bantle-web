@@ -62,7 +62,7 @@ export default function AboutPage() {
             the listing, keep monthly sharing and one-time access labels
             separate, confirm terms in chat, and coordinate directly
             outside Bantle. The app does not process payments, verify
-            payments, or guarantee access.
+            payments, or promise access.
           </p>
           <p>
             Bantle is built and maintained by a small independent team
@@ -103,7 +103,7 @@ export default function AboutPage() {
             <li>Process, verify or hold payments — payment happens directly between users outside Bantle.</li>
             <li>Sell, rent, or hand off your data to advertisers or brokers.</li>
             <li>Verify remaining access duration, provider compliance or payment status.</li>
-            <li>Guarantee access, refunds, compensation or dispute outcomes.</li>
+            <li>Promise access, refunds, compensation or dispute outcomes.</li>
           </ul>
         </section>
 

@@ -80,14 +80,14 @@ export default function RefundPolicyPage() {
           <p>
             We cannot reverse a transfer, recover money that has already
             been sent between members, verify whether a payment happened,
-            guarantee access or subscription duration, compensate you for
-            scams, losses or failed access, guarantee that the other
+            promise access or subscription duration, compensate you for
+            scams, losses or failed access, promise that the other
             member will refund you, or act as an arbitrator with binding
             authority over your dispute.
           </p>
           <p>
             For one-time access, Bantle also does not verify the remaining
-            access period or guarantee that the access will continue for
+            access period or promise that the access will continue for
             the months shown. Confirm details directly in chat before
             paying outside Bantle.
           </p>

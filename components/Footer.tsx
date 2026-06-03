@@ -24,7 +24,7 @@ export function Footer() {
               <BrandMark light size="lg" />
             </Link>
             <p className="mt-4 text-[15px] leading-7 text-cream/80 max-w-xs">
-              {TAGLINE} A coordination and chat app for household and
+              {TAGLINE}. A coordination and chat app for household and
               family-plan arrangements in India.
             </p>
             <p className="mt-6 text-sm text-cream/60">

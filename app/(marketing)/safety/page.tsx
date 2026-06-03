@@ -51,8 +51,8 @@ export default function SafetyPage() {
             <li>
               <strong>Deal safety acknowledgement.</strong> Before a deal
               is proposed or accepted, Bantle reminds users that payment
-              happens outside Bantle and that Bantle does not verify or
-              guarantee payment, access or duration.
+              happens outside Bantle and that Bantle does not verify
+              payment, access or duration, or promise any outcome.
             </li>
             <li>
               <strong>Ratings over time.</strong> If a household member
@@ -175,8 +175,8 @@ export default function SafetyPage() {
             <Link href="/community-guidelines">community guidelines</Link>,
             and make sure repeat offenders don&apos;t get a second chance.
             What we can&apos;t do: reverse a transfer, refund or
-            compensate you, verify a payment, guarantee access or
-            subscription duration, or guarantee the outcome of any
+            compensate you, verify a payment, promise access or
+            subscription duration, or promise the outcome of any
             specific household arrangement.
           </p>
         </section>

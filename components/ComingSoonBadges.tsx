@@ -20,7 +20,7 @@ export function ComingSoonBadges({
       )}
     >
       <StoreBadge store="play" variant={variant} />
-      <StoreBadge store="apple" variant={variant} />
+      <StoreBadge store="ios" variant={variant} />
     </div>
   );
 }
@@ -29,7 +29,7 @@ function StoreBadge({
   store,
   variant,
 }: {
-  store: "play" | "apple";
+  store: "play" | "ios";
   variant: "default" | "compact";
 }) {
   const isCompact = variant === "compact";
@@ -48,7 +48,7 @@ function StoreBadge({
       className={cn(wrapperBase, dimensions, "opacity-80")}
     >
       <span className="shrink-0">
-        {store === "play" ? <PlayGlyph /> : <AppleGlyph />}
+        {store === "play" ? <PlayGlyph /> : <IosGlyph />}
       </span>
       <span className="flex flex-col items-start leading-tight text-left">
         <span className="text-[10px] uppercase tracking-[0.14em] text-cream/70">
@@ -79,7 +79,7 @@ function PlayGlyph() {
   );
 }
 
-function AppleGlyph() {
+function IosGlyph() {
   return (
     <svg
       viewBox="0 0 24 24"
@@ -89,8 +89,12 @@ function AppleGlyph() {
       className="text-cream"
     >
       <path
-        fill="currentColor"
-        d="M16.4 12.2c0-2.5 2-3.7 2.1-3.8-1.2-1.7-3-2-3.7-2-1.6-.2-3 .9-3.8.9-.8 0-2-.9-3.3-.9-1.7 0-3.3 1-4.2 2.6-1.8 3.1-.4 7.7 1.3 10.2.9 1.2 1.9 2.6 3.2 2.5 1.3-.1 1.8-.8 3.3-.8 1.6 0 2 .8 3.3.8 1.4 0 2.3-1.2 3.1-2.5.7-.9 1.2-2 1.6-3.1-2-.8-3-2.7-2.9-3.9ZM14.1 4.3c.7-.8 1.1-1.9 1-3-1 0-2.1.7-2.8 1.5-.6.7-1.2 1.8-1 2.9 1.1 0 2.2-.6 2.8-1.4Z"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M8 2.8h8a2 2 0 0 1 2 2v14.4a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V4.8a2 2 0 0 1 2-2Zm3.2 15.5h3.6"
       />
     </svg>
   );

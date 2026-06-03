@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import {
   Ban,
@@ -21,43 +20,14 @@ import {
 } from "@/lib/constants";
 
 export const metadata = {
-  title: "Household subscription coordination in India",
+  title: {
+    absolute: "Bantle — Household subscription access coordination",
+  },
   description: SITE_DESCRIPTION,
   alternates: {
     canonical: "/",
   },
 };
-
-const appPreviewScreens = [
-  {
-    src: "/images/app-screens/home-overview.png",
-    alt: "Bantle home screen with search, categories, and a safety banner",
-    title: "Home overview",
-    width: 760,
-    height: 527,
-  },
-  {
-    src: "/images/app-screens/listing-details.png",
-    alt: "Bantle listing details fields for plan, duration, price, and slots",
-    title: "Listing details",
-    width: 760,
-    height: 487,
-  },
-  {
-    src: "/images/app-screens/deals-overview.png",
-    alt: "Bantle deals screen with status tabs and a direct-payment reminder",
-    title: "Deal timeline",
-    width: 760,
-    height: 376,
-  },
-  {
-    src: "/images/app-screens/settings.png",
-    alt: "Bantle settings screen with account, notification, and support options",
-    title: "Settings",
-    width: 491,
-    height: 760,
-  },
-];
 
 const structuredData = [
   {
@@ -198,6 +168,29 @@ function HowItWorks() {
 }
 
 function AppPreview() {
+  const highlights = [
+    {
+      icon: FileCheck2,
+      title: "Listing terms",
+      body: "Plan type, access notes, provider-rule reminders, and outside-Bantle payment context stay visible before users coordinate directly.",
+    },
+    {
+      icon: MessageCircle,
+      title: "Chat context",
+      body: "Users confirm access, timing, expectations, and next steps directly with each other before moving ahead outside Bantle.",
+    },
+    {
+      icon: ListChecks,
+      title: "Status updates",
+      body: "Deal states help both sides understand what has been proposed, accepted, closed, or needs attention.",
+    },
+    {
+      icon: ShieldCheck,
+      title: "Safety controls",
+      body: "Settings, reports, blocks, and support surfaces are part of the app experience without changing payment responsibility.",
+    },
+  ];
+
   return (
     <section className="border-t border-line">
       <div className="container-x py-16 md:py-24">
@@ -207,33 +200,34 @@ function AppPreview() {
               App preview
             </p>
             <h2 className="font-serif text-3xl md:text-4xl text-teal-900 leading-tight tracking-tightish text-balance">
-              A public preview of the current mobile layout.
+              A preview grounded in the real app flow.
             </h2>
             <p className="mt-5 text-[16px] leading-8 text-ink-muted max-w-xl">
-              These actual Bantle UI screens focus on the surfaces that keep
-              coordination clear: terms, status, settings, and safety
-              reminders.
+              The launch page uses generic examples so provider names and
+              private user context stay off the public website.
             </p>
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
-            {appPreviewScreens.map((screen) => (
-              <figure
-                key={screen.src}
-                className="overflow-hidden rounded-[24px] border border-line bg-white shadow-[0_18px_54px_rgba(0,60,52,0.10)]"
-              >
-                <Image
-                  src={screen.src}
-                  alt={screen.alt}
-                  width={screen.width}
-                  height={screen.height}
-                  className="h-auto w-full"
-                  sizes="(min-width: 1024px) 280px, (min-width: 640px) 44vw, 90vw"
-                />
-                <figcaption className="border-t border-line px-4 py-3 text-sm font-medium text-teal-900">
-                  {screen.title}
-                </figcaption>
-              </figure>
-            ))}
+            {highlights.map((item) => {
+              const Icon = item.icon;
+
+              return (
+                <article
+                  key={item.title}
+                  className="rounded-card border border-line bg-white p-6 shadow-[0_18px_54px_rgba(0,60,52,0.08)]"
+                >
+                  <span className="inline-flex h-10 w-10 items-center justify-center rounded-button bg-teal-100 text-teal-900">
+                    <Icon className="h-5 w-5" strokeWidth={1.8} />
+                  </span>
+                  <h3 className="mt-5 font-serif text-xl text-teal-900">
+                    {item.title}
+                  </h3>
+                  <p className="mt-3 text-[15px] leading-7 text-ink-muted">
+                    {item.body}
+                  </p>
+                </article>
+              );
+            })}
           </div>
         </div>
       </div>

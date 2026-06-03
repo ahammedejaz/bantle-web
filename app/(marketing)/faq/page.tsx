@@ -118,7 +118,7 @@ const sections: Section[] = [
             One-time access means a host is offering access for the
             remaining period shown, for a one-time price. It is not an
             account sale or ownership transfer. Bantle does not verify the
-            remaining duration, process payments, or guarantee access.
+            remaining duration, process payments, or promise access.
             Confirm the details directly in chat before paying outside
             Bantle.
           </p>
@@ -131,7 +131,7 @@ const sections: Section[] = [
             Bantle never holds money. For monthly sharing or one-time
             access, payment happens directly between users outside Bantle
             by a method they mutually choose. Bantle does not process or
-            verify payments, guarantee access, or guarantee duration.
+            verify payments, promise access, or promise duration.
             Confirm access details directly before paying.
           </p>
         ),
@@ -156,7 +156,7 @@ const sections: Section[] = [
             split across the remaining members. Bantle can also act on
             behavioural reports if there&apos;s a pattern across multiple
             plans. Bantle cannot recover a payment, refund or compensate
-            you, verify whether payment happened, or guarantee access.
+            you, verify whether payment happened, or promise access.
             Disputes are handled with your payment provider, your bank,
             appropriate legal channels, or directly between the members
             involved.

@@ -1,8 +1,8 @@
 export const BRAND_NAME = "Bantle";
-export const TAGLINE = "Coordinate household subscription access clearly.";
+export const TAGLINE = "Household subscription access coordination";
 export const SITE_URL = "https://bantle.in";
 export const SITE_DESCRIPTION =
-  "Bantle is an India-first mobile app for coordinating household and family-plan subscription access. Users follow provider rules and handle payments directly outside Bantle.";
+  "Bantle helps people in India coordinate household and family-plan subscription access with people they already trust. Users follow provider rules and handle payments directly outside Bantle.";
 
 export const CONTACT_EMAIL = "support@bantle.in";
 export const FEEDBACK_EMAIL = "feedback@bantle.in";
