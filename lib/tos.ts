@@ -17,5 +17,5 @@ export const CHANGES_FROM_PREVIOUS = [
   "Added user attestations that every member of a coordination plan belongs to the same household",
   "Strengthened user responsibility for complying with each provider's terms of service",
   "Removed phone verification references — Bantle uses email verification",
-  "Removed Netflix from the catalogue of supported family plans",
+  "Removed named-provider examples from the catalogue of supported family plans",
 ];

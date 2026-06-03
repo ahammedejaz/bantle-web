@@ -37,24 +37,24 @@ function WhyBantle() {
             Why Bantle
           </p>
           <h2 className="font-serif text-3xl md:text-4xl text-teal-900 leading-tight tracking-tightish text-balance">
-            Built for direct subscription coordination.
+            Built for clear, direct coordination.
           </h2>
         </div>
         <div className="grid gap-6 md:grid-cols-3">
           <FeatureCard
             icon={HandCoins}
-            title="Save real money"
-            body="Coordinate monthly sharing or one-time access for subscriptions you already manage. Clear prices, durations and notes help both sides know what they are discussing before money moves outside Bantle."
+            title="Keep terms visible"
+            body="Coordinate monthly sharing or one-time access for subscriptions you already manage. Clear listing terms and chat context help both sides understand what they are discussing."
           />
           <FeatureCard
             icon={HeartHandshake}
-            title="Coordinate, don't negotiate"
-            body="Listings, chat and deal states keep the arrangement clear. Monthly sharing stays monthly; one-time access shows the one-time price and months remaining without turning Bantle into a payment service."
+            title="Coordinate directly"
+            body="Listings, chat and deal states keep the arrangement clear. Bantle provides structure while users confirm access, provider rules and any outside-Bantle payment directly."
           />
           <FeatureCard
             icon={ShieldCheck}
             title="Stay in control"
-            body="Bantle never touches your money and does not verify payment, access or duration. Users confirm access details directly before paying outside Bantle."
+            body="Bantle never touches money and does not verify payment, access or duration. Users stay responsible for following each provider's household or family-plan rules."
           />
         </div>
       </div>
@@ -67,12 +67,12 @@ function HowItWorks() {
     {
       icon: ListChecks,
       title: "Add monthly sharing or one-time access",
-      body: "Pick the subscription you are coordinating, choose monthly sharing or one-time access, and enter the price, duration, access method and notes that the other person should confirm in chat.",
+      body: "Pick the subscription access you are coordinating, choose monthly sharing or one-time access, and add the safe notes the other person should confirm in chat.",
     },
     {
       icon: MessageCircle,
       title: "Confirm details in chat",
-      body: "Use chat to confirm access, duration, price and terms directly. Bantle requires safety acknowledgements before proposal and acceptance, but does not guarantee the arrangement.",
+      body: "Use chat to confirm access, provider rules, timing and expectations directly. Bantle requires safety acknowledgements before proposal and acceptance, but does not guarantee the arrangement.",
     },
     {
       icon: HandCoins,
@@ -139,8 +139,8 @@ function TrustSection() {
           <div className="space-y-5">
             <p className="text-[16px] leading-8 text-ink">
               Subscription coordination already happens across India,
-              often through chat threads where price, access duration and
-              renewal timing get lost. We built Bantle to make those
+              often through chat threads where plan terms, access
+              expectations and renewal timing get lost. We built Bantle to make those
               details clearer before users coordinate directly.
             </p>
             <p className="text-[16px] leading-8 text-ink">
@@ -154,7 +154,7 @@ function TrustSection() {
                 "Email-verified accounts",
                 "Monthly sharing and one-time access terms",
                 "Free to use — Bantle doesn't earn from your arrangements",
-                "No payment handling — direct between users",
+                "No payment handling — users coordinate directly",
               ].map((line) => (
                 <li
                   key={line}

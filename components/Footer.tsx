@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ComingSoonBadges } from "@/components/ComingSoonBadges";
+import { BrandMark } from "@/components/BrandMark";
 import {
   CONTACT_EMAIL,
   LEGAL_LINKS,
@@ -17,13 +18,14 @@ export function Footer() {
           <div>
             <Link
               href="/"
-              className="font-serif italic text-3xl text-cream tracking-tightish"
+              className="inline-flex"
+              aria-label="Bantle home"
             >
-              Bantle
+              <BrandMark light size="lg" />
             </Link>
             <p className="mt-4 text-[15px] leading-7 text-cream/80 max-w-xs">
-              {TAGLINE} Keep your savings. A coordination and chat app for
-              household subscription arrangements in India.
+              {TAGLINE} A coordination and chat app for household and
+              family-plan arrangements in India.
             </p>
             <p className="mt-6 text-sm text-cream/60">
               Reach us at{" "}

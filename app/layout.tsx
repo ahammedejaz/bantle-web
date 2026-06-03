@@ -26,18 +26,17 @@ const lora = Lora({
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: `${BRAND_NAME} — ${TAGLINE} Keep your savings.`,
+    default: `${BRAND_NAME} — ${TAGLINE}`,
     template: `%s | ${BRAND_NAME}`,
   },
   description: SITE_DESCRIPTION,
   keywords: [
     "Bantle",
     "household subscription coordination India",
-    "coordinate Spotify family plan",
-    "coordinate YouTube Premium access",
-    "Apple One family share",
-    "Microsoft 365 family",
-    "OTT household coordination India",
+    "family plan coordination India",
+    "subscription access coordination",
+    "household plan coordination",
+    "direct subscription coordination",
     "subscription coordination India",
   ],
   authors: [{ name: BRAND_NAME }],
@@ -46,12 +45,12 @@ export const metadata: Metadata = {
     locale: "en_IN",
     url: SITE_URL,
     siteName: BRAND_NAME,
-    title: `${BRAND_NAME} — ${TAGLINE} Keep your savings.`,
+    title: `${BRAND_NAME} — ${TAGLINE}`,
     description: SITE_DESCRIPTION,
   },
   twitter: {
     card: "summary_large_image",
-    title: `${BRAND_NAME} — ${TAGLINE} Keep your savings.`,
+    title: `${BRAND_NAME} — ${TAGLINE}`,
     description: SITE_DESCRIPTION,
   },
   robots: {

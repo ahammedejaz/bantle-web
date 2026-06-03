@@ -68,10 +68,8 @@ export default function TermsPage() {
               other members of that plan;
             </li>
             <li>
-              affiliated with, sponsored by or endorsed by Spotify,
-              YouTube, Apple, Microsoft, Amazon, Disney, JioCinema, Zee5,
-              SonyLIV, Audible or any other subscription provider whose
-              plans may be coordinated through the Service.
+              affiliated with, sponsored by or endorsed by any subscription
+              provider whose plans may be coordinated through the Service.
             </li>
           </ul>
           <p>
@@ -294,11 +292,10 @@ export default function TermsPage() {
           <h2>9. Subscription provider terms</h2>
           <p>
             Almost every family or household subscription tier is
-            governed by terms set by the underlying provider — for
-            example, Spotify, Apple, Microsoft, Amazon, YouTube, Disney
-            and others all impose rules about who is permitted to share
-            an account or plan, what counts as a household, and how
-            address verification may be performed.
+            governed by terms set by the underlying provider. Providers
+            may impose rules about who is permitted to share an account
+            or plan, what counts as a household, and how address
+            verification may be performed.
           </p>
           <p>
             <strong>You are solely responsible</strong> for ensuring

@@ -9,8 +9,8 @@
   }
 
   body {
-    background-color: #FAF5EC;
-    color: #1A1A1A;
+    background-color: #FAFBFA;
+    color: #102622;
     font-family: var(--font-inter), Inter, system-ui, -apple-system, sans-serif;
     font-weight: 400;
     -webkit-font-smoothing: antialiased;
@@ -30,7 +30,7 @@
   }
 
   *:focus-visible {
-    outline: 2px solid #0A7C7C;
+    outline: 2px solid #007E5A;
     outline-offset: 2px;
     border-radius: 4px;
   }

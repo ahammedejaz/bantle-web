@@ -1,7 +1,7 @@
 import { ImageResponse } from "next/og";
 
 export const runtime = "edge";
-export const alt = "Bantle — share subscription costs. Keep your savings.";
+export const alt = "Bantle — coordinate subscription access clearly.";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -50,7 +50,7 @@ export default async function OGImage() {
               maxWidth: "920px",
             }}
           >
-            Coordinate household access. Keep your savings.
+            Coordinate subscription access clearly.
           </div>
           <div
             style={{
@@ -60,8 +60,8 @@ export default async function OGImage() {
               maxWidth: "880px",
             }}
           >
-            Manage household subscription arrangements for Spotify,
-            YouTube Premium, Apple One and more.
+            Keep household and family-plan details, chat and updates in
+            one place. Payments and access stay outside Bantle.
           </div>
         </div>
 

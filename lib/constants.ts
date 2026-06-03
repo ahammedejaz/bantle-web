@@ -1,8 +1,8 @@
 export const BRAND_NAME = "Bantle";
-export const TAGLINE = "Coordinate subscription access.";
+export const TAGLINE = "Coordinate subscription access clearly.";
 export const SITE_URL = "https://bantle.in";
 export const SITE_DESCRIPTION =
-  "Bantle helps people in India coordinate household subscription access directly with people they already trust. Payments stay outside Bantle; Bantle does not process payments, verify payments, or guarantee access.";
+  "Bantle helps people in India coordinate household and family-plan access directly with people they already trust. Users must follow provider rules. Payments and access stay outside Bantle; Bantle does not process payments, verify payments, or guarantee access.";
 
 export const CONTACT_EMAIL = "support@bantle.in";
 export const FEEDBACK_EMAIL = "feedback@bantle.in";

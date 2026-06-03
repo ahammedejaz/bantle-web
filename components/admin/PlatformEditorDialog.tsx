@@ -42,7 +42,7 @@ const EMPTY_FORM: FormState = {
   display_order: "0",
 };
 
-// "Spotify Family" -> "spotify_family"
+// "Family Music Plan" -> "family_music_plan"
 function suggestSlug(label: string): string {
   return label
     .toLowerCase()
@@ -316,7 +316,7 @@ export function PlatformEditorDialog({
                 value={form.label}
                 onChange={(e) => handleLabelChange(e.target.value)}
                 disabled={submitting}
-                placeholder="e.g. Spotify Family"
+                placeholder="e.g. Family Music Plan"
                 maxLength={60}
                 className={inputClass}
               />

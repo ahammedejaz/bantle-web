@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { NAV_LINKS } from "@/lib/constants";
 import { MobileNav } from "@/components/MobileNav";
+import { BrandMark } from "@/components/BrandMark";
 
 export function Header() {
   return (
@@ -9,9 +10,9 @@ export function Header() {
         <Link
           href="/"
           aria-label="Bantle home"
-          className="font-serif italic text-2xl text-teal-900 tracking-tightish"
+          className="shrink-0"
         >
-          Bantle
+          <BrandMark />
         </Link>
         <nav
           aria-label="Primary"

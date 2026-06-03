@@ -89,12 +89,12 @@ const sections: Section[] = [
           <p>
             Almost every &ldquo;family&rdquo; or &ldquo;household&rdquo;
             subscription tier was designed for people living at the same
-            address. Providers verify this in different ways &mdash;
-            Spotify and YouTube Premium do address checks, Apple One
-            requires Family Sharing, and so on. A stranger-discovery model
-            for these plans tends to violate provider terms, end with forced
-            sign-outs, and put both sides in an awkward position. Bantle is
-            built for the case the providers intend.
+            address or belonging to an approved family group. Providers
+            set and enforce those rules in different ways. A
+            stranger-discovery model for these plans can violate provider
+            terms and put both sides in an awkward position. Bantle is
+            built for the coordination use cases providers commonly
+            allow.
           </p>
         ),
       },
@@ -102,14 +102,12 @@ const sections: Section[] = [
         q: "Can I share with friends who don't live with me?",
         a: (
           <p>
-            Honest answer: most providers say no, and they enforce it more
-            seriously every year. Bantle won&apos;t stop you from inviting
-            someone outside your household, but it&apos;s the wrong tool
-            for that case — you&apos;d be responsible for any
-            consequences from the provider, and we won&apos;t coordinate
-            it the way we coordinate household members. We strongly
-            recommend keeping your Bantle plans to the people you actually
-            live with.
+            You should only coordinate access when the provider&apos;s
+            rules allow it. Many household or family-plan subscriptions
+            require the same residence or an approved family group. Bantle
+            is not a tool for bypassing those rules, and users remain
+            responsible for provider consequences if they coordinate
+            access in a way the provider does not permit.
           </p>
         ),
       },

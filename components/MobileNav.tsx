@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/sheet";
 import { NAV_LINKS, LEGAL_LINKS } from "@/lib/constants";
 import { ComingSoonBadges } from "@/components/ComingSoonBadges";
+import { BrandMark } from "@/components/BrandMark";
 
 export function MobileNav() {
   const [open, setOpen] = useState(false);
@@ -27,8 +28,8 @@ export function MobileNav() {
         </button>
       </SheetTrigger>
       <SheetContent side="right" className="flex flex-col">
-        <SheetTitle className="mb-6 font-serif italic text-2xl">
-          Bantle
+        <SheetTitle className="mb-6">
+          <BrandMark />
         </SheetTitle>
         <nav aria-label="Mobile" className="flex flex-col gap-1">
           {NAV_LINKS.map((link) => (
