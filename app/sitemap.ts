@@ -9,6 +9,7 @@ const publicRoutes = [
   "/faq",
   "/support",
   "/account-deletion",
+  "/child-safety-standards",
   "/terms",
   "/privacy",
   "/refund-policy",
