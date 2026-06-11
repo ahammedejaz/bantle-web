@@ -19,6 +19,7 @@ The smoke test verified:
 - `profiles.is_verified` stayed unchanged.
 - Safe test storage objects and test rows were cleaned up after verification.
 - Manual local browser verification was later recorded for both admin queue pages.
+- Manual local invalid-detail browser verification was later recorded for both admin detail routes.
 
 No secrets, tokens, signed URLs, full user IDs, emails, full storage paths, or image contents are included in this report.
 
@@ -244,6 +245,8 @@ Manual local browser pass:
 - Pages checked:
   - `http://localhost:3021/admin/identity-verifications`
   - `http://localhost:3021/admin/name-change-requests`
+  - `http://localhost:3021/admin/identity-verifications/not-a-real-id`
+  - `http://localhost:3021/admin/name-change-requests/not-a-real-id`
 
 Observed result:
 
@@ -257,6 +260,11 @@ Observed result:
 - Identity page copy clearly stated that identity verification does not change the legacy public verified badge.
 - Name changes page copy clearly stated that this queue does not enable mobile edit-profile enforcement.
 - The existing red `2 Issues` badge appeared globally in the admin sidebar and appeared unrelated to this Phase 2 work.
+- Both invalid detail URLs showed a safe `Not found` state.
+- Invalid detail URLs did not crash.
+- Invalid detail URLs did not show a blank page.
+- Invalid detail URLs did not expose a stack trace.
+- Invalid detail URLs did not expose a signed URL or storage path.
 
 Validation command results recorded with the manual browser pass:
 
@@ -266,8 +274,6 @@ Validation command results recorded with the manual browser pass:
 
 Not checked in this manual browser pass:
 
-- `/admin/identity-verifications/not-a-real-id`
-- `/admin/name-change-requests/not-a-real-id`
 - Deployed or hosted admin environment browser behavior.
 - Non-admin browser navigation.
 - Mobile UI or mobile enforcement flows.
@@ -275,12 +281,11 @@ Not checked in this manual browser pass:
 Manual browser pass remaining risks:
 
 - The browser pass covered local empty-state queue pages, not populated queue pages with real pending rows.
-- Invalid-detail browser pages were not checked.
 - The red `2 Issues` sidebar badge was not investigated as part of this Phase 2 queue smoke update because it appeared globally unrelated.
 
 Manual browser pass next recommended step:
 
-- Run a hosted/staging admin browser pass, including invalid-detail URLs and non-admin access behavior, before moving beyond Phase 2 admin queue verification.
+- Run a hosted/staging admin browser pass, including non-admin access behavior, before moving beyond Phase 2 admin queue verification.
 
 ## 15. Files Changed
 
@@ -308,15 +313,14 @@ Compensating coverage:
 
 - Authenticated HTTP page loads verified admin pages returned successfully.
 - Authenticated API calls exercised `requireAdmin`, same-origin mutation checks, signed URL generation, approve/reject handlers, audit logging, and cleanup.
-- Manual local browser verification later checked both queue pages, sidebar navigation, active tab highlighting, empty states, counts, and privacy-sensitive field visibility.
+- Manual local browser verification later checked both queue pages, invalid-detail safe `Not found` states, sidebar navigation, active tab highlighting, empty states, counts, and privacy-sensitive field visibility.
 
 ## 17. Remaining Risks
 
 - This was a local runtime HTTP smoke test, not a deployed production smoke test.
-- Browser automation was unavailable; browser verification was manual and covered local empty-state queue pages only.
-- Invalid-detail browser pages were not checked.
+- Browser automation was unavailable; browser verification was manual and covered local empty-state queue pages plus invalid-detail safe states.
 - Audit rows remain by design; test review rows and storage objects were removed, so those audit rows reference test resource IDs that no longer have corresponding test rows.
 
 ## 18. Next Recommended Step
 
-Run a hosted/staging admin browser pass with a safe admin account, including invalid-detail URLs and non-admin access behavior, then proceed to Phase 3 planning only after confirming the queues are acceptable for admin workflow.
+Run a hosted/staging admin browser pass with a safe admin account, including non-admin access behavior, then proceed to Phase 3 planning only after confirming the queues are acceptable for admin workflow.
