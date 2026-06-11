@@ -1,6 +1,6 @@
 # Trust Verification Phase 2 Admin Queue Smoke Test Report Pointer
 
-Date: 2026-06-11 18:00:11 IST
+Date: 2026-06-11 18:20:09 IST
 
 The detailed smoke-test report is stored in the mobile repo:
 
@@ -16,11 +16,14 @@ feature/trust-verification-admin-queues
 
 Result:
 
-- Runtime smoke test was blocked before admin login, local app startup, API route calls, or test data mutation.
+- Runtime smoke test was attempted again after the admin repo `.env` file was restored.
 - The admin repo was clean and on the expected branch.
-- `.env` is ignored by `.gitignore`.
-- The expected admin repo `.env` file was not present at the repo root.
-- `/tmp/bantle-smoke.env` was present and approved, but no test user data was used because admin env was missing first.
+- `.env` exists at the admin repo root and is ignored by `.gitignore`.
+- The required explicit env load of admin `.env` and `/tmp/bantle-smoke.env` was performed.
+- `ADMIN_EMAIL` and `ADMIN_PASSWORD` were present.
+- `/tmp/bantle-smoke.env` was present and approved.
+- Required `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, and `SUPABASE_SERVICE_ROLE_KEY` were missing after sourcing.
+- Runtime testing stopped before admin login, local app startup, API route calls, test data setup, or database/storage mutation.
 - No secrets, passwords, tokens, signed URLs, full user IDs, emails, storage paths, or image contents were printed.
 - No database rows or storage objects were created.
 - No real users were mutated.
@@ -34,10 +37,10 @@ Validation:
 
 Smoke tests skipped:
 
-- Admin login/session: missing admin repo `.env`.
-- Local dev server runtime smoke: missing admin repo `.env`.
-- Identity list/detail, signed URL, approve/reject, name-change approve/reject, and audit row verification: skipped because no authenticated admin session was available.
+- Admin login/session: missing required Supabase runtime env names.
+- Local dev server runtime smoke: missing required Supabase runtime env names.
+- Identity list/detail, signed URL, approve/reject, name-change approve/reject, and audit row verification: skipped because no authenticated admin runtime was available.
 
 Next step:
 
-Place the expected ignored `.env` file at the admin repo root, then rerun the runtime smoke task.
+Add `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, and `SUPABASE_SERVICE_ROLE_KEY` to the ignored admin repo `.env`, then rerun the runtime smoke task.
