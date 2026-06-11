@@ -30,7 +30,11 @@ export type AdminActionType =
   | "broadcast_sent"
   | "broadcast_retried"
   | "user_verification_updated"
-  | "verification_settings_updated";
+  | "verification_settings_updated"
+  | "identity_verification_approved"
+  | "identity_verification_rejected"
+  | "name_change_approved"
+  | "name_change_rejected";
 
 export interface AdminActionInput {
   admin_id: string;

@@ -87,7 +87,7 @@ export function UserActionPanel({
     <>
       <section className="mt-6 pt-6 border-t border-line">
         <h2 className="text-xs uppercase tracking-[0.14em] text-teal-600 mb-3">
-          Verification
+          Legacy trust badge
         </h2>
         <div className="px-4 py-3 rounded-card border border-line bg-cream-card">
           <div className="flex items-start justify-between gap-3 flex-wrap">
@@ -130,7 +130,7 @@ export function UserActionPanel({
             >
               {verificationAction === "manual_verify"
                 ? "Working…"
-                : "Verify user"}
+                : "Set badge on"}
             </button>
             <button
               type="button"
@@ -144,7 +144,7 @@ export function UserActionPanel({
             >
               {verificationAction === "manual_unverify"
                 ? "Working…"
-                : "Unverify user"}
+                : "Set badge off"}
             </button>
             <button
               type="button"
@@ -257,40 +257,42 @@ function getVerificationStatus(user: {
 }) {
   if (user.verification_override === "verified") {
     return {
-      label: "Manually verified",
-      detail: "Admin override keeps the trust badge on regardless of rating count.",
+      label: "Manual trust badge on",
+      detail:
+        "Legacy admin override keeps the rating/manual trust badge on. This is separate from selfie identity verification.",
       badge: "Manual",
       className: "bg-teal-50 text-teal-900 border-teal-200",
     };
   }
   if (user.verification_override === "unverified") {
     return {
-      label: "Manually unverified",
+      label: "Manual trust badge off",
       detail:
-        "Admin override keeps the trust badge off regardless of rating count.",
+        "Legacy admin override keeps the rating/manual trust badge off. This is separate from selfie identity verification.",
       badge: "Manual",
       className: "bg-amber-50 text-amber-900 border-amber-200",
     };
   }
   if (user.is_verified) {
     return {
-      label: "Auto verified by ratings",
+      label: "Rating rules badge on",
       detail: "No manual override is set; current ratings meet the threshold.",
       badge: "Auto",
       className: "bg-teal-50 text-teal-900 border-teal-200",
     };
   }
   return {
-    label: "Not verified",
-    detail: "No manual override is set and current ratings do not meet the threshold.",
+    label: "Legacy badge off",
+    detail:
+      "No manual override is set and current ratings do not meet the legacy trust-badge threshold.",
     badge: "Rules",
     className: "bg-gray-50 text-gray-700 border-gray-200",
   };
 }
 
 function verificationSuccessMessage(action: VerificationAction): string {
-  if (action === "manual_verify") return "User manually verified.";
-  if (action === "manual_unverify") return "User manually unverified.";
+  if (action === "manual_verify") return "Legacy trust badge enabled.";
+  if (action === "manual_unverify") return "Legacy trust badge disabled.";
   return "Manual override cleared; rating rules now apply.";
 }
 

@@ -166,6 +166,18 @@ function getResourceLink(action: AuditListItem): {
   if (type === "user_report" && id) {
     return { href: `/admin/reports/${id}`, label: "Report" };
   }
+  if (type === "identity_verification" && id) {
+    return {
+      href: `/admin/identity-verifications/${id}`,
+      label: "Identity verification",
+    };
+  }
+  if (type === "name_change_request" && id) {
+    return {
+      href: `/admin/name-change-requests/${id}`,
+      label: "Name-change request",
+    };
+  }
   if (type === "platform") {
     return { href: "/admin/platforms", label: id ? `Platform ${id}` : "Platform" };
   }

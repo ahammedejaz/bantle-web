@@ -68,7 +68,7 @@ export function VerificationSettingsPanel({
           show(
             e instanceof Error
               ? e.message
-              : "Verification settings could not be loaded.",
+              : "Legacy trust-badge settings could not be loaded.",
             "error",
           );
         }
@@ -119,7 +119,7 @@ export function VerificationSettingsPanel({
           `Recomputed ${data.recompute.total_profiles} profiles; ${data.recompute.changed_profiles} changed.`,
         );
       }
-      show("Verification settings saved.", "success");
+      show("Legacy trust-badge settings saved.", "success");
       await onSaved?.();
     } catch (e) {
       show(e instanceof Error ? e.message : "Save failed.", "error");
@@ -133,11 +133,11 @@ export function VerificationSettingsPanel({
       <div className="flex items-start justify-between gap-4 mb-3">
         <div>
           <h2 className="text-xs uppercase tracking-[0.14em] text-teal-600">
-            Verification settings
+            Legacy trust-badge settings
           </h2>
           <p className="text-xs text-ink-muted mt-1 max-w-xl">
-            Manual overrides always win. Users without manual override are
-            verified automatically when they meet the threshold.
+            Rating thresholds and manual overrides control the legacy public
+            badge only. This is separate from selfie identity verification.
           </p>
         </div>
         {settings ? (
