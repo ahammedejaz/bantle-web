@@ -10,7 +10,6 @@ import {
 } from "@/components/admin/userStatus";
 import { UserActionPanel } from "@/components/admin/UserActionPanel";
 import { UserDetailTabs } from "@/components/admin/UserDetailTabs";
-import { VerificationSettingsPanel } from "@/components/admin/VerificationSettingsPanel";
 
 interface UserDetail {
   user: {
@@ -216,9 +215,6 @@ export function UserDetailClient({ userId }: { userId: string }) {
 
       {/* Action panel */}
       <UserActionPanel user={user} onActionComplete={fetchDetail} />
-
-      {/* Verification thresholds */}
-      <VerificationSettingsPanel onSaved={fetchDetail} />
 
       {/* Tabbed activity */}
       <UserDetailTabs userId={userId} counts={counts} />
