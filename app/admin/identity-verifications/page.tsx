@@ -17,8 +17,8 @@ export default function AdminIdentityVerificationsPage() {
       </h1>
       <p className="text-sm text-ink-muted mb-8">
         Review submitted selfie verification requests. This queue updates
-        identity verification status only; it does not change the legacy public
-        verified badge.
+        identity verification status and refreshes the public reviewed badge
+        through the shared badge resolver.
       </p>
       <Suspense
         fallback={

@@ -21,6 +21,9 @@ interface UserRowProps {
     rating_avg: number | null;
     rating_count: number | null;
     is_verified: boolean | null;
+    identity_verification_status: string;
+    manual_verification_status: string;
+    manual_verification_category: string | null;
   };
 }
 
@@ -52,11 +55,15 @@ export function UserRow({ user }: UserRowProps) {
             >
               {statusDisplay.label}
             </span>
-            {user.is_verified ? (
-              <span className="inline-flex items-center px-2 py-0.5 text-xs font-medium rounded-button border bg-teal-50 text-teal-900 border-teal-200">
-                Verified
-              </span>
-            ) : null}
+            <span
+              className={
+                user.is_verified
+                  ? "inline-flex items-center px-2 py-0.5 text-xs font-medium rounded-button border bg-teal-50 text-teal-900 border-teal-200"
+                  : "inline-flex items-center px-2 py-0.5 text-xs font-medium rounded-button border bg-gray-50 text-gray-700 border-gray-200"
+              }
+            >
+              Public badge: {user.is_verified ? "On" : "Off"}
+            </span>
           </div>
           <p className="text-xs text-ink-muted truncate">
             {user.email ?? "(no email)"}
@@ -71,9 +78,55 @@ export function UserRow({ user }: UserRowProps) {
               </>
             ) : null}
           </p>
+          <p className="text-xs text-ink-muted mt-1">
+            Selfie: {humanizeStatus(user.identity_verification_status)} &middot;
+            Manual: {manualReviewLabel(user)}
+          </p>
         </div>
         <ChevronRight size={16} className="text-ink-muted shrink-0 mt-1" />
       </div>
     </Link>
   );
+}
+
+function humanizeStatus(status: string): string {
+  switch (status) {
+    case "approved":
+      return "Approved";
+    case "pending":
+      return "Pending";
+    case "rejected":
+      return "Rejected";
+    case "reverification_required":
+      return "Reverification required";
+    case "unverified":
+      return "Unverified";
+    case "none":
+      return "None";
+    case "revoked":
+      return "Revoked";
+    case "expired":
+      return "Expired";
+    default:
+      return status
+        .split("_")
+        .filter(Boolean)
+        .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+        .join(" ");
+  }
+}
+
+function manualReviewLabel(user: {
+  manual_verification_status: string;
+  manual_verification_category: string | null;
+}): string {
+  if (
+    user.manual_verification_status === "approved" &&
+    user.manual_verification_category
+  ) {
+    return `${humanizeStatus(user.manual_verification_status)} (${humanizeStatus(
+      user.manual_verification_category,
+    )})`;
+  }
+  return humanizeStatus(user.manual_verification_status);
 }

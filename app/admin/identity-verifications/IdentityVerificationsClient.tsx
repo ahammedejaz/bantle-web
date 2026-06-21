@@ -201,7 +201,7 @@ function IdentityVerificationRow({
           </div>
           <p className="text-xs text-ink-muted">
             Identity status: {humanize(item.user?.identity_verification_status)}
-            {item.user?.is_verified ? " · legacy badge currently on" : ""}
+            {item.user?.is_verified ? " · public badge on" : ""}
           </p>
           <p className="text-xs text-ink-muted mt-1">
             Submitted {fmtDate(item.submitted_at)} · {ratingText}

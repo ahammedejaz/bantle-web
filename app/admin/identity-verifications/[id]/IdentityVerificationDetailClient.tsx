@@ -199,9 +199,7 @@ export function IdentityVerificationDetailClient({
       <p className="text-sm text-ink-muted mt-2">
         Identity status:{" "}
         {humanize(verification.user?.identity_verification_status)}
-        {verification.user?.is_verified
-          ? " · legacy public badge currently on"
-          : ""}
+        {verification.user?.is_verified ? " · public badge on" : ""}
       </p>
 
       <section className="mt-6 grid gap-4 md:grid-cols-3">

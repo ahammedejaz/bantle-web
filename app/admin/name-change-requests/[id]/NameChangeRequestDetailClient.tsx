@@ -189,7 +189,7 @@ export function NameChangeRequestDetailClient({
       </h1>
       <p className="text-sm text-ink-muted mt-2">
         Identity status: {humanize(request.user?.identity_verification_status)}
-        {request.user?.is_verified ? " · legacy public badge currently on" : ""}
+        {request.user?.is_verified ? " · public badge on" : ""}
       </p>
 
       <section className="mt-6 grid gap-4 md:grid-cols-2">

@@ -126,6 +126,22 @@ export async function POST(
     });
   }
 
+  const { error: badgeError } = await supabase.rpc(
+    "refresh_profile_reviewed_badge",
+    { p_user_id: existing.user_id },
+  );
+
+  if (badgeError) {
+    const correlationId = safeAdminErrorLog(
+      "admin_identity_verification_reject_badge_refresh_failed",
+      badgeError,
+      { operation: "identity_verification_reject_badge_refresh" },
+    );
+    return adminErrorResponse("Reviewed badge could not be refreshed.", 500, {
+      correlationId,
+    });
+  }
+
   await logAdminAction(supabase, {
     admin_id: admin.id,
     action_type: "identity_verification_rejected",

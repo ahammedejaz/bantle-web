@@ -1,22 +1,39 @@
-// PATCH /admin/api/users/[id]/verification - temporary admin/manual badge control.
-// Body: { action: "manual_verify" | "manual_unverify" }
+// PATCH /admin/api/users/[id]/verification - structured admin/manual review.
+// Body:
+//   { action: "manual_approve", category, reason, internal_note? }
+//   { action: "manual_revoke", reason, internal_note? }
 
 import { type NextRequest, NextResponse } from "next/server";
-import { logAdminAction } from "@/lib/admin-actions";
 import {
   adminErrorResponse,
   safeAdminErrorLog,
 } from "@/lib/admin-safe-errors";
 import { requireAdmin } from "@/lib/admin-auth";
 
-type VerificationAction = "manual_verify" | "manual_unverify";
+type VerificationAction = "manual_approve" | "manual_revoke";
+type ManualVerificationCategory =
+  | "individual_exception"
+  | "company"
+  | "vendor"
+  | "partner"
+  | "other";
 
 interface VerificationActionBody {
   action?: string;
+  category?: unknown;
+  reason?: unknown;
+  internal_note?: unknown;
 }
 
-const USER_SELECT =
-  "id, is_admin, is_verified, rating_avg, rating_count, verification_override, verified_manually_by, verified_manually_at";
+const MANUAL_CATEGORIES: readonly ManualVerificationCategory[] = [
+  "individual_exception",
+  "company",
+  "vendor",
+  "partner",
+  "other",
+];
+
+const USER_SELECT = "id,is_admin";
 
 export async function PATCH(
   request: NextRequest,
@@ -40,7 +57,7 @@ export async function PATCH(
     return NextResponse.json(
       {
         error:
-          "action must be manual_verify or manual_unverify",
+          "action must be manual_approve or manual_revoke",
       },
       { status: 400 },
     );
@@ -63,64 +80,87 @@ export async function PATCH(
     );
   }
 
-  const previous = {
-    is_verified: targetUser.is_verified,
-    verification_override: targetUser.verification_override,
-    rating_avg: targetUser.rating_avg,
-    rating_count: targetUser.rating_count,
-  };
-
-  const manualVerified = body.action === "manual_verify";
-  const { data: updatedUser, error: updateError } = await supabase
-    .from("profiles")
-    .update({
-      is_verified: manualVerified,
-      verification_override: manualVerified ? "verified" : "unverified",
-      verified_manually_by: admin.id,
-      verified_manually_at: new Date().toISOString(),
-    })
-    .eq("id", userId)
-    .select(USER_SELECT)
-    .maybeSingle();
-
-  if (updateError || !updatedUser) {
-    const correlationId = safeAdminErrorLog(
-      "admin_user_verification_update_failed",
-      updateError,
-      { operation: "user_verification_update" },
+  const reason = parseRequiredText(body.reason, "Reason");
+  if ("error" in reason) {
+    return NextResponse.json({ error: reason.error }, { status: 400 });
+  }
+  const internalNote = parseOptionalText(body.internal_note);
+  const category =
+    body.action === "manual_approve" ? body.category : undefined;
+  if (body.action === "manual_approve" && !isManualCategory(category)) {
+    return NextResponse.json(
+      { error: "Valid category is required." },
+      { status: 400 },
     );
-    return adminErrorResponse("Verification state could not be updated.", 500, {
+  }
+
+  const rpc =
+    body.action === "manual_approve"
+      ? await supabase.rpc("admin_approve_manual_verification", {
+          p_user_id: userId,
+          p_admin_id: admin.id,
+          p_category: category,
+          p_reason: reason.value,
+          p_internal_note: internalNote,
+          p_expires_at: null,
+        })
+      : await supabase.rpc("admin_revoke_manual_verification", {
+          p_user_id: userId,
+          p_admin_id: admin.id,
+          p_reason: reason.value,
+          p_internal_note: internalNote,
+        });
+
+  if (rpc.error) {
+    const correlationId = safeAdminErrorLog(
+      "admin_manual_verification_rpc_failed",
+      rpc.error,
+      { operation: body.action },
+    );
+    return adminErrorResponse("Manual verification could not be updated.", 500, {
       correlationId,
     });
   }
 
-  await logAdminAction(supabase, {
-    admin_id: admin.id,
-    action_type: "user_verification_updated",
-    target_user_id: userId,
-    target_resource_id: null,
-    target_resource_type: "user",
-    payload: {
-      action: body.action,
-      previous,
-      next: {
-        is_verified: updatedUser.is_verified,
-        verification_override: updatedUser.verification_override,
-        rating_avg: updatedUser.rating_avg,
-        rating_count: updatedUser.rating_count,
-      },
-      notification: { status: "disabled", reason: "legacy_badge_events_retired" },
-    },
-  });
-
-  return NextResponse.json({ success: true, user: updatedUser });
+  return NextResponse.json({ success: true, result: rpc.data ?? null });
 }
 
 function isVerificationAction(
   action: string | undefined,
 ): action is VerificationAction {
   return (
-    action === "manual_verify" ||
-    action === "manual_unverify"
+    action === "manual_approve" ||
+    action === "manual_revoke"
   );
+}
+
+function isManualCategory(
+  value: unknown,
+): value is ManualVerificationCategory {
+  return (
+    typeof value === "string" &&
+    (MANUAL_CATEGORIES as readonly string[]).includes(value)
+  );
+}
+
+function parseRequiredText(
+  value: unknown,
+  label: string,
+): { value: string } | { error: string } {
+  if (typeof value !== "string") {
+    return { error: `${label} is required.` };
+  }
+  const trimmed = value.trim();
+  if (!trimmed) return { error: `${label} is required.` };
+  if (trimmed.length > 1000) {
+    return { error: `${label} must be 1000 characters or less.` };
+  }
+  return { value: trimmed };
+}
+
+function parseOptionalText(value: unknown): string | null {
+  if (typeof value !== "string") return null;
+  const trimmed = value.trim();
+  if (!trimmed) return null;
+  return trimmed.slice(0, 2000);
 }

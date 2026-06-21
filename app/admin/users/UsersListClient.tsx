@@ -18,6 +18,9 @@ interface UserListItem {
   rating_avg: number | null;
   rating_count: number | null;
   is_verified: boolean | null;
+  identity_verification_status: string;
+  manual_verification_status: string;
+  manual_verification_category: string | null;
 }
 
 export function UsersListClient() {

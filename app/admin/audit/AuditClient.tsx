@@ -23,6 +23,8 @@ const ACTION_OPTIONS = [
   { value: "deal_terminated", label: "Deal terminated" },
   { value: "broadcast_sent", label: "Broadcast sent" },
   { value: "broadcast_retried", label: "Broadcast retried" },
+  { value: "manual_verification_approved", label: "Manual verification approved" },
+  { value: "manual_verification_revoked", label: "Manual verification revoked" },
 ];
 
 const RESOURCE_OPTIONS = [

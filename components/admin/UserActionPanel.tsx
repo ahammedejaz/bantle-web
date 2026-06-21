@@ -6,18 +6,37 @@ import { UserActionModal, type UserAction } from "./UserActionModal";
 import { getUserStatus } from "./userStatus";
 import { cn } from "@/lib/utils";
 
-type VerificationOverride = "verified" | "unverified" | null;
-type VerificationAction = "manual_verify" | "manual_unverify";
+type ManualVerificationAction = "manual_approve" | "manual_revoke";
+type ManualVerificationCategory =
+  | "individual_exception"
+  | "company"
+  | "vendor"
+  | "partner"
+  | "other";
+type ManualVerificationStatus = "none" | "approved" | "revoked" | "expired";
+
+const MANUAL_CATEGORIES: readonly {
+  value: ManualVerificationCategory;
+  label: string;
+}[] = [
+  { value: "individual_exception", label: "Individual exception" },
+  { value: "company", label: "Company" },
+  { value: "vendor", label: "Vendor" },
+  { value: "partner", label: "Partner" },
+  { value: "other", label: "Other" },
+];
 
 interface UserActionPanelProps {
   user: {
     id: string;
     is_admin: boolean;
     is_verified: boolean | null;
-    rating_avg: number | null;
-    rating_count: number | null;
-    verification_override: VerificationOverride;
-    verified_manually_at: string | null;
+    identity_verification_status: string;
+    manual_verification_status: ManualVerificationStatus;
+    manual_verification_category: ManualVerificationCategory | null;
+    manual_verified_at: string | null;
+    manual_verification_revoked_at: string | null;
+    manual_verification_expires_at: string | null;
     banned_until: string | null;
     permanently_banned: boolean;
     deleted_at: string | null;
@@ -31,16 +50,18 @@ export function UserActionPanel({
 }: UserActionPanelProps) {
   const toast = useAdminToast();
   const [activeAction, setActiveAction] = useState<UserAction | null>(null);
-  const [verificationAction, setVerificationAction] =
-    useState<VerificationAction | null>(null);
+  const [manualAction, setManualAction] =
+    useState<ManualVerificationAction | null>(null);
+  const [approveCategory, setApproveCategory] =
+    useState<ManualVerificationCategory>("individual_exception");
+  const [approveReason, setApproveReason] = useState("");
+  const [approveNote, setApproveNote] = useState("");
+  const [revokeReason, setRevokeReason] = useState("");
+  const [revokeNote, setRevokeNote] = useState("");
   const status = getUserStatus(user);
-  const verificationStatus = getVerificationStatus(user);
-  const ratingText =
-    user.rating_count && user.rating_count > 0
-      ? `${(user.rating_avg ?? 0).toFixed(1)} from ${user.rating_count} rating${
-          user.rating_count === 1 ? "" : "s"
-        }`
-      : "No ratings yet";
+  const manualReview = getManualReviewStatus(user);
+  const canRevokeManualReview =
+    user.manual_verification_status === "approved";
 
   const handleSuccess = (message: string) => {
     toast.show(message, "success");
@@ -51,14 +72,36 @@ export function UserActionPanel({
     toast.show(message, "error");
   };
 
-  const handleVerificationAction = async (action: VerificationAction) => {
-    if (verificationAction || user.is_admin) return;
-    setVerificationAction(action);
+  const handleManualReviewAction = async (
+    action: ManualVerificationAction,
+  ) => {
+    if (manualAction || user.is_admin) return;
+    const reason =
+      action === "manual_approve" ? approveReason.trim() : revokeReason.trim();
+    if (!reason) {
+      toast.show("Reason is required.", "error");
+      return;
+    }
+
+    setManualAction(action);
     try {
       const response = await fetch(`/admin/api/users/${user.id}/verification`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action }),
+        body: JSON.stringify(
+          action === "manual_approve"
+            ? {
+                action,
+                category: approveCategory,
+                reason,
+                internal_note: approveNote,
+              }
+            : {
+                action,
+                reason,
+                internal_note: revokeNote,
+              },
+        ),
       });
       if (!response.ok) {
         const data = (await response
@@ -68,15 +111,22 @@ export function UserActionPanel({
         };
         throw new Error(data.error ?? `HTTP ${response.status}`);
       }
-      toast.show(verificationSuccessMessage(action), "success");
+      toast.show(manualReviewSuccessMessage(action), "success");
+      if (action === "manual_approve") {
+        setApproveReason("");
+        setApproveNote("");
+      } else {
+        setRevokeReason("");
+        setRevokeNote("");
+      }
       onActionComplete();
     } catch (e) {
       toast.show(
-        e instanceof Error ? e.message : "Verification update failed.",
+        e instanceof Error ? e.message : "Manual review update failed.",
         "error",
       );
     } finally {
-      setVerificationAction(null);
+      setManualAction(null);
     }
   };
 
@@ -84,68 +134,160 @@ export function UserActionPanel({
     <>
       <section className="mt-6 pt-6 border-t border-line">
         <h2 className="text-xs uppercase tracking-[0.14em] text-teal-600 mb-3">
-          Temporary manual verification
+          Verification review
         </h2>
         <div className="px-4 py-3 rounded-card border border-line bg-cream-card">
           <div className="flex items-start justify-between gap-3 flex-wrap">
             <div>
               <p className="text-sm font-medium text-ink">
-                {verificationStatus.label}
+                Public badge: {user.is_verified ? "On" : "Off"}
               </p>
               <p className="text-xs text-ink-muted mt-1">
-                {verificationStatus.detail}
+                Selfie verification:{" "}
+                {humanizeIdentityStatus(user.identity_verification_status)}
               </p>
               <p className="text-xs text-ink-muted mt-1">
-                Current rating: {ratingText}
+                Manual review: {manualReview.label}
               </p>
-              <p className="text-xs text-ink-muted mt-1">
-                Ratings are trust history only and no longer change this badge.
-              </p>
-              {user.verified_manually_at ? (
+              {manualReview.detail ? (
                 <p className="text-xs text-ink-muted mt-1">
-                  Last manual change: {formatDate(user.verified_manually_at)}
+                  {manualReview.detail}
                 </p>
               ) : null}
             </div>
             <span
               className={cn(
                 "inline-flex items-center px-2 py-0.5 text-xs font-medium rounded-button border",
-                verificationStatus.className,
+                user.is_verified
+                  ? "bg-teal-50 text-teal-900 border-teal-200"
+                  : "bg-gray-50 text-gray-700 border-gray-200",
               )}
             >
-              {verificationStatus.badge}
+              Public badge {user.is_verified ? "on" : "off"}
             </span>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">
-            <button
-              type="button"
-              onClick={() => void handleVerificationAction("manual_verify")}
-              disabled={
-                user.is_admin ||
-                verificationAction !== null ||
-                user.verification_override === "verified"
-              }
-              className="px-4 py-3 rounded-button bg-teal-900 hover:bg-teal-800 text-sm font-medium text-cream transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {verificationAction === "manual_verify"
-                ? "Working…"
-                : "Verify manually"}
-            </button>
-            <button
-              type="button"
-              onClick={() => void handleVerificationAction("manual_unverify")}
-              disabled={
-                user.is_admin ||
-                verificationAction !== null ||
-                user.verification_override === "unverified"
-              }
-              className="px-4 py-3 rounded-button bg-amber-50 border border-amber-200 hover:bg-amber-100 text-sm font-medium text-amber-900 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {verificationAction === "manual_unverify"
-                ? "Working…"
-                : "Remove manual verification"}
-            </button>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-4">
+            <div className="space-y-3">
+              <p className="text-xs uppercase tracking-[0.14em] text-teal-600">
+                Approve manual review
+              </p>
+              <label className="block">
+                <span className="text-xs text-ink-muted">Category</span>
+                <select
+                  value={approveCategory}
+                  onChange={(event) =>
+                    setApproveCategory(
+                      event.target.value as ManualVerificationCategory,
+                    )
+                  }
+                  disabled={user.is_admin || manualAction !== null}
+                  className="mt-1 w-full rounded-button border border-line bg-cream px-3 py-2 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-teal-900 disabled:opacity-50"
+                >
+                  {MANUAL_CATEGORIES.map((category) => (
+                    <option key={category.value} value={category.value}>
+                      {category.label}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label className="block">
+                <span className="text-xs text-ink-muted">Reason</span>
+                <textarea
+                  value={approveReason}
+                  onChange={(event) => setApproveReason(event.target.value)}
+                  maxLength={1000}
+                  rows={3}
+                  disabled={user.is_admin || manualAction !== null}
+                  className="mt-1 w-full rounded-button border border-line bg-cream px-3 py-2 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-teal-900 disabled:opacity-50"
+                />
+              </label>
+              <label className="block">
+                <span className="text-xs text-ink-muted">
+                  Internal note optional
+                </span>
+                <textarea
+                  value={approveNote}
+                  onChange={(event) => setApproveNote(event.target.value)}
+                  maxLength={2000}
+                  rows={2}
+                  disabled={user.is_admin || manualAction !== null}
+                  className="mt-1 w-full rounded-button border border-line bg-cream px-3 py-2 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-teal-900 disabled:opacity-50"
+                />
+              </label>
+              <button
+                type="button"
+                onClick={() => void handleManualReviewAction("manual_approve")}
+                disabled={
+                  user.is_admin ||
+                  manualAction !== null ||
+                  approveReason.trim().length === 0
+                }
+                className="w-full px-4 py-3 rounded-button bg-teal-900 hover:bg-teal-800 text-sm font-medium text-cream transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {manualAction === "manual_approve"
+                  ? "Working..."
+                  : "Approve manual review"}
+              </button>
+            </div>
+
+            <div className="space-y-3">
+              <p className="text-xs uppercase tracking-[0.14em] text-teal-600">
+                Revoke manual review
+              </p>
+              <label className="block">
+                <span className="text-xs text-ink-muted">Reason</span>
+                <textarea
+                  value={revokeReason}
+                  onChange={(event) => setRevokeReason(event.target.value)}
+                  maxLength={1000}
+                  rows={3}
+                  disabled={
+                    user.is_admin ||
+                    manualAction !== null ||
+                    !canRevokeManualReview
+                  }
+                  className="mt-1 w-full rounded-button border border-line bg-cream px-3 py-2 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-teal-900 disabled:opacity-50"
+                />
+              </label>
+              <label className="block">
+                <span className="text-xs text-ink-muted">
+                  Internal note optional
+                </span>
+                <textarea
+                  value={revokeNote}
+                  onChange={(event) => setRevokeNote(event.target.value)}
+                  maxLength={2000}
+                  rows={2}
+                  disabled={
+                    user.is_admin ||
+                    manualAction !== null ||
+                    !canRevokeManualReview
+                  }
+                  className="mt-1 w-full rounded-button border border-line bg-cream px-3 py-2 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-teal-900 disabled:opacity-50"
+                />
+              </label>
+              <button
+                type="button"
+                onClick={() => void handleManualReviewAction("manual_revoke")}
+                disabled={
+                  user.is_admin ||
+                  manualAction !== null ||
+                  !canRevokeManualReview ||
+                  revokeReason.trim().length === 0
+                }
+                className="w-full px-4 py-3 rounded-button bg-amber-50 border border-amber-200 hover:bg-amber-100 text-sm font-medium text-amber-900 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {manualAction === "manual_revoke"
+                  ? "Working..."
+                  : "Revoke manual review"}
+              </button>
+              {!canRevokeManualReview ? (
+                <p className="text-xs text-ink-muted">
+                  No active manual approval to revoke.
+                </p>
+              ) : null}
+            </div>
           </div>
 
           {user.is_admin ? (
@@ -237,49 +379,78 @@ export function UserActionPanel({
   );
 }
 
-function getVerificationStatus(user: {
-  is_verified: boolean | null;
-  verification_override: VerificationOverride;
+function getManualReviewStatus(user: {
+  manual_verification_status: ManualVerificationStatus;
+  manual_verification_category: ManualVerificationCategory | null;
+  manual_verified_at: string | null;
+  manual_verification_revoked_at: string | null;
+  manual_verification_expires_at: string | null;
 }) {
-  if (user.verification_override === "verified") {
+  if (user.manual_verification_status === "approved") {
+    const category = user.manual_verification_category
+      ? manualCategoryLabel(user.manual_verification_category)
+      : "Uncategorized";
+    const approvedAt = user.manual_verified_at
+      ? `Approved ${formatDate(user.manual_verified_at)}`
+      : null;
+    const expiresAt = user.manual_verification_expires_at
+      ? `Expires ${formatDate(user.manual_verification_expires_at)}`
+      : null;
     return {
-      label: "Manual verification on",
-      detail:
-        "An admin action keeps the public badge on. This remains separate from selfie identity verification until the next verification phase.",
-      badge: "Manual",
-      className: "bg-teal-50 text-teal-900 border-teal-200",
+      label: `Approved (${category})`,
+      detail: [approvedAt, expiresAt].filter(Boolean).join(" · "),
     };
   }
-  if (user.verification_override === "unverified") {
+  if (user.manual_verification_status === "revoked") {
     return {
-      label: "Manual verification off",
-      detail:
-        "An admin action keeps the public badge off. Ratings cannot change it.",
-      badge: "Manual",
-      className: "bg-amber-50 text-amber-900 border-amber-200",
+      label: "Revoked",
+      detail: user.manual_verification_revoked_at
+        ? `Revoked ${formatDate(user.manual_verification_revoked_at)}`
+        : null,
     };
   }
-  if (user.is_verified) {
+  if (user.manual_verification_status === "expired") {
     return {
-      label: "Existing badge on",
-      detail:
-        "No manual override is recorded. Rating changes no longer affect this saved badge state.",
-      badge: "Existing",
-      className: "bg-teal-50 text-teal-900 border-teal-200",
+      label: "Expired",
+      detail: user.manual_verification_expires_at
+        ? `Expired ${formatDate(user.manual_verification_expires_at)}`
+        : null,
     };
   }
-  return {
-    label: "Badge off",
-    detail:
-      "No manual override is recorded. Rating changes no longer affect this badge.",
-    badge: "Off",
-    className: "bg-gray-50 text-gray-700 border-gray-200",
-  };
+  return { label: "None", detail: null };
 }
 
-function verificationSuccessMessage(action: VerificationAction): string {
-  if (action === "manual_verify") return "Manual verification enabled.";
-  return "Manual verification removed.";
+function manualReviewSuccessMessage(action: ManualVerificationAction): string {
+  if (action === "manual_approve") return "Manual review approved.";
+  return "Manual review revoked.";
+}
+
+function humanizeIdentityStatus(status: string): string {
+  switch (status) {
+    case "approved":
+      return "Approved";
+    case "pending":
+      return "Pending";
+    case "rejected":
+      return "Rejected";
+    case "reverification_required":
+      return "Reverification required";
+    case "unverified":
+      return "Unverified";
+    default:
+      return status
+        .split("_")
+        .filter(Boolean)
+        .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+        .join(" ");
+  }
+}
+
+function manualCategoryLabel(category: ManualVerificationCategory): string {
+  return (
+    MANUAL_CATEGORIES.find((item) => item.value === category)?.label ??
+    category
+  );
 }
 
 function formatDate(iso: string): string {
