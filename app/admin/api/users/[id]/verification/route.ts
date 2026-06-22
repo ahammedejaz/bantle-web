@@ -112,6 +112,17 @@ export async function PATCH(
         });
 
   if (rpc.error) {
+    if (rpc.error.code === "55000") {
+      return NextResponse.json(
+        {
+          error:
+            body.action === "manual_approve"
+              ? "Manual approval is already active."
+              : "No active manual approval exists to revoke.",
+        },
+        { status: 409 },
+      );
+    }
     const correlationId = safeAdminErrorLog(
       "admin_manual_verification_rpc_failed",
       rpc.error,

@@ -5,6 +5,10 @@ import { useAdminToast } from "./AdminToastProvider";
 import { UserActionModal, type UserAction } from "./UserActionModal";
 import { getUserStatus } from "./userStatus";
 import { cn } from "@/lib/utils";
+import {
+  isManualVerificationActive,
+  type ManualVerificationStatus,
+} from "@/lib/manual-verification";
 
 type ManualVerificationAction = "manual_approve" | "manual_revoke";
 type ManualVerificationCategory =
@@ -13,8 +17,6 @@ type ManualVerificationCategory =
   | "vendor"
   | "partner"
   | "other";
-type ManualVerificationStatus = "none" | "approved" | "revoked" | "expired";
-
 const MANUAL_CATEGORIES: readonly {
   value: ManualVerificationCategory;
   label: string;
@@ -60,8 +62,8 @@ export function UserActionPanel({
   const [revokeNote, setRevokeNote] = useState("");
   const status = getUserStatus(user);
   const manualReview = getManualReviewStatus(user);
-  const canRevokeManualReview =
-    user.manual_verification_status === "approved";
+  const manualApprovalActive = isManualVerificationActive(user);
+  const canRevokeManualReview = manualApprovalActive;
 
   const handleSuccess = (message: string) => {
     toast.show(message, "success");
@@ -76,6 +78,14 @@ export function UserActionPanel({
     action: ManualVerificationAction,
   ) => {
     if (manualAction || user.is_admin) return;
+    if (action === "manual_approve" && manualApprovalActive) {
+      toast.show("Manual approval is already active.", "error");
+      return;
+    }
+    if (action === "manual_revoke" && !manualApprovalActive) {
+      toast.show("No active manual approval exists to revoke.", "error");
+      return;
+    }
     const reason =
       action === "manual_approve" ? approveReason.trim() : revokeReason.trim();
     if (!reason) {
@@ -181,7 +191,11 @@ export function UserActionPanel({
                       event.target.value as ManualVerificationCategory,
                     )
                   }
-                  disabled={user.is_admin || manualAction !== null}
+                  disabled={
+                    user.is_admin ||
+                    manualAction !== null ||
+                    manualApprovalActive
+                  }
                   className="mt-1 w-full rounded-button border border-line bg-cream px-3 py-2 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-teal-900 disabled:opacity-50"
                 >
                   {MANUAL_CATEGORIES.map((category) => (
@@ -198,7 +212,11 @@ export function UserActionPanel({
                   onChange={(event) => setApproveReason(event.target.value)}
                   maxLength={1000}
                   rows={3}
-                  disabled={user.is_admin || manualAction !== null}
+                  disabled={
+                    user.is_admin ||
+                    manualAction !== null ||
+                    manualApprovalActive
+                  }
                   className="mt-1 w-full rounded-button border border-line bg-cream px-3 py-2 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-teal-900 disabled:opacity-50"
                 />
               </label>
@@ -211,7 +229,11 @@ export function UserActionPanel({
                   onChange={(event) => setApproveNote(event.target.value)}
                   maxLength={2000}
                   rows={2}
-                  disabled={user.is_admin || manualAction !== null}
+                  disabled={
+                    user.is_admin ||
+                    manualAction !== null ||
+                    manualApprovalActive
+                  }
                   className="mt-1 w-full rounded-button border border-line bg-cream px-3 py-2 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-teal-900 disabled:opacity-50"
                 />
               </label>
@@ -221,6 +243,7 @@ export function UserActionPanel({
                 disabled={
                   user.is_admin ||
                   manualAction !== null ||
+                  manualApprovalActive ||
                   approveReason.trim().length === 0
                 }
                 className="w-full px-4 py-3 rounded-button bg-teal-900 hover:bg-teal-800 text-sm font-medium text-cream transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
@@ -229,6 +252,11 @@ export function UserActionPanel({
                   ? "Working..."
                   : "Approve manual review"}
               </button>
+              {manualApprovalActive ? (
+                <p className="text-xs text-ink-muted">
+                  Manual approval is active. Revoke it before approving again.
+                </p>
+              ) : null}
             </div>
 
             <div className="space-y-3">
@@ -386,7 +414,8 @@ function getManualReviewStatus(user: {
   manual_verification_revoked_at: string | null;
   manual_verification_expires_at: string | null;
 }) {
-  if (user.manual_verification_status === "approved") {
+  const manualApprovalActive = isManualVerificationActive(user);
+  if (user.manual_verification_status === "approved" && manualApprovalActive) {
     const category = user.manual_verification_category
       ? manualCategoryLabel(user.manual_verification_category)
       : "Uncategorized";
@@ -399,6 +428,14 @@ function getManualReviewStatus(user: {
     return {
       label: `Approved (${category})`,
       detail: [approvedAt, expiresAt].filter(Boolean).join(" · "),
+    };
+  }
+  if (user.manual_verification_status === "approved") {
+    return {
+      label: "Expired (inactive)",
+      detail: user.manual_verification_expires_at
+        ? `Expired ${formatDate(user.manual_verification_expires_at)}`
+        : null,
     };
   }
   if (user.manual_verification_status === "revoked") {

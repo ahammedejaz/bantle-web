@@ -10,6 +10,10 @@ import {
 } from "@/components/admin/userStatus";
 import { UserActionPanel } from "@/components/admin/UserActionPanel";
 import { UserDetailTabs } from "@/components/admin/UserDetailTabs";
+import {
+  getEffectiveManualVerificationStatus,
+  type ManualVerificationStatus,
+} from "@/lib/manual-verification";
 
 interface UserDetail {
   user: {
@@ -24,7 +28,7 @@ interface UserDetail {
     identity_verified_at: string | null;
     identity_verification_rejected_at: string | null;
     identity_reverification_required_at: string | null;
-    manual_verification_status: "none" | "approved" | "revoked" | "expired";
+    manual_verification_status: ManualVerificationStatus;
     manual_verification_category:
       | "individual_exception"
       | "company"
@@ -100,9 +104,14 @@ function humanizeStatus(status: string): string {
 }
 
 function manualReviewSummary(user: UserDetail["user"]): string {
-  const base = humanizeStatus(user.manual_verification_status);
+  const effectiveStatus = getEffectiveManualVerificationStatus(user);
+  const base =
+    effectiveStatus === "expired" &&
+    user.manual_verification_status === "approved"
+      ? "Expired (inactive)"
+      : humanizeStatus(effectiveStatus);
   if (
-    user.manual_verification_status === "approved" &&
+    effectiveStatus === "approved" &&
     user.manual_verification_category
   ) {
     return `${base} (${humanizeStatus(user.manual_verification_category)})`;
