@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
   let query = supabase
     .from("profiles")
     .select(
-      "id, display_name, email, created_at, is_admin, banned_until, permanently_banned, deleted_at, rating_avg, rating_count, is_verified",
+      "id, display_name, email, created_at, is_admin, banned_until, permanently_banned, deleted_at, rating_avg, rating_count, is_verified, identity_verification_status, manual_verification_status, manual_verification_category",
       { count: "exact" },
     )
     .order("created_at", { ascending: false })

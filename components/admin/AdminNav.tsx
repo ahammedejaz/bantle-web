@@ -12,6 +12,8 @@ import {
   LogOut,
   Megaphone,
   ScrollText,
+  ShieldCheck,
+  UserRoundPen,
   Users,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -21,6 +23,17 @@ const NAV_ITEMS = [
   { href: "/admin", label: "Dashboard", icon: Home },
   { href: "/admin/reports", label: "Reports", icon: Flag },
   { href: "/admin/users", label: "Users", icon: Users },
+  {
+    href: "/admin/identity-verifications",
+    label: "Identity Verification",
+    icon: ShieldCheck,
+  },
+  {
+    href: "/admin/settings/deal-reputation",
+    label: "Deal Reputation",
+    icon: ListChecks,
+  },
+  { href: "/admin/name-change-requests", label: "Name Changes", icon: UserRoundPen },
   { href: "/admin/listings", label: "Listings", icon: ListChecks },
   { href: "/admin/deals", label: "Deals", icon: Handshake },
   { href: "/admin/audit", label: "Audit", icon: ScrollText },

@@ -10,7 +10,10 @@ import {
 } from "@/components/admin/userStatus";
 import { UserActionPanel } from "@/components/admin/UserActionPanel";
 import { UserDetailTabs } from "@/components/admin/UserDetailTabs";
-import { VerificationSettingsPanel } from "@/components/admin/VerificationSettingsPanel";
+import {
+  getEffectiveManualVerificationStatus,
+  type ManualVerificationStatus,
+} from "@/lib/manual-verification";
 
 interface UserDetail {
   user: {
@@ -21,6 +24,21 @@ interface UserDetail {
     last_seen_at: string | null;
     is_admin: boolean;
     is_verified: boolean | null;
+    identity_verification_status: string;
+    identity_verified_at: string | null;
+    identity_verification_rejected_at: string | null;
+    identity_reverification_required_at: string | null;
+    manual_verification_status: ManualVerificationStatus;
+    manual_verification_category:
+      | "individual_exception"
+      | "company"
+      | "vendor"
+      | "partner"
+      | "other"
+      | null;
+    manual_verified_at: string | null;
+    manual_verification_revoked_at: string | null;
+    manual_verification_expires_at: string | null;
     rating_avg: number | null;
     rating_count: number | null;
     verification_override: "verified" | "unverified" | null;
@@ -56,6 +74,49 @@ function fmtDate(iso: string | null | undefined): string {
     hour: "2-digit",
     minute: "2-digit",
   });
+}
+
+function humanizeStatus(status: string): string {
+  switch (status) {
+    case "approved":
+      return "Approved";
+    case "pending":
+      return "Pending";
+    case "rejected":
+      return "Rejected";
+    case "reverification_required":
+      return "Reverification required";
+    case "unverified":
+      return "Unverified";
+    case "none":
+      return "None";
+    case "revoked":
+      return "Revoked";
+    case "expired":
+      return "Expired";
+    default:
+      return status
+        .split("_")
+        .filter(Boolean)
+        .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+        .join(" ");
+  }
+}
+
+function manualReviewSummary(user: UserDetail["user"]): string {
+  const effectiveStatus = getEffectiveManualVerificationStatus(user);
+  const base =
+    effectiveStatus === "expired" &&
+    user.manual_verification_status === "approved"
+      ? "Expired (inactive)"
+      : humanizeStatus(effectiveStatus);
+  if (
+    effectiveStatus === "approved" &&
+    user.manual_verification_category
+  ) {
+    return `${base} (${humanizeStatus(user.manual_verification_category)})`;
+  }
+  return base;
 }
 
 export function UserDetailClient({ userId }: { userId: string }) {
@@ -134,9 +195,13 @@ export function UserDetailClient({ userId }: { userId: string }) {
           </span>
           {user.is_verified ? (
             <span className="inline-flex items-center px-2 py-0.5 text-xs font-medium rounded-button border bg-teal-50 text-teal-900 border-teal-200">
-              Verified
+              Public badge: On
             </span>
-          ) : null}
+          ) : (
+            <span className="inline-flex items-center px-2 py-0.5 text-xs font-medium rounded-button border bg-gray-50 text-gray-700 border-gray-200">
+              Public badge: Off
+            </span>
+          )}
         </div>
         <p className="text-sm text-ink-muted">{user.email ?? "(no email)"}</p>
         <p className="text-xs text-ink-muted mt-1 font-mono break-all">
@@ -147,6 +212,11 @@ export function UserDetailClient({ userId }: { userId: string }) {
           {user.last_seen_at ? (
             <> &middot; Last seen {fmtDate(user.last_seen_at)}</>
           ) : null}
+        </p>
+        <p className="text-xs text-ink-muted mt-1">
+          Public badge: {user.is_verified ? "On" : "Off"} &middot; Selfie
+          verification: {humanizeStatus(user.identity_verification_status)}
+          &middot; Manual review: {manualReviewSummary(user)}
         </p>
       </div>
 
@@ -216,9 +286,6 @@ export function UserDetailClient({ userId }: { userId: string }) {
 
       {/* Action panel */}
       <UserActionPanel user={user} onActionComplete={fetchDetail} />
-
-      {/* Verification thresholds */}
-      <VerificationSettingsPanel onSaved={fetchDetail} />
 
       {/* Tabbed activity */}
       <UserDetailTabs userId={userId} counts={counts} />

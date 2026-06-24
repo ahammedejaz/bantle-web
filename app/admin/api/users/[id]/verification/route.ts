@@ -1,33 +1,40 @@
-// PATCH /admin/api/users/[id]/verification — admin trust verification override.
-// Body: { action: "manual_verify" | "manual_unverify" | "clear_override" }
+// PATCH /admin/api/users/[id]/verification - structured admin/manual review.
+// Body:
+//   { action: "manual_approve", category, reason, internal_note? }
+//   { action: "manual_revoke", reason, internal_note? }
 
 import { type NextRequest, NextResponse } from "next/server";
-import type { SupabaseClient } from "@supabase/supabase-js";
-import { logAdminAction } from "@/lib/admin-actions";
-import { sendAdminPush } from "@/lib/admin-push";
 import {
   adminErrorResponse,
   safeAdminErrorLog,
 } from "@/lib/admin-safe-errors";
 import { requireAdmin } from "@/lib/admin-auth";
+import { notifyTrustStatusUpdate } from "@/lib/trust-notifications";
 
-type VerificationAction =
-  | "manual_verify"
-  | "manual_unverify"
-  | "clear_override";
+type VerificationAction = "manual_approve" | "manual_revoke";
+type ManualVerificationCategory =
+  | "individual_exception"
+  | "company"
+  | "vendor"
+  | "partner"
+  | "other";
 
 interface VerificationActionBody {
   action?: string;
+  category?: unknown;
+  reason?: unknown;
+  internal_note?: unknown;
 }
 
-type VerificationNotificationKind =
-  | "verification_earned"
-  | "verification_lost";
+const MANUAL_CATEGORIES: readonly ManualVerificationCategory[] = [
+  "individual_exception",
+  "company",
+  "vendor",
+  "partner",
+  "other",
+];
 
-type VerificationNotificationSource = "admin" | "rating_rules";
-
-const USER_SELECT =
-  "id, is_admin, is_verified, rating_avg, rating_count, verification_override, verified_manually_by, verified_manually_at";
+const USER_SELECT = "id,is_admin";
 
 export async function PATCH(
   request: NextRequest,
@@ -51,7 +58,7 @@ export async function PATCH(
     return NextResponse.json(
       {
         error:
-          "action must be manual_verify, manual_unverify, or clear_override",
+          "action must be manual_approve or manual_revoke",
       },
       { status: 400 },
     );
@@ -74,277 +81,138 @@ export async function PATCH(
     );
   }
 
-  const previous = {
-    is_verified: targetUser.is_verified,
-    verification_override: targetUser.verification_override,
-    rating_avg: targetUser.rating_avg,
-    rating_count: targetUser.rating_count,
-  };
-
-  if (body.action === "clear_override") {
-    const { error: clearError } = await supabase
-      .from("profiles")
-      .update({
-        verification_override: null,
-        verified_manually_by: admin.id,
-        verified_manually_at: new Date().toISOString(),
-      })
-      .eq("id", userId);
-
-    if (clearError) {
-      const correlationId = safeAdminErrorLog(
-        "admin_user_verification_clear_failed",
-        clearError,
-        { operation: "user_verification_clear" },
-      );
-      return adminErrorResponse("Verification override could not be cleared.", 500, {
-        correlationId,
-      });
-    }
-
-    const { data: recomputed, error: recomputeError } = await supabase.rpc(
-      "recompute_profile_verification",
-      {
-        p_apply_hysteresis: false,
-        p_notify: false,
-        p_profile_id: userId,
-      },
+  const reason = parseRequiredText(body.reason, "Reason");
+  if ("error" in reason) {
+    return NextResponse.json({ error: reason.error }, { status: 400 });
+  }
+  const internalNote = parseOptionalText(body.internal_note);
+  const category =
+    body.action === "manual_approve" ? body.category : undefined;
+  if (body.action === "manual_approve" && !isManualCategory(category)) {
+    return NextResponse.json(
+      { error: "Valid category is required." },
+      { status: 400 },
     );
-
-    if (recomputeError) {
-      const correlationId = safeAdminErrorLog(
-        "admin_user_verification_recompute_failed",
-        recomputeError,
-        { operation: "user_verification_recompute" },
-      );
-      return adminErrorResponse("Verification state could not be recomputed.", 500, {
-        correlationId,
-      });
-    }
-
-    const { data: updatedUser, error: refetchError } = await supabase
-      .from("profiles")
-      .select(USER_SELECT)
-      .eq("id", userId)
-      .maybeSingle();
-
-    if (refetchError || !updatedUser) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
-    }
-
-    const notification = await notifyVerificationStateChange({
-      supabase,
-      userId,
-      previousIsVerified: targetUser.is_verified,
-      nextUser: updatedUser,
-      source: "rating_rules",
-    });
-
-    await logAdminAction(supabase, {
-      admin_id: admin.id,
-      action_type: "user_verification_updated",
-      target_user_id: userId,
-      target_resource_id: null,
-      target_resource_type: "user",
-      payload: {
-        action: body.action,
-        previous,
-        next: {
-          is_verified: updatedUser.is_verified,
-          verification_override: updatedUser.verification_override,
-          rating_avg: updatedUser.rating_avg,
-          rating_count: updatedUser.rating_count,
-        },
-        recompute: recomputed?.[0] ?? null,
-        notification,
-      },
-    });
-
-    return NextResponse.json({ success: true, user: updatedUser });
   }
 
-  const manualVerified = body.action === "manual_verify";
-  const { data: updatedUser, error: updateError } = await supabase
-    .from("profiles")
-    .update({
-      is_verified: manualVerified,
-      verification_override: manualVerified ? "verified" : "unverified",
-      verified_manually_by: admin.id,
-      verified_manually_at: new Date().toISOString(),
-    })
-    .eq("id", userId)
-    .select(USER_SELECT)
-    .maybeSingle();
+  const rpc =
+    body.action === "manual_approve"
+      ? await supabase.rpc("admin_approve_manual_verification", {
+          p_user_id: userId,
+          p_admin_id: admin.id,
+          p_category: category,
+          p_reason: reason.value,
+          p_internal_note: internalNote,
+          p_expires_at: null,
+        })
+      : await supabase.rpc("admin_revoke_manual_verification", {
+          p_user_id: userId,
+          p_admin_id: admin.id,
+          p_reason: reason.value,
+          p_internal_note: internalNote,
+        });
 
-  if (updateError || !updatedUser) {
+  if (rpc.error) {
+    if (rpc.error.code === "55000") {
+      return NextResponse.json(
+        {
+          error:
+            body.action === "manual_approve"
+              ? "Manual approval is already active."
+              : "No active manual approval exists to revoke.",
+        },
+        { status: 409 },
+      );
+    }
     const correlationId = safeAdminErrorLog(
-      "admin_user_verification_update_failed",
-      updateError,
-      { operation: "user_verification_update" },
+      "admin_manual_verification_rpc_failed",
+      rpc.error,
+      { operation: body.action },
     );
-    return adminErrorResponse("Verification state could not be updated.", 500, {
+    return adminErrorResponse("Manual verification could not be updated.", 500, {
       correlationId,
     });
   }
 
-  const notification = await notifyVerificationStateChange({
+  const resultRow = Array.isArray(rpc.data) ? rpc.data[0] : null;
+  const notificationCategory =
+    body.action === "manual_approve" && isManualCategory(category)
+      ? category
+      : resultRow?.manual_verification_category;
+
+  await notifyTrustStatusUpdate({
     supabase,
     userId,
-    previousIsVerified: targetUser.is_verified,
-    nextUser: updatedUser,
-    source: "admin",
-  });
-
-  await logAdminAction(supabase, {
-    admin_id: admin.id,
-    action_type: "user_verification_updated",
-    target_user_id: userId,
-    target_resource_id: null,
-    target_resource_type: "user",
+    kind:
+      body.action === "manual_approve"
+        ? "trust_badge_awarded"
+        : "trust_badge_revoked",
+    operation: `manual_verification_${body.action}_notify`,
     payload: {
-      action: body.action,
-      previous,
-      next: {
-        is_verified: updatedUser.is_verified,
-        verification_override: updatedUser.verification_override,
-        rating_avg: updatedUser.rating_avg,
-        rating_count: updatedUser.rating_count,
-      },
-      notification,
+      category: safeManualVerificationCategory(notificationCategory),
+      label: manualVerificationLabel(notificationCategory),
+      route: "profile",
     },
   });
 
-  return NextResponse.json({ success: true, user: updatedUser });
+  return NextResponse.json({ success: true, result: rpc.data ?? null });
 }
 
 function isVerificationAction(
   action: string | undefined,
 ): action is VerificationAction {
   return (
-    action === "manual_verify" ||
-    action === "manual_unverify" ||
-    action === "clear_override"
+    action === "manual_approve" ||
+    action === "manual_revoke"
   );
 }
 
-async function notifyVerificationStateChange(args: {
-  supabase: SupabaseClient;
-  userId: string;
-  previousIsVerified: boolean | null;
-  nextUser: {
-    is_verified: boolean | null;
-    rating_avg: number | null;
-    rating_count: number | null;
-  };
-  source: VerificationNotificationSource;
-}): Promise<{
-  status: "sent" | "skipped" | "failed";
-  reason?: string;
-  kind?: VerificationNotificationKind;
-  push?: "sent" | "skipped" | "failed";
-}> {
-  const previousVisibleState = args.previousIsVerified === true;
-  const nextVisibleState = args.nextUser.is_verified === true;
-
-  if (previousVisibleState === nextVisibleState) {
-    return { status: "skipped", reason: "no_visible_state_change" };
-  }
-
-  const kind: VerificationNotificationKind = nextVisibleState
-    ? "verification_earned"
-    : "verification_lost";
-  const copy = verificationNotificationCopy(kind, args.source);
-  const payload = {
-    source: args.source,
-    rating_avg: args.nextUser.rating_avg ?? 0,
-    rating_count: args.nextUser.rating_count ?? 0,
-    previous_is_verified: previousVisibleState,
-    is_verified: nextVisibleState,
-  };
-
-  let notificationStatus: "sent" | "failed" = "sent";
-  const { error: notificationError } = await args.supabase
-    .from("notifications")
-    .insert({
-      user_id: args.userId,
-      kind,
-      payload,
-    });
-
-  if (notificationError) {
-    notificationStatus = "failed";
-    safeAdminErrorLog(
-      "admin_user_verification_notification_insert_failed",
-      notificationError,
-      { operation: "user_verification_notification_insert" },
-    );
-  }
-
-  let pushStatus: "sent" | "skipped" | "failed" = "skipped";
-  try {
-    const pushResult = await sendAdminPush({
-      supabase: args.supabase,
-      recipientUserId: args.userId,
-      title: copy.title,
-      body: copy.body,
-      data: {
-        kind,
-        type: kind,
-        source: args.source,
-      },
-    });
-
-    if (pushResult.sent) {
-      pushStatus = "sent";
-    } else {
-      pushStatus = "skipped";
-      safeAdminErrorLog(
-        "admin_user_verification_push_skipped",
-        pushResult.reason,
-        { operation: "user_verification_push" },
-      );
-    }
-  } catch (error) {
-    pushStatus = "failed";
-    safeAdminErrorLog("admin_user_verification_push_failed", error, {
-      operation: "user_verification_push",
-    });
-  }
-
-  return {
-    status: notificationStatus,
-    kind,
-    push: pushStatus,
-  };
+function isManualCategory(
+  value: unknown,
+): value is ManualVerificationCategory {
+  return (
+    typeof value === "string" &&
+    (MANUAL_CATEGORIES as readonly string[]).includes(value)
+  );
 }
 
-function verificationNotificationCopy(
-  kind: VerificationNotificationKind,
-  source: VerificationNotificationSource,
-): {
-  title: string;
-  body: string;
-} {
-  if (kind === "verification_earned") {
-    if (source === "rating_rules") {
-      return {
-        title: "You earned the Verified badge",
-        body: "Your rating history now meets Bantle verification rules.",
-      };
-    }
-    return {
-      title: "You’re now verified on Bantle",
-      body: "Your profile has been verified by Bantle.",
-    };
+function parseRequiredText(
+  value: unknown,
+  label: string,
+): { value: string } | { error: string } {
+  if (typeof value !== "string") {
+    return { error: `${label} is required.` };
   }
-  if (source === "rating_rules") {
-    return {
-      title: "Your Verified badge was removed",
-      body: "Your rating history no longer meets Bantle verification rules.",
-    };
+  const trimmed = value.trim();
+  if (!trimmed) return { error: `${label} is required.` };
+  if (trimmed.length > 1000) {
+    return { error: `${label} must be 1000 characters or less.` };
   }
-  return {
-    title: "Verification removed",
-    body: "Your Bantle verification status has been updated.",
-  };
+  return { value: trimmed };
+}
+
+function parseOptionalText(value: unknown): string | null {
+  if (typeof value !== "string") return null;
+  const trimmed = value.trim();
+  if (!trimmed) return null;
+  return trimmed.slice(0, 2000);
+}
+
+function safeManualVerificationCategory(value: unknown): string {
+  return isManualCategory(value) ? value : "other";
+}
+
+function manualVerificationLabel(value: unknown): string {
+  switch (safeManualVerificationCategory(value)) {
+    case "individual_exception":
+      return "Identity";
+    case "company":
+    case "vendor":
+      return "Business";
+    case "partner":
+      return "Partner";
+    case "other":
+    default:
+      return "Trust";
+  }
 }

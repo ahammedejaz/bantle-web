@@ -27,6 +27,18 @@ function getAuditActionClass(actionType: string): string {
   if (actionType.startsWith("user_")) {
     return "bg-amber-50 text-amber-900 border-amber-200";
   }
+  if (actionType.startsWith("identity_")) {
+    return "bg-teal-50 text-teal-900 border-teal-200";
+  }
+  if (actionType.startsWith("manual_verification_")) {
+    return "bg-teal-50 text-teal-900 border-teal-200";
+  }
+  if (actionType.startsWith("deal_reputation_")) {
+    return "bg-teal-50 text-teal-900 border-teal-200";
+  }
+  if (actionType.startsWith("name_change_")) {
+    return "bg-blue-50 text-blue-900 border-blue-200";
+  }
   if (actionType.startsWith("platform_")) {
     return "bg-teal-50 text-teal-900 border-teal-200";
   }

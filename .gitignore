@@ -30,6 +30,7 @@ yarn-error.log*
 .env*.local
 
 # local database backups
+database-backups/
 database-backups/*.sql
 database-backups/*.dump
 !database-backups/README.md
