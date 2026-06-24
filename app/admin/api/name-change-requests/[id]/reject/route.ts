@@ -9,6 +9,7 @@ import {
   adminErrorResponse,
   safeAdminErrorLog,
 } from "@/lib/admin-safe-errors";
+import { notifyTrustStatusUpdate } from "@/lib/trust-notifications";
 
 interface RejectBody {
   user_visible_rejection_message?: unknown;
@@ -69,8 +70,25 @@ export async function POST(
     });
   }
 
+  const requestRow = Array.isArray(updatedRequest)
+    ? updatedRequest[0]
+    : updatedRequest;
+  if (requestRow?.user_id) {
+    await notifyTrustStatusUpdate({
+      supabase,
+      userId: requestRow.user_id,
+      kind: "name_change_rejected",
+      operation: "name_change_reject_notify",
+      payload: {
+        source: "name_change",
+        route: "edit_profile",
+        user_visible_message: rejectionMessage.value,
+      },
+    });
+  }
+
   return NextResponse.json({
     success: true,
-    request: Array.isArray(updatedRequest) ? updatedRequest[0] : updatedRequest,
+    request: requestRow,
   });
 }

@@ -11,6 +11,7 @@ import {
   adminErrorResponse,
   safeAdminErrorLog,
 } from "@/lib/admin-safe-errors";
+import { notifyTrustStatusUpdate } from "@/lib/trust-notifications";
 
 interface RejectBody {
   user_visible_rejection_message?: unknown;
@@ -153,6 +154,18 @@ export async function POST(
       previous_status: existing.status,
       next_status: "rejected",
       retention_days: settings.rejected_selfie_retention_days,
+    },
+  });
+
+  await notifyTrustStatusUpdate({
+    supabase,
+    userId: existing.user_id,
+    kind: "identity_verification_rejected",
+    operation: "identity_verification_reject_notify",
+    payload: {
+      source: "identity",
+      route: "identity_verification",
+      user_visible_message: rejectionMessage.value,
     },
   });
 

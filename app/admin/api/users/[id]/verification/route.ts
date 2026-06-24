@@ -9,6 +9,7 @@ import {
   safeAdminErrorLog,
 } from "@/lib/admin-safe-errors";
 import { requireAdmin } from "@/lib/admin-auth";
+import { notifyTrustStatusUpdate } from "@/lib/trust-notifications";
 
 type VerificationAction = "manual_approve" | "manual_revoke";
 type ManualVerificationCategory =
@@ -133,6 +134,27 @@ export async function PATCH(
     });
   }
 
+  const resultRow = Array.isArray(rpc.data) ? rpc.data[0] : null;
+  const notificationCategory =
+    body.action === "manual_approve" && isManualCategory(category)
+      ? category
+      : resultRow?.manual_verification_category;
+
+  await notifyTrustStatusUpdate({
+    supabase,
+    userId,
+    kind:
+      body.action === "manual_approve"
+        ? "trust_badge_awarded"
+        : "trust_badge_revoked",
+    operation: `manual_verification_${body.action}_notify`,
+    payload: {
+      category: safeManualVerificationCategory(notificationCategory),
+      label: manualVerificationLabel(notificationCategory),
+      route: "profile",
+    },
+  });
+
   return NextResponse.json({ success: true, result: rpc.data ?? null });
 }
 
@@ -174,4 +196,23 @@ function parseOptionalText(value: unknown): string | null {
   const trimmed = value.trim();
   if (!trimmed) return null;
   return trimmed.slice(0, 2000);
+}
+
+function safeManualVerificationCategory(value: unknown): string {
+  return isManualCategory(value) ? value : "other";
+}
+
+function manualVerificationLabel(value: unknown): string {
+  switch (safeManualVerificationCategory(value)) {
+    case "individual_exception":
+      return "Identity";
+    case "company":
+    case "vendor":
+      return "Business";
+    case "partner":
+      return "Partner";
+    case "other":
+    default:
+      return "Trust";
+  }
 }

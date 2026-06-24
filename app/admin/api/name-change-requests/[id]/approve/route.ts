@@ -6,6 +6,7 @@ import {
   adminErrorResponse,
   safeAdminErrorLog,
 } from "@/lib/admin-safe-errors";
+import { notifyTrustStatusUpdate } from "@/lib/trust-notifications";
 
 interface ApproveBody {
   admin_internal_note?: unknown;
@@ -57,8 +58,31 @@ export async function POST(
     });
   }
 
+  const requestRow = Array.isArray(updatedRequest)
+    ? updatedRequest[0]
+    : updatedRequest;
+  if (requestRow?.user_id) {
+    await notifyTrustStatusUpdate({
+      supabase,
+      userId: requestRow.user_id,
+      kind: requestRow.identity_reverification_required
+        ? "identity_reverification_required"
+        : "name_change_approved",
+      operation: "name_change_approve_notify",
+      payload: requestRow.identity_reverification_required
+        ? {
+            source: "name_change",
+            route: "identity_verification",
+          }
+        : {
+            source: "name_change",
+            route: "profile",
+          },
+    });
+  }
+
   return NextResponse.json({
     success: true,
-    request: Array.isArray(updatedRequest) ? updatedRequest[0] : updatedRequest,
+    request: requestRow,
   });
 }

@@ -10,6 +10,7 @@ import {
   adminErrorResponse,
   safeAdminErrorLog,
 } from "@/lib/admin-safe-errors";
+import { notifyTrustStatusUpdate } from "@/lib/trust-notifications";
 
 interface ApproveBody {
   admin_internal_note?: unknown;
@@ -145,6 +146,17 @@ export async function POST(
       previous_status: existing.status,
       next_status: "approved",
       retention_days: settings.approved_selfie_retention_days,
+    },
+  });
+
+  await notifyTrustStatusUpdate({
+    supabase,
+    userId: existing.user_id,
+    kind: "identity_verification_approved",
+    operation: "identity_verification_approve_notify",
+    payload: {
+      source: "identity",
+      route: "profile",
     },
   });
 
