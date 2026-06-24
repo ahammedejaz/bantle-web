@@ -181,6 +181,12 @@ function getResourceLink(action: AuditListItem): {
   if (type === "platform") {
     return { href: "/admin/platforms", label: id ? `Platform ${id}` : "Platform" };
   }
+  if (type === "trust_system_settings") {
+    return {
+      href: "/admin/settings/deal-reputation",
+      label: "Trust settings",
+    };
+  }
 
   if (type || id) {
     return { label: [type ?? "Resource", id].filter(Boolean).join(" ") };

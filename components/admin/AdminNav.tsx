@@ -28,6 +28,11 @@ const NAV_ITEMS = [
     label: "Identity Verification",
     icon: ShieldCheck,
   },
+  {
+    href: "/admin/settings/deal-reputation",
+    label: "Deal Reputation",
+    icon: ListChecks,
+  },
   { href: "/admin/name-change-requests", label: "Name Changes", icon: UserRoundPen },
   { href: "/admin/listings", label: "Listings", icon: ListChecks },
   { href: "/admin/deals", label: "Deals", icon: Handshake },
