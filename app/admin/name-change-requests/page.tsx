@@ -16,9 +16,8 @@ export default function AdminNameChangeRequestsPage() {
         Name changes
       </h1>
       <p className="text-sm text-ink-muted mb-8">
-        Review pending display-name change requests. This queue does not change
-        the current mobile edit-profile behavior or enable name-change
-        enforcement.
+        Review pending display-name change requests. Approved changes update the
+        profile name and require identity re-verification.
       </p>
       <Suspense
         fallback={

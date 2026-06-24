@@ -1,6 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/admin-auth";
-import { logAdminAction } from "@/lib/admin-actions";
+import { getNameChangeAdminError } from "@/lib/name-change-errors";
 import {
   parseOptionalAdminNote,
   parseRequiredRejectionMessage,
@@ -39,76 +39,38 @@ export async function POST(
     return NextResponse.json({ error: rejectionMessage.error }, { status: 400 });
   }
 
-  const { data: existing, error: existingError } = await supabase
-    .from("name_change_requests")
-    .select("id,user_id,current_display_name,requested_display_name,status")
-    .eq("id", id)
-    .maybeSingle();
-
-  if (existingError || !existing) {
-    return NextResponse.json(
-      { error: "Name-change request not found" },
-      { status: 404 },
-    );
-  }
-  if (existing.status !== "pending") {
-    return NextResponse.json(
-      { error: "Name-change request is not pending" },
-      { status: 409 },
-    );
-  }
-
-  const nowIso = new Date().toISOString();
   const adminInternalNote = parseOptionalAdminNote(body.admin_internal_note);
 
-  const { data: updatedRequest, error: updateError } = await supabase
-    .from("name_change_requests")
-    .update({
-      status: "rejected",
-      reviewed_by: admin.id,
-      reviewed_at: nowIso,
-      rejected_at: nowIso,
-      approved_at: null,
-      user_visible_rejection_message: rejectionMessage.value,
-      admin_internal_note: adminInternalNote,
-    })
-    .eq("id", id)
-    .eq("status", "pending")
-    .select("id,user_id,status,reviewed_at,rejected_at")
-    .maybeSingle();
+  const { data: updatedRequest, error: rpcError } = await supabase.rpc(
+    "reject_name_change_request",
+    {
+      p_request_id: id,
+      p_admin_id: admin.id,
+      p_user_visible_rejection_message: rejectionMessage.value,
+      p_admin_note: adminInternalNote,
+    },
+  );
 
-  if (updateError) {
+  if (rpcError) {
+    const mapped = getNameChangeAdminError(rpcError);
+    if (mapped) {
+      return NextResponse.json(
+        { error: mapped.message },
+        { status: mapped.status },
+      );
+    }
     const correlationId = safeAdminErrorLog(
-      "admin_name_change_reject_update_failed",
-      updateError,
-      { operation: "name_change_reject_update" },
+      "admin_name_change_reject_rpc_failed",
+      rpcError,
+      { operation: "name_change_reject_rpc" },
     );
     return adminErrorResponse("Name-change request could not be rejected.", 500, {
       correlationId,
     });
   }
-  if (!updatedRequest) {
-    return NextResponse.json(
-      { error: "Name-change request is not pending" },
-      { status: 409 },
-    );
-  }
-
-  await logAdminAction(supabase, {
-    admin_id: admin.id,
-    action_type: "name_change_rejected",
-    target_user_id: existing.user_id,
-    target_resource_id: id,
-    target_resource_type: "name_change_request",
-    reason: rejectionMessage.value,
-    payload: {
-      previous_status: existing.status,
-      next_status: "rejected",
-    },
-  });
 
   return NextResponse.json({
     success: true,
-    request: updatedRequest,
+    request: Array.isArray(updatedRequest) ? updatedRequest[0] : updatedRequest,
   });
 }
