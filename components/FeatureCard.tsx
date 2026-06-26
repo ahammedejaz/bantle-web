@@ -6,14 +6,15 @@ interface FeatureCardProps {
   body: string;
 }
 
+// Dark glass card used on the marketing homepage (homepage-only component).
 export function FeatureCard({ icon: Icon, title, body }: FeatureCardProps) {
   return (
-    <article className="bg-cream-card border border-line rounded-card p-6 md:p-7 flex flex-col gap-4 h-full">
-      <span className="inline-flex items-center justify-center h-10 w-10 rounded-button bg-teal-100 text-teal-900">
+    <article className="flex h-full flex-col gap-4 rounded-2xl border border-white/10 bg-white/[0.04] p-6 backdrop-blur md:p-7">
+      <span className="inline-flex h-11 w-11 items-center justify-center rounded-[14px] bg-teal-400/15 text-teal-300">
         <Icon className="h-5 w-5" strokeWidth={1.75} />
       </span>
-      <h3 className="font-serif text-xl text-teal-900">{title}</h3>
-      <p className="text-[15px] leading-7 text-ink-muted">{body}</p>
+      <h3 className="font-serif text-xl text-cream">{title}</h3>
+      <p className="text-[15px] leading-7 text-cream/65">{body}</p>
     </article>
   );
 }
