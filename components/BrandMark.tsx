@@ -7,9 +7,9 @@ interface BrandMarkProps {
 }
 
 const sizeClasses = {
-  sm: { mark: "h-7 w-7", text: "text-[18px]", gap: "gap-2" },
-  md: { mark: "h-8 w-8", text: "text-[20px]", gap: "gap-2.5" },
-  lg: { mark: "h-10 w-10", text: "text-[25px]", gap: "gap-3" },
+  sm: { mark: "h-6 w-auto", text: "text-[18px]", gap: "gap-2" },
+  md: { mark: "h-7 w-auto", text: "text-[20px]", gap: "gap-2" },
+  lg: { mark: "h-9 w-auto", text: "text-[25px]", gap: "gap-2.5" },
 };
 
 // Marketing-only brand lockup (header, mobile nav, footer). The admin panel
@@ -26,8 +26,8 @@ export function BrandMark({ light = false, size = "md" }: BrandMarkProps) {
       <img
         src="/brand/bantle-mark.png"
         alt=""
-        width={40}
-        height={40}
+        width={168}
+        height={214}
         className={`${classes.mark} shrink-0 object-contain`}
       />
       <span

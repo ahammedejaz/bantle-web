@@ -126,9 +126,9 @@ function AppPreviewVisual() {
               <img
                 src="/brand/bantle-mark.png"
                 alt=""
-                width={28}
-                height={28}
-                className="h-7 w-7 shrink-0 object-contain"
+                width={168}
+                height={214}
+                className="h-6 w-auto shrink-0 object-contain"
               />
               <span>
                 <span className="block font-sans text-[15px] font-medium leading-none tracking-[-0.01em] text-teal-900">
