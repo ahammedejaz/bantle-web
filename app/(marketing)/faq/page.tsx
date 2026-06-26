@@ -137,6 +137,63 @@ const sections: Section[] = [
         ),
       },
       {
+        q: "Do I need identity verification to post a listing?",
+        a: (
+          <p>
+            Yes. To post a listing on Bantle you must complete identity
+            verification (a private selfie review) or be approved as a
+            business or partner profile. Verification helps reduce fake
+            accounts; it does not guarantee deals, payment, or access.
+          </p>
+        ),
+      },
+      {
+        q: "What trust badges can I see on Bantle?",
+        a: (
+          <p>
+            Bantle shows <strong>Identity verified</strong>,{" "}
+            <strong>Business verified</strong> and{" "}
+            <strong>Partner verified</strong> badges. A badge signals that
+            Bantle reviewed an account and helps reduce fake accounts, but
+            it is not a guarantee of payment, access, refunds, or deal
+            safety.
+          </p>
+        ),
+      },
+      {
+        q: "Why is my activity limited before I verify?",
+        a: (
+          <p>
+            Unverified accounts have limited deal activity — for example,
+            keeping only one pending or active deal at a time — until
+            identity verification, or business/partner approval, is
+            completed.
+          </p>
+        ),
+      },
+      {
+        q: "How often can I change my display name?",
+        a: (
+          <p>
+            Up to 2 approved name changes per year (within any 365 days).
+            An approved name change may require you to verify your identity
+            again to restore your Identity verified badge.
+          </p>
+        ),
+      },
+      {
+        q: "Can a business or partner sell on Bantle?",
+        a: (
+          <p>
+            Yes. Businesses and partners can reach out to Bantle to be
+            reviewed for a business or partner profile — email{" "}
+            <a href="mailto:support@bantle.in">support@bantle.in</a>.
+            Approved profiles can post listings and may receive a Business
+            verified or Partner verified badge.
+          </p>
+        ),
+      },
+      {
         q: "What happens if my household composition changes?",
         a: (
           <p>
@@ -280,8 +337,8 @@ const sections: Section[] = [
         q: "What devices does Bantle support?",
         a: (
           <p>
-            We&apos;re launching on Android first, with iOS to follow
-            shortly after. Android 9 (Pie) and above is supported. There
+            Bantle is preparing early access across Android and iOS.
+            Android 9 (Pie) and above is supported. There
             is no Bantle website experience for end users beyond this
             marketing site — plans, chat and settlement all live in the
             mobile app.

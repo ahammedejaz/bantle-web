@@ -59,24 +59,24 @@ export function HeroSection() {
               Coming soon · Made in India
             </span>
             <h1 className="mt-6 max-w-2xl text-balance font-serif text-4xl italic leading-[1.05] tracking-tightish text-teal-900 sm:text-5xl md:text-6xl">
-              Split subscriptions with{" "}
+              Split or buy subscriptions with{" "}
               <span className="text-teal-500">more trust</span>.
             </h1>
             <p className="mt-6 max-w-xl text-lg leading-8 text-ink-muted">
-              Find active subscription slots, review the details, and propose a
-              deal when everything looks right. Bantle keeps trust signals,
-              chat, and safety checks clear — while payments stay outside
-              Bantle.
+              Share a monthly slot or buy fixed-duration access when a seller
+              has validity remaining. Review the listing, propose a deal, and
+              chat after it&apos;s accepted — with verified sellers and clear
+              trust signals, while payments stay outside Bantle.
             </p>
             <div className="mt-7 grid max-w-2xl gap-3 text-sm sm:grid-cols-3">
-              <HeroPill>Propose a deal first</HeroPill>
+              <HeroPill>Split or buy access</HeroPill>
+              <HeroPill>Verified sellers &amp; proposal-first chat</HeroPill>
               <HeroPill>Payments stay outside Bantle</HeroPill>
-              <HeroPill>Private trust verification</HeroPill>
             </div>
             <div className="mt-9">
               <ComingSoonBadges />
               <p className="mt-4 text-sm text-ink-muted">
-                Launching first on Android, with iOS to follow.
+                Bantle is preparing early access across Android and iOS.
               </p>
             </div>
           </div>
