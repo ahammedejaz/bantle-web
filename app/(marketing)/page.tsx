@@ -355,7 +355,7 @@ function SafetyAndLimits() {
               ))}
             </ul>
           </div>
-          <div className="rounded-3xl border border-teal-900/10 bg-white p-6 text-center shadow-[0_18px_50px_-20px_rgba(0,60,52,0.25)] md:p-8">
+          <div className="flex h-full flex-col items-center justify-center rounded-3xl border border-teal-900/10 bg-white p-6 text-center shadow-[0_18px_50px_-20px_rgba(0,60,52,0.25)] md:p-8">
             <span className="mx-auto inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-teal-100 to-teal-50 text-teal-700 ring-1 ring-teal-200/70">
               <Ban className="h-5 w-5" strokeWidth={1.8} />
             </span>
