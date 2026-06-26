@@ -154,11 +154,11 @@ function HowItWorks() {
             return (
               <li
                 key={step.title}
-                className="flex h-full flex-col gap-4 rounded-card border border-line bg-white p-6 shadow-[0_14px_44px_rgba(0,60,52,0.05)]"
+                className="group flex h-full flex-col gap-4 rounded-3xl border border-teal-900/10 bg-white p-6 shadow-[0_10px_30px_-14px_rgba(0,60,52,0.18)] transition-all duration-300 hover:-translate-y-1 hover:border-teal-300 hover:shadow-[0_24px_50px_-22px_rgba(0,60,52,0.28)]"
               >
                 <span
                   aria-hidden="true"
-                  className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-teal-100 text-sm font-semibold text-teal-900"
+                  className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-teal-500 to-teal-700 text-sm font-semibold text-cream shadow-[0_8px_18px_-8px_rgba(0,60,52,0.6)]"
                 >
                   {i + 1}
                 </span>
@@ -231,9 +231,9 @@ function AppPreview() {
               return (
                 <article
                   key={item.title}
-                  className="rounded-card border border-line bg-white p-6 shadow-[0_18px_54px_rgba(0,60,52,0.06)]"
+                  className="group rounded-3xl border border-teal-900/10 bg-white p-6 shadow-[0_10px_30px_-14px_rgba(0,60,52,0.18)] transition-all duration-300 hover:-translate-y-1 hover:border-teal-300 hover:shadow-[0_24px_50px_-22px_rgba(0,60,52,0.28)]"
                 >
-                  <span className="inline-flex h-11 w-11 items-center justify-center rounded-[14px] bg-teal-100 text-teal-900">
+                  <span className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-teal-100 to-teal-50 text-teal-700 ring-1 ring-teal-200/70 transition-colors duration-300 group-hover:text-teal-900">
                     <Icon className="h-5 w-5" strokeWidth={1.8} />
                   </span>
                   <h3 className="mt-5 font-serif text-xl text-teal-900">
@@ -289,9 +289,9 @@ function SafetyAndLimits() {
               ))}
             </ul>
           </div>
-          <div className="rounded-card border border-line bg-white p-6 shadow-[0_18px_54px_rgba(0,60,52,0.06)] md:p-8">
+          <div className="rounded-3xl border border-teal-900/10 bg-white p-6 shadow-[0_18px_50px_-20px_rgba(0,60,52,0.25)] md:p-8">
             <div className="flex items-center gap-3">
-              <span className="inline-flex h-11 w-11 items-center justify-center rounded-[14px] bg-teal-100 text-teal-900">
+              <span className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-teal-100 to-teal-50 text-teal-700 ring-1 ring-teal-200/70">
                 <Ban className="h-5 w-5" strokeWidth={1.8} />
               </span>
               <h3 className="font-serif text-2xl text-teal-900">
@@ -348,9 +348,11 @@ function FAQPreview() {
           {faqs.map((item) => (
             <article
               key={item.q}
-              className="rounded-card border border-line bg-white p-6 shadow-[0_18px_54px_rgba(0,60,52,0.06)]"
+              className="group rounded-3xl border border-teal-900/10 bg-white p-6 shadow-[0_10px_30px_-14px_rgba(0,60,52,0.18)] transition-all duration-300 hover:-translate-y-1 hover:border-teal-300 hover:shadow-[0_24px_50px_-22px_rgba(0,60,52,0.28)]"
             >
-              <CircleHelp className="h-5 w-5 text-teal-700" strokeWidth={1.8} />
+              <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-teal-50 text-teal-700 ring-1 ring-teal-100">
+                <CircleHelp className="h-5 w-5" strokeWidth={1.8} />
+              </span>
               <h3 className="mt-4 font-serif text-xl text-teal-900">
                 {item.q}
               </h3>
