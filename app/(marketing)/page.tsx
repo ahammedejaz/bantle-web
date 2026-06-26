@@ -240,6 +240,7 @@ function SafetyAndLimits() {
     "Users coordinate directly with people they already trust.",
     "Every arrangement should follow the provider's household or family-plan rules.",
     "Bantle keeps terms, chat, and updates organized for moderation context.",
+    "Optional identity verification keeps selfies private, manually reviewed, and off public profiles.",
   ];
   const limits = [
     "Bantle does not collect, hold, route, verify, insure, or reverse payments.",

@@ -31,8 +31,10 @@ export default function PrivacyPage() {
             Bantle is a household-coordination app for splitting family-plan
             subscriptions. We collect the minimum data needed to verify
             you, run the app, and protect each household&apos;s
-            information. We do not collect phone numbers. We do not sell
-            your data to anybody, ever. We do not handle payments, so we
+            information. If you choose identity verification, your selfie is
+            stored privately, reviewed manually by our team, and never shown
+            on your public profile. We do not collect phone numbers. We do not
+            sell your data to anybody, ever. We do not handle payments, so we
             don&apos;t hold any financial information about you. The rest
             of this page is the long, careful version of that.
           </p>
@@ -70,6 +72,20 @@ export default function PrivacyPage() {
             <li>Ratings you receive and give, with associated plan IDs.</li>
           </ul>
 
+          <h3>Identity verification data</h3>
+          <ul>
+            <li>A selfie image you submit when you request identity verification. It is uploaded to private verification storage, reviewed manually by our team through short-lived, access-controlled links, and is never shown on your public profile or used for marketing.</li>
+            <li>Your verification status (for example: not submitted, in review, approved, rejected, or re-verification required) and, if a request is rejected, the review message we show you.</li>
+            <li>Bantle does not request GPS or device location for identity verification.</li>
+            <li>Identity verification is designed to support a clear privacy notice and your consent before you submit a selfie. We do not perform biometric matching, liveness detection, or facial recognition, and a reviewed badge is a signal — not a guarantee about any user.</li>
+          </ul>
+
+          <h3>Name-change request data</h3>
+          <ul>
+            <li>When you request a display-name change, we store the requested name, the request status, and when it was submitted so the request can be reviewed.</li>
+            <li>An approved display-name change may require you to verify your identity again.</li>
+          </ul>
+
           <h3>Communication data</h3>
           <ul>
             <li>Messages you send inside Bantle&apos;s chat.</li>
@@ -104,6 +120,7 @@ export default function PrivacyPage() {
           <ul>
             <li>To run the service: coordinating plans across household members, supporting chat and monthly settlement flows.</li>
             <li>To verify identity through email confirmation.</li>
+            <li>To review identity verification and display-name change requests that you choose to submit, through manual admin review.</li>
             <li>To send transactional emails like verification messages, password resets and plan updates.</li>
             <li>To deliver in-app and push notifications.</li>
             <li>To improve Bantle, in aggregate, through anonymised analytics and crash reporting.</li>
@@ -270,6 +287,11 @@ export default function PrivacyPage() {
           <h2>9. Security</h2>
           <ul>
             <li>Data is encrypted in transit (TLS) and at rest.</li>
+            <li>
+              Identity verification selfies are kept in private storage, are
+              not publicly accessible, and are reviewed manually by our team
+              through short-lived, access-controlled links.
+            </li>
             <li>
               Sensitive actions require email re-verification.
             </li>

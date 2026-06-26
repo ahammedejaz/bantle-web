@@ -243,6 +243,9 @@ export function NameChangeRequestDetailClient({
                 rows={3}
                 className="w-full px-3 py-2 text-sm border border-line rounded-button bg-white text-ink focus:outline-none focus:ring-2 focus:ring-teal-900"
               />
+              <span className="block text-xs text-ink-muted mt-1">
+                Internal only — never shown to the user.
+              </span>
             </label>
 
             <div className="grid gap-3 md:grid-cols-2">
@@ -267,6 +270,9 @@ export function NameChangeRequestDetailClient({
                     rows={3}
                     className="w-full px-3 py-2 text-sm border border-line rounded-button bg-white text-ink focus:outline-none focus:ring-2 focus:ring-teal-900"
                   />
+                  <span className="block text-xs text-ink-muted mt-1">
+                    Shown to the user — keep it clear and respectful.
+                  </span>
                 </label>
                 <button
                   type="button"

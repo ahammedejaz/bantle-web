@@ -49,6 +49,16 @@ export default function SafetyPage() {
               passwords.
             </li>
             <li>
+              <strong>Identity verification.</strong> Users can submit a
+              selfie for identity verification. The selfie is stored
+              privately, reviewed manually by our team through short-lived
+              access, and is never shown on public profiles or used for
+              marketing. Bantle does not use biometric matching or liveness
+              detection and does not request your location for verification.
+              A reviewed badge is a helpful signal, not a guarantee about any
+              user.
+            </li>
+            <li>
               <strong>Deal safety acknowledgement.</strong> Before a deal
               is proposed or accepted, Bantle reminds users that payment
               happens outside Bantle and that Bantle does not verify

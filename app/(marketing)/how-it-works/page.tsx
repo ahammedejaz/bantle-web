@@ -28,7 +28,7 @@ const steps = [
     n: 3,
     title: "Talk in chat",
     body: [
-      "Use Bantle chat to confirm access, duration, price, rules and timing. Keep the arrangement clear before either side coordinates outside Bantle.",
+      "Buyers propose first. Once a proposal is accepted and the deal is active, full chat opens so both sides can confirm access, duration, price, rules and timing before either side coordinates outside Bantle. Closed, cancelled, rejected or completed deals become read-only.",
       "Bantle keeps monthly sharing and one-time access labels separate so one-time prices are never shown as monthly prices.",
     ],
   },

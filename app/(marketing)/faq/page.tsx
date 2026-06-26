@@ -172,12 +172,27 @@ const sections: Section[] = [
         q: "How does Bantle keep things safe?",
         a: (
           <p>
-            The strongest safety signal on Bantle is that everyone on a
-            plan already lives with each other — trust is built into the
-            household, not bolted on with a badge. On top of that, every
-            account is email-verified, every plan is private to the
-            members invited to it, and any member can report or block at
-            any time.
+            Every account is email-verified, and users can also submit a
+            selfie for identity verification that our team reviews manually
+            and keeps private — it is never shown on public profiles. Plans
+            and chats stay private to the people involved, buyers propose
+            before full chat opens, and any member can report or block at any
+            time. A reviewed badge is a helpful signal, not a guarantee about
+            any user.
+          </p>
+        ),
+      },
+      {
+        q: "Is my identity verification selfie public?",
+        a: (
+          <p>
+            No. If you submit a selfie for identity verification, it is
+            uploaded to private storage, reviewed manually by our team through
+            short-lived access, and is never shown on your public profile or
+            used for marketing. Bantle does not use biometric matching or
+            liveness detection, and does not request your location for
+            verification. You can read more in our{" "}
+            <Link href="/privacy">privacy policy</Link>.
           </p>
         ),
       },
