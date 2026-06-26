@@ -71,7 +71,7 @@ export default function Home() {
 
 function Eyebrow({ children }: { children: React.ReactNode }) {
   return (
-    <p className="mb-4 text-xs uppercase tracking-[0.14em] text-teal-300">
+    <p className="mb-4 text-xs uppercase tracking-[0.14em] text-teal-600">
       {children}
     </p>
   );
@@ -79,11 +79,11 @@ function Eyebrow({ children }: { children: React.ReactNode }) {
 
 function WhyBantle() {
   return (
-    <section className="bg-[#03261F] text-cream">
+    <section className="border-t border-line">
       <div className="container-x py-16 md:py-24">
         <div className="mb-12 max-w-2xl md:mb-16">
           <Eyebrow>Why Bantle</Eyebrow>
-          <h2 className="text-balance font-serif text-3xl leading-tight tracking-tightish text-cream md:text-4xl">
+          <h2 className="text-balance font-serif text-3xl leading-tight tracking-tightish text-teal-900 md:text-4xl">
             A clearer place for direct coordination.
           </h2>
         </div>
@@ -139,32 +139,34 @@ function HowItWorks() {
   ];
 
   return (
-    <section className="bg-[#04231E] text-cream">
+    <section className="border-t border-line bg-cream-card">
       <div className="container-x py-16 md:py-24">
         <div className="mb-12 max-w-2xl md:mb-16">
           <Eyebrow>How it works</Eyebrow>
-          <h2 className="text-balance font-serif text-3xl leading-tight tracking-tightish text-cream md:text-4xl">
+          <h2 className="text-balance font-serif text-3xl leading-tight tracking-tightish text-teal-900 md:text-4xl">
             From discovering a slot to a direct conversation.
           </h2>
         </div>
-        <ol className="grid gap-8 sm:grid-cols-2 lg:grid-cols-5 lg:gap-6">
+        <ol className="grid gap-6 sm:grid-cols-2 lg:grid-cols-5">
           {steps.map((step, i) => {
             const Icon = step.icon;
 
             return (
               <li
                 key={step.title}
-                className="flex h-full flex-col gap-4 rounded-2xl border border-white/10 bg-white/[0.03] p-6"
+                className="flex h-full flex-col gap-4 rounded-card border border-line bg-white p-6 shadow-[0_14px_44px_rgba(0,60,52,0.05)]"
               >
                 <span
                   aria-hidden="true"
-                  className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-teal-300/40 text-sm font-medium text-teal-300"
+                  className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-teal-100 text-sm font-semibold text-teal-900"
                 >
                   {i + 1}
                 </span>
-                <Icon className="h-5 w-5 text-teal-300" strokeWidth={1.8} />
-                <h3 className="font-serif text-lg text-cream">{step.title}</h3>
-                <p className="text-[14px] leading-7 text-cream/65">
+                <Icon className="h-5 w-5 text-teal-700" strokeWidth={1.8} />
+                <h3 className="font-serif text-lg text-teal-900">
+                  {step.title}
+                </h3>
+                <p className="text-[14px] leading-7 text-ink-muted">
                   {step.body}
                 </p>
               </li>
@@ -174,7 +176,7 @@ function HowItWorks() {
         <div className="mt-12">
           <Link
             href="/how-it-works"
-            className="text-teal-300 underline underline-offset-4 hover:text-teal-200 text-[15px]"
+            className="text-teal-600 underline underline-offset-2 hover:text-teal-900 text-[15px]"
           >
             Read the full walk-through →
           </Link>
@@ -209,15 +211,15 @@ function AppPreview() {
   ];
 
   return (
-    <section className="bg-[#03261F] text-cream">
+    <section className="border-t border-line">
       <div className="container-x py-16 md:py-24">
         <div className="grid gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:items-start">
           <div>
             <Eyebrow>App preview</Eyebrow>
-            <h2 className="text-balance font-serif text-3xl leading-tight tracking-tightish text-cream md:text-4xl">
+            <h2 className="text-balance font-serif text-3xl leading-tight tracking-tightish text-teal-900 md:text-4xl">
               A preview grounded in the real app flow.
             </h2>
-            <p className="mt-5 max-w-xl text-[16px] leading-8 text-cream/70">
+            <p className="mt-5 max-w-xl text-[16px] leading-8 text-ink-muted">
               These highlights mirror how the Bantle mobile app keeps discovery,
               proposals, chat, and safety clear for both sides.
             </p>
@@ -229,15 +231,15 @@ function AppPreview() {
               return (
                 <article
                   key={item.title}
-                  className="rounded-2xl border border-white/10 bg-white/[0.04] p-6 backdrop-blur"
+                  className="rounded-card border border-line bg-white p-6 shadow-[0_18px_54px_rgba(0,60,52,0.06)]"
                 >
-                  <span className="inline-flex h-11 w-11 items-center justify-center rounded-[14px] bg-teal-400/15 text-teal-300">
+                  <span className="inline-flex h-11 w-11 items-center justify-center rounded-[14px] bg-teal-100 text-teal-900">
                     <Icon className="h-5 w-5" strokeWidth={1.8} />
                   </span>
-                  <h3 className="mt-5 font-serif text-xl text-cream">
+                  <h3 className="mt-5 font-serif text-xl text-teal-900">
                     {item.title}
                   </h3>
-                  <p className="mt-3 text-[15px] leading-7 text-cream/65">
+                  <p className="mt-3 text-[15px] leading-7 text-ink-muted">
                     {item.body}
                   </p>
                 </article>
@@ -264,22 +266,22 @@ function SafetyAndLimits() {
   ];
 
   return (
-    <section className="bg-[#04231E] text-cream">
+    <section className="border-t border-line bg-cream-card">
       <div className="container-x py-16 md:py-24">
         <div className="grid gap-10 md:grid-cols-2 md:gap-16">
           <div>
             <Eyebrow>Safety and transparency</Eyebrow>
-            <h2 className="text-balance font-serif text-3xl leading-tight tracking-tightish text-cream md:text-4xl">
+            <h2 className="text-balance font-serif text-3xl leading-tight tracking-tightish text-teal-900 md:text-4xl">
               Built around clear responsibilities.
             </h2>
             <ul className="mt-8 grid gap-4">
               {safetyNotes.map((note) => (
                 <li
                   key={note}
-                  className="flex gap-3 text-[15px] leading-7 text-cream/80"
+                  className="flex gap-3 text-[15px] leading-7 text-ink"
                 >
                   <BadgeCheck
-                    className="mt-1 h-5 w-5 shrink-0 text-teal-300"
+                    className="mt-1 h-5 w-5 shrink-0 text-teal-700"
                     strokeWidth={1.8}
                   />
                   <span>{note}</span>
@@ -287,12 +289,12 @@ function SafetyAndLimits() {
               ))}
             </ul>
           </div>
-          <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-6 backdrop-blur md:p-8">
+          <div className="rounded-card border border-line bg-white p-6 shadow-[0_18px_54px_rgba(0,60,52,0.06)] md:p-8">
             <div className="flex items-center gap-3">
-              <span className="inline-flex h-11 w-11 items-center justify-center rounded-[14px] bg-teal-400/15 text-teal-300">
+              <span className="inline-flex h-11 w-11 items-center justify-center rounded-[14px] bg-teal-100 text-teal-900">
                 <Ban className="h-5 w-5" strokeWidth={1.8} />
               </span>
-              <h3 className="font-serif text-2xl text-cream">
+              <h3 className="font-serif text-2xl text-teal-900">
                 What Bantle does not do
               </h3>
             </div>
@@ -300,11 +302,11 @@ function SafetyAndLimits() {
               {limits.map((line) => (
                 <li
                   key={line}
-                  className="flex gap-3 text-[15px] leading-7 text-cream/80"
+                  className="flex gap-3 text-[15px] leading-7 text-ink"
                 >
                   <span
                     aria-hidden="true"
-                    className="mt-3 h-1.5 w-1.5 shrink-0 rounded-full bg-teal-300"
+                    className="mt-3 h-1.5 w-1.5 shrink-0 rounded-full bg-teal-600"
                   />
                   <span>{line}</span>
                 </li>
@@ -334,11 +336,11 @@ function FAQPreview() {
   ];
 
   return (
-    <section className="bg-[#03261F] text-cream">
+    <section className="border-t border-line">
       <div className="container-x py-16 md:py-24">
         <div className="mb-10 max-w-2xl">
           <Eyebrow>FAQ</Eyebrow>
-          <h2 className="text-balance font-serif text-3xl leading-tight tracking-tightish text-cream md:text-4xl">
+          <h2 className="text-balance font-serif text-3xl leading-tight tracking-tightish text-teal-900 md:text-4xl">
             The important boundaries are visible upfront.
           </h2>
         </div>
@@ -346,11 +348,13 @@ function FAQPreview() {
           {faqs.map((item) => (
             <article
               key={item.q}
-              className="rounded-2xl border border-white/10 bg-white/[0.04] p-6 backdrop-blur"
+              className="rounded-card border border-line bg-white p-6 shadow-[0_18px_54px_rgba(0,60,52,0.06)]"
             >
-              <CircleHelp className="h-5 w-5 text-teal-300" strokeWidth={1.8} />
-              <h3 className="mt-4 font-serif text-xl text-cream">{item.q}</h3>
-              <p className="mt-3 text-[15px] leading-7 text-cream/65">
+              <CircleHelp className="h-5 w-5 text-teal-700" strokeWidth={1.8} />
+              <h3 className="mt-4 font-serif text-xl text-teal-900">
+                {item.q}
+              </h3>
+              <p className="mt-3 text-[15px] leading-7 text-ink-muted">
                 {item.a}
               </p>
             </article>
@@ -359,7 +363,7 @@ function FAQPreview() {
         <div className="mt-10">
           <Link
             href="/faq"
-            className="text-teal-300 underline underline-offset-4 hover:text-teal-200 text-[15px]"
+            className="text-teal-600 underline underline-offset-2 hover:text-teal-900 text-[15px]"
           >
             Read all questions →
           </Link>
@@ -371,26 +375,22 @@ function FAQPreview() {
 
 function ComingSoonCTA() {
   return (
-    <section className="relative overflow-hidden bg-[#02211C] text-cream">
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute left-1/2 top-0 h-[360px] w-[360px] -translate-x-1/2 rounded-full bg-teal-400/15 blur-[120px]"
-      />
-      <div className="container-x relative py-16 text-center md:py-24">
+    <section className="border-t border-teal-800 bg-teal-900 text-cream">
+      <div className="container-x py-16 text-center md:py-24">
         <h2 className="mx-auto max-w-3xl text-balance font-serif text-3xl italic tracking-tightish md:text-5xl">
           Be the first to know when Bantle opens.
         </h2>
-        <p className="mx-auto mt-5 max-w-2xl text-lg leading-8 text-cream/70">
+        <p className="mx-auto mt-5 max-w-2xl text-lg leading-8 text-cream/80">
           Bantle is opening up in early access. Request access if you want
           launch updates, or bookmark the store badges below.
         </p>
         <div className="mt-10 flex justify-center">
           <ComingSoonBadges align="center" />
         </div>
-        <p className="mt-8 text-sm text-cream/60">
+        <p className="mt-8 text-sm text-cream/70">
           <Link
             href="/support"
-            className="underline underline-offset-4 hover:text-cream"
+            className="underline underline-offset-2 hover:text-cream"
           >
             Request early access →
           </Link>

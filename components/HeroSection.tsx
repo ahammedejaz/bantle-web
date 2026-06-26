@@ -7,9 +7,10 @@ import {
 } from "lucide-react";
 import { ComingSoonBadges } from "@/components/ComingSoonBadges";
 
-// Marketing homepage hero. Dark, premium, mint-accented to mirror the
-// current Bantle mobile app. The right-hand "app preview" is built
-// entirely in HTML/CSS with neutral placeholder data — no real mobile
+// Marketing homepage hero. Light/cream premium to match the rest of the
+// marketing site, with mint/green accents that nod to the mobile app. The
+// right-hand "app preview" is a premium deep-teal panel inside a white frame,
+// built entirely in HTML/CSS with neutral placeholder data — no real mobile
 // screenshots, no personal/test names, no provider logos.
 
 const slots = [
@@ -41,28 +42,24 @@ const slots = [
 
 export function HeroSection() {
   return (
-    <section className="relative overflow-hidden bg-[#02211C] text-cream">
-      {/* soft mint glow */}
+    <section className="relative overflow-hidden border-b border-line bg-gradient-to-b from-teal-50 via-cream to-cream">
+      {/* one soft mint highlight, kept subtle on the light background */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute -top-40 -right-24 h-[460px] w-[460px] rounded-full bg-teal-400/20 blur-[120px]"
-      />
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute -bottom-32 -left-24 h-[420px] w-[420px] rounded-full bg-teal-500/20 blur-[120px]"
+        className="pointer-events-none absolute -top-32 -right-24 h-[420px] w-[420px] rounded-full bg-teal-200/40 blur-[130px]"
       />
       <div className="container-x relative pt-14 pb-20 md:pt-20 md:pb-28">
         <div className="grid gap-14 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:gap-16">
           <div>
-            <span className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/[0.04] px-3 py-1.5 text-xs uppercase tracking-[0.14em] text-teal-300">
-              <span className="h-1.5 w-1.5 rounded-full bg-teal-300" />
+            <span className="inline-flex items-center gap-2 rounded-full border border-teal-200 bg-teal-50 px-3 py-1.5 text-xs uppercase tracking-[0.14em] text-teal-700">
+              <span className="h-1.5 w-1.5 rounded-full bg-teal-500" />
               Coming soon · Made in India
             </span>
-            <h1 className="mt-6 max-w-2xl text-balance font-serif text-4xl italic leading-[1.05] tracking-tightish sm:text-5xl md:text-6xl">
+            <h1 className="mt-6 max-w-2xl text-balance font-serif text-4xl italic leading-[1.05] tracking-tightish text-teal-900 sm:text-5xl md:text-6xl">
               Split subscriptions with{" "}
-              <span className="text-teal-300">more trust</span>.
+              <span className="text-teal-500">more trust</span>.
             </h1>
-            <p className="mt-6 max-w-xl text-lg leading-8 text-cream/75">
+            <p className="mt-6 max-w-xl text-lg leading-8 text-ink-muted">
               Find active subscription slots, review the details, and propose a
               deal when everything looks right. Bantle keeps trust signals,
               chat, and safety checks clear — while payments stay outside
@@ -75,7 +72,7 @@ export function HeroSection() {
             </div>
             <div className="mt-9">
               <ComingSoonBadges />
-              <p className="mt-4 text-sm text-cream/55">
+              <p className="mt-4 text-sm text-ink-muted">
                 Launching first on Android, with iOS to follow.
               </p>
             </div>
@@ -89,8 +86,8 @@ export function HeroSection() {
 
 function HeroPill({ children }: { children: ReactNode }) {
   return (
-    <span className="inline-flex min-h-11 items-center gap-2 rounded-button border border-white/10 bg-white/[0.04] px-3 py-2 text-cream/85">
-      <CheckCircle2 className="h-4 w-4 shrink-0 text-teal-300" strokeWidth={1.9} />
+    <span className="inline-flex min-h-11 items-center gap-2 rounded-button border border-teal-200 bg-teal-50 px-3 py-2 text-teal-800">
+      <CheckCircle2 className="h-4 w-4 shrink-0 text-teal-600" strokeWidth={1.9} />
       <span className="leading-snug">{children}</span>
     </span>
   );
@@ -103,7 +100,7 @@ function AppPreviewVisual() {
       role="img"
       aria-label="Illustrative Bantle app preview showing example subscription slots with neutral placeholder data, a propose-a-deal action, and a note that chat starts after a deal request"
     >
-      <div className="relative rounded-[34px] border border-white/10 bg-white/[0.05] p-3 shadow-[0_40px_120px_rgba(0,0,0,0.45)] backdrop-blur">
+      <div className="relative rounded-[34px] border border-line bg-white p-3 shadow-[0_30px_90px_rgba(0,60,52,0.16)]">
         <div className="overflow-hidden rounded-[26px] border border-white/10 bg-[#04332B]">
           {/* top bar */}
           <div className="flex items-center justify-between px-5 pt-5">
