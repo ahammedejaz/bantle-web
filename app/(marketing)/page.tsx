@@ -31,23 +31,24 @@ export const metadata = {
   },
 };
 
-const structuredData = [
-  {
-    "@context": "https://schema.org",
-    "@type": "Organization",
-    name: BRAND_NAME,
-    url: SITE_URL,
-    email: CONTACT_EMAIL,
-  },
-  {
-    "@context": "https://schema.org",
-    "@type": "WebSite",
-    name: BRAND_NAME,
-    url: SITE_URL,
-    description: SITE_DESCRIPTION,
-    inLanguage: "en-IN",
-  },
-];
+const structuredData = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      name: BRAND_NAME,
+      url: SITE_URL,
+      email: CONTACT_EMAIL,
+    },
+    {
+      "@type": "WebSite",
+      name: BRAND_NAME,
+      url: SITE_URL,
+      description: SITE_DESCRIPTION,
+      inLanguage: "en-IN",
+    },
+  ],
+};
 
 export default function Home() {
   return (
@@ -147,26 +148,28 @@ function HowItWorks() {
             From discovering a slot to a direct conversation.
           </h2>
         </div>
-        <ol className="grid gap-6 sm:grid-cols-2 lg:grid-cols-5">
+        <ol className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
           {steps.map((step, i) => {
             const Icon = step.icon;
 
             return (
               <li
                 key={step.title}
-                className="group flex h-full flex-col gap-4 rounded-3xl border border-teal-900/10 bg-white p-6 shadow-[0_10px_30px_-14px_rgba(0,60,52,0.18)] transition-all duration-300 hover:-translate-y-1 hover:border-teal-300 hover:shadow-[0_24px_50px_-22px_rgba(0,60,52,0.28)]"
+                className="group flex h-full flex-col gap-3 rounded-2xl border border-teal-900/10 bg-white p-5 shadow-[0_10px_30px_-14px_rgba(0,60,52,0.18)] transition-all duration-300 hover:-translate-y-1 hover:border-teal-300 hover:shadow-[0_22px_46px_-24px_rgba(0,60,52,0.28)]"
               >
-                <span
-                  aria-hidden="true"
-                  className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-teal-500 to-teal-700 text-sm font-semibold text-cream shadow-[0_8px_18px_-8px_rgba(0,60,52,0.6)]"
-                >
-                  {i + 1}
-                </span>
-                <Icon className="h-5 w-5 text-teal-700" strokeWidth={1.8} />
-                <h3 className="font-serif text-lg text-teal-900">
+                <div className="flex items-center gap-2.5">
+                  <span
+                    aria-hidden="true"
+                    className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-teal-500 to-teal-700 text-[13px] font-semibold text-cream shadow-[0_8px_18px_-8px_rgba(0,60,52,0.6)]"
+                  >
+                    {i + 1}
+                  </span>
+                  <Icon className="h-5 w-5 text-teal-700" strokeWidth={1.8} />
+                </div>
+                <h3 className="font-serif text-base leading-snug text-teal-900">
                   {step.title}
                 </h3>
-                <p className="text-[14px] leading-7 text-ink-muted">
+                <p className="text-[13.5px] leading-6 text-ink-muted">
                   {step.body}
                 </p>
               </li>
@@ -379,7 +382,7 @@ function ComingSoonCTA() {
   return (
     <section className="border-t border-teal-800 bg-teal-900 text-cream">
       <div className="container-x py-16 text-center md:py-24">
-        <h2 className="mx-auto max-w-3xl text-balance font-serif text-3xl italic tracking-tightish md:text-5xl">
+        <h2 className="mx-auto max-w-3xl text-balance font-serif text-3xl italic leading-[1.15] tracking-tightish md:text-5xl md:leading-[1.12]">
           Be the first to know when Bantle opens.
         </h2>
         <p className="mx-auto mt-5 max-w-2xl text-lg leading-8 text-cream/80">

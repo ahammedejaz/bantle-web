@@ -6,12 +6,12 @@ interface BrandMarkProps {
   size?: "sm" | "md" | "lg";
 }
 
-// The mark is a tightly-cropped (zero-padding) glyph at 148x197, so a small
-// gap reads as one wordmark unit.
+// The mark is a tightly-cropped (zero-padding) glyph at 148x197, so a very
+// small gap reads as one wordmark unit.
 const sizeClasses = {
-  sm: { mark: "h-7 w-auto", text: "text-[20px]", gap: "gap-1.5" },
-  md: { mark: "h-9 w-auto", text: "text-[23px]", gap: "gap-1.5" },
-  lg: { mark: "h-11 w-auto", text: "text-[29px]", gap: "gap-2" },
+  sm: { mark: "h-7 w-auto", text: "text-[21px]", gap: "gap-1" },
+  md: { mark: "h-10 w-auto", text: "text-[24px]", gap: "gap-1" },
+  lg: { mark: "h-12 w-auto", text: "text-[30px]", gap: "gap-1.5" },
 };
 
 // Marketing-only brand lockup (header, mobile nav, footer). The admin panel
@@ -32,7 +32,7 @@ export function BrandMark({ light = false, size = "md" }: BrandMarkProps) {
         className={`${classes.mark} shrink-0 object-contain`}
       />
       <span
-        className={`${classes.text} font-semibold leading-none tracking-[-0.02em] ${
+        className={`${classes.text} font-medium leading-none tracking-[-0.02em] ${
           light ? "text-cream" : "text-teal-900"
         }`}
       >

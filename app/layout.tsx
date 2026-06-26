@@ -70,17 +70,17 @@ export const metadata: Metadata = {
       "max-video-preview": -1,
     },
   },
-  icons: {
-    icon: "/icon.svg",
-    apple: "/apple-icon.svg",
-  },
 };
 
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${inter.variable} ${lora.variable}`}>
+    <html
+      lang="en"
+      data-scroll-behavior="smooth"
+      className={`${inter.variable} ${lora.variable}`}
+    >
       <body className="bg-cream text-ink">{children}</body>
     </html>
   );
