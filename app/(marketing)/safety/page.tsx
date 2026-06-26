@@ -109,6 +109,24 @@ export default function SafetyPage() {
         </section>
 
         <section>
+          <h2>Provider terms still apply</h2>
+          <p>
+            Some family, household, or location-based subscription plans may
+            only allow sharing with people in the same household, family, or
+            permitted location. Only list, request, or buy access when the
+            provider&apos;s own terms allow it. Bantle does not override
+            provider rules and does not verify whether a specific arrangement
+            is permitted — users are responsible for confirming that before
+            they coordinate.
+          </p>
+          <p>
+            When posting a monthly household plan, Bantle asks you to confirm
+            you are sharing within your household and to check the
+            provider&apos;s family-plan terms first.
+          </p>
+        </section>
+
+        <section>
           <h2>What you control</h2>
           <ul>
             <li>

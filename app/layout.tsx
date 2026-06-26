@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Lora } from "next/font/google";
 import "./globals.css";
-import { BRAND_NAME, SITE_DESCRIPTION, SITE_URL, TAGLINE } from "@/lib/constants";
+import { BRAND_NAME, SITE_DESCRIPTION, SITE_TITLE, SITE_URL } from "@/lib/constants";
 
 // Root layout. Site-wide concerns only: html/body, fonts, globals,
 // site-wide metadata. NO Header/Footer here — those belong to the
@@ -26,7 +26,7 @@ const lora = Lora({
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: `${TAGLINE} | ${BRAND_NAME}`,
+    default: SITE_TITLE,
     template: `%s | ${BRAND_NAME}`,
   },
   description: SITE_DESCRIPTION,
@@ -53,12 +53,12 @@ export const metadata: Metadata = {
     locale: "en_IN",
     url: SITE_URL,
     siteName: BRAND_NAME,
-    title: `${TAGLINE} | ${BRAND_NAME}`,
+    title: SITE_TITLE,
     description: SITE_DESCRIPTION,
   },
   twitter: {
     card: "summary_large_image",
-    title: `${TAGLINE} | ${BRAND_NAME}`,
+    title: SITE_TITLE,
     description: SITE_DESCRIPTION,
   },
   robots: {

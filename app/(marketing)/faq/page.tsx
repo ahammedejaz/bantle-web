@@ -137,6 +137,20 @@ const sections: Section[] = [
         ),
       },
       {
+        q: "Can I list household or family subscriptions?",
+        a: (
+          <p>
+            Only when the provider&apos;s own terms allow it. Some family,
+            household, or location-based plans may require members to be in
+            the same household or location. Bantle does not override provider
+            rules or verify whether your arrangement is permitted — you are
+            responsible for confirming that before you list, request, or buy
+            access. When posting a monthly household plan, Bantle asks you to
+            confirm you are sharing within your household.
+          </p>
+        ),
+      },
+      {
         q: "Do I need identity verification to post a listing?",
         a: (
           <p>

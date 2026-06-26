@@ -1,5 +1,8 @@
 export const BRAND_NAME = "Bantle";
 export const TAGLINE = "Split or buy subscriptions with more trust.";
+// Exact site/tab title requested by the founder (no trailing period, no template
+// suffix). Used for the homepage <title> and OG/Twitter titles.
+export const SITE_TITLE = "Bantle - Split or buy subscriptions with more trust";
 export const SITE_URL = "https://bantle.in";
 export const SITE_DESCRIPTION =
   "Bantle helps people split monthly subscriptions or buy fixed-duration access with clearer trust signals. Review listings, propose a deal, and chat after acceptance while payments stay outside Bantle.";

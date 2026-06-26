@@ -18,13 +18,13 @@ import {
   BRAND_NAME,
   CONTACT_EMAIL,
   SITE_DESCRIPTION,
+  SITE_TITLE,
   SITE_URL,
-  TAGLINE,
 } from "@/lib/constants";
 
 export const metadata = {
   title: {
-    absolute: `${TAGLINE} | ${BRAND_NAME}`,
+    absolute: SITE_TITLE,
   },
   description: SITE_DESCRIPTION,
   alternates: {
@@ -64,6 +64,7 @@ export default function Home() {
       <WhyBantle />
       <HowItWorks />
       <AppPreview />
+      <TrustHighlights />
       <SafetyAndLimits />
       <FAQPreview />
       <ComingSoonCTA />
@@ -256,6 +257,64 @@ function AppPreview() {
   );
 }
 
+function TrustHighlights() {
+  const items = [
+    {
+      icon: ShieldCheck,
+      title: "Private identity review",
+      body: "Selfies stay private, are manually reviewed, stay off public profiles, and don't use location tracking.",
+    },
+    {
+      icon: BadgeCheck,
+      title: "Trust badges with limits",
+      body: "Identity verified, Business verified, and Partner verified are signals that help reduce fake accounts — not guarantees of payment, access, refunds, or outcomes.",
+    },
+    {
+      icon: FileCheck2,
+      title: "Verified access to listing",
+      body: "Posting a listing requires identity verification or an approved business or partner profile.",
+    },
+    {
+      icon: ListChecks,
+      title: "Limited access before verification",
+      body: "Unverified accounts have limited deal activity until identity verification is completed.",
+    },
+    {
+      icon: HeartHandshake,
+      title: "Partner and business review",
+      body: "Businesses and partners who want to sell on Bantle can reach out to be reviewed.",
+    },
+    {
+      icon: MessageCircle,
+      title: "Proposal-first chat",
+      body: "Buyers propose first, and chat opens after a deal request or accepted proposal.",
+    },
+  ];
+
+  return (
+    <section className="border-t border-line bg-gradient-to-b from-teal-50/60 via-cream to-cream">
+      <div className="container-x py-16 md:py-24">
+        <div className="mb-12 max-w-2xl md:mb-16">
+          <Eyebrow>Why Bantle is different</Eyebrow>
+          <h2 className="text-balance font-serif text-3xl leading-tight tracking-tightish text-teal-900 md:text-4xl">
+            Trust built into every step.
+          </h2>
+        </div>
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {items.map((item) => (
+            <FeatureCard
+              key={item.title}
+              icon={item.icon}
+              title={item.title}
+              body={item.body}
+            />
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function SafetyAndLimits() {
   const safetyNotes = [
     "Buyers propose first, and chat opens after a deal request or accepted proposal.",
@@ -264,6 +323,7 @@ function SafetyAndLimits() {
     "Trust badges — Identity verified, Business verified, and Partner verified — are signals that help reduce fake accounts, not guarantees of any outcome.",
     "Unverified accounts have limited deal activity until they complete identity verification.",
     "Businesses and partners who want to sell on Bantle can reach out to be reviewed.",
+    "Provider terms still apply — some family or household plans may require members to be in the same household or location, so only list, request, or buy access when the provider's own terms allow it.",
   ];
   const limits = [
     "Bantle does not collect, hold, route, verify, insure, or reverse payments.",
@@ -295,26 +355,20 @@ function SafetyAndLimits() {
               ))}
             </ul>
           </div>
-          <div className="rounded-3xl border border-teal-900/10 bg-white p-6 shadow-[0_18px_50px_-20px_rgba(0,60,52,0.25)] md:p-8">
-            <div className="flex items-center gap-3">
-              <span className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-teal-100 to-teal-50 text-teal-700 ring-1 ring-teal-200/70">
-                <Ban className="h-5 w-5" strokeWidth={1.8} />
-              </span>
-              <h3 className="font-serif text-2xl text-teal-900">
-                What Bantle does not do
-              </h3>
-            </div>
-            <ul className="mt-6 grid gap-4">
+          <div className="rounded-3xl border border-teal-900/10 bg-white p-6 text-center shadow-[0_18px_50px_-20px_rgba(0,60,52,0.25)] md:p-8">
+            <span className="mx-auto inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-teal-100 to-teal-50 text-teal-700 ring-1 ring-teal-200/70">
+              <Ban className="h-5 w-5" strokeWidth={1.8} />
+            </span>
+            <h3 className="mt-4 font-serif text-2xl text-teal-900">
+              What Bantle does not do
+            </h3>
+            <ul className="mt-6 grid gap-3">
               {limits.map((line) => (
                 <li
                   key={line}
-                  className="flex gap-3 text-[15px] leading-7 text-ink"
+                  className="text-[15px] leading-7 text-ink"
                 >
-                  <span
-                    aria-hidden="true"
-                    className="mt-3 h-1.5 w-1.5 shrink-0 rounded-full bg-teal-600"
-                  />
-                  <span>{line}</span>
+                  {line}
                 </li>
               ))}
             </ul>
