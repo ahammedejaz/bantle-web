@@ -57,6 +57,7 @@ export default function Home() {
         }}
       />
       <HeroSection />
+      <SeeInAction />
       <WhyBantle />
       <HowItWorks />
       <AppPreview />
@@ -64,6 +65,74 @@ export default function Home() {
       <FAQPreview />
       <ComingSoonCTA />
     </>
+  );
+}
+
+function SeeInAction() {
+  const shots = [
+    {
+      src: "/images/app-screens/home-popular-listings.jpg",
+      width: 757,
+      height: 1536,
+      label: "Home feed",
+      body: "Discover popular listings and compare monthly slots at a glance.",
+      alt: "Bantle mobile home screen showing activity and popular subscription listings",
+    },
+    {
+      src: "/images/app-screens/listing-detail-propose-deal.jpg",
+      width: 762,
+      height: 1536,
+      label: "Listing details",
+      body: "Review the host, price, commitment, and availability, then propose a deal. Chat starts after your deal request.",
+      alt: "Bantle mobile listing detail screen showing Microsoft 365 Family and propose a deal button",
+    },
+  ];
+
+  return (
+    <section className="border-t border-line">
+      <div className="container-x py-16 md:py-24">
+        <div className="max-w-2xl mb-12 md:mb-16">
+          <p className="text-xs uppercase tracking-[0.14em] text-teal-600 mb-4">
+            See Bantle in action
+          </p>
+          <h2 className="font-serif text-3xl md:text-4xl text-teal-900 leading-tight tracking-tightish text-balance">
+            Browse, review, then propose a deal.
+          </h2>
+          <p className="mt-5 text-[16px] leading-8 text-ink-muted max-w-xl">
+            Browse active subscription slots, review the details, and propose a
+            deal when everything looks right. Chat opens after a deal request.
+          </p>
+        </div>
+        <div className="grid gap-10 sm:grid-cols-2 sm:gap-8 md:gap-12">
+          {shots.map((shot) => (
+            <figure key={shot.label} className="flex flex-col items-center">
+              <div className="w-full max-w-[300px] rounded-[38px] border border-line bg-white p-3 shadow-[0_28px_90px_rgba(0,60,52,0.16)]">
+                <div className="overflow-hidden rounded-[30px] border border-line bg-cream">
+                  {/* Static marketing screenshot from the current mobile app.
+                      next/image is not used elsewhere on this site; a plain
+                      img with explicit width/height avoids layout shift. */}
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={shot.src}
+                    width={shot.width}
+                    height={shot.height}
+                    alt={shot.alt}
+                    loading="lazy"
+                    className="block h-auto w-full"
+                  />
+                </div>
+              </div>
+              <figcaption className="mt-6 max-w-xs text-center">
+                <p className="font-serif text-xl text-teal-900">{shot.label}</p>
+                <p className="mt-2 text-[15px] leading-7 text-ink-muted">
+                  {shot.body}
+                </p>
+              </figcaption>
+            </figure>
+          ))}
+        </div>
+      </div>
+    </section>
   );
 }
 
@@ -203,8 +272,8 @@ function AppPreview() {
               A preview grounded in the real app flow.
             </h2>
             <p className="mt-5 text-[16px] leading-8 text-ink-muted max-w-xl">
-              The launch page uses generic examples so provider names and
-              private user context stay off the public website.
+              These highlights mirror the real Bantle app flow shown in the
+              screenshots above.
             </p>
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
