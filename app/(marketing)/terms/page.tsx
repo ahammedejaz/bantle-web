@@ -21,7 +21,9 @@ export default function TermsPage() {
         title="The rules of using Bantle."
         intro={`Version ${CURRENT_VERSION}. Effective ${EFFECTIVE_DATE_DISPLAY}. By using Bantle you agree to these terms.`}
       />
-      <article className="container-x py-12 md:py-16 prose-bantle max-w-3xl">
+      <div className="bg-gradient-to-b from-teal-50/50 via-cream to-cream">
+        <div className="container-x py-12 md:py-16">
+          <article className="prose-bantle mx-auto max-w-3xl rounded-3xl border border-line bg-white p-6 shadow-[0_22px_60px_-28px_rgba(0,60,52,0.28)] md:p-10">
         <section>
           <h2>1. Acceptance and eligibility</h2>
           <p>
@@ -428,7 +430,9 @@ export default function TermsPage() {
             Bantle Service is operated by {COMPANY_NAME}.
           </p>
         </section>
-      </article>
+          </article>
+        </div>
+      </div>
     </>
   );
 }

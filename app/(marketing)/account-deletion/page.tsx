@@ -20,7 +20,9 @@ export default function AccountDeletionPage() {
         intro="Bantle gives users control over their account and data."
       />
 
-      <article className="container-x py-12 md:py-16 prose-bantle max-w-3xl">
+      <div className="bg-gradient-to-b from-teal-50/50 via-cream to-cream">
+        <div className="container-x py-12 md:py-16">
+          <article className="prose-bantle mx-auto max-w-3xl rounded-3xl border border-line bg-white p-6 shadow-[0_22px_60px_-28px_rgba(0,60,52,0.28)] md:p-10">
         <section>
           <p>
             You can request deletion of your Bantle account and associated
@@ -155,7 +157,9 @@ export default function AccountDeletionPage() {
             <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>
           </p>
         </section>
-      </article>
+          </article>
+        </div>
+      </div>
     </>
   );
 }

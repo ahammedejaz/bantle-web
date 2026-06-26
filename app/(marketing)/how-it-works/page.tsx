@@ -66,7 +66,9 @@ export default function HowItWorksPage() {
         title="From listed terms to direct coordination, in six steps."
         intro="Bantle coordinates monthly sharing and one-time access. Payment and access confirmation happen directly between users outside Bantle."
       />
-      <article className="container-x py-12 md:py-16 prose-bantle max-w-3xl">
+      <div className="bg-gradient-to-b from-teal-50/50 via-cream to-cream">
+        <div className="container-x py-12 md:py-16">
+          <article className="prose-bantle mx-auto max-w-3xl rounded-3xl border border-line bg-white p-6 shadow-[0_22px_60px_-28px_rgba(0,60,52,0.28)] md:p-10">
         <ol className="not-prose space-y-12">
           {steps.map((s) => (
             <li key={s.n} className="flex flex-col md:flex-row gap-6 md:gap-10">
@@ -115,7 +117,9 @@ export default function HowItWorksPage() {
             for the full version.
           </p>
         </section>
-      </article>
+          </article>
+        </div>
+      </div>
     </>
   );
 }

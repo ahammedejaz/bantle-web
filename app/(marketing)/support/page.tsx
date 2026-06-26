@@ -16,7 +16,8 @@ export default function SupportPage() {
         title="Talk to a real person at Bantle."
         intro="We're a small team — emails come straight to humans, not a triage queue. We aim to reply within two business days."
       />
-      <article className="container-x py-12 md:py-16 max-w-3xl">
+      <div className="bg-gradient-to-b from-teal-50/50 via-cream to-cream">
+        <article className="container-x py-12 md:py-16 max-w-3xl">
         <section className="grid gap-6 md:grid-cols-2">
           <ContactCard
             label="General support"
@@ -84,7 +85,8 @@ export default function SupportPage() {
             <code>[PARTNERSHIP]</code>.
           </p>
         </section>
-      </article>
+        </article>
+      </div>
     </>
   );
 }
@@ -99,7 +101,7 @@ function ContactCard({
   body: string;
 }) {
   return (
-    <div className="bg-cream-card border border-line rounded-card p-6">
+    <div className="rounded-2xl border border-line bg-white p-6 shadow-[0_12px_34px_-20px_rgba(0,60,52,0.22)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_22px_50px_-24px_rgba(0,60,52,0.3)]">
       <p className="text-xs uppercase tracking-[0.14em] text-teal-600 mb-3">
         {label}
       </p>

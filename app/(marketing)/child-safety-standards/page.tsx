@@ -19,7 +19,9 @@ export default function ChildSafetyStandardsPage() {
         intro="Bantle is intended for adults aged 18 and over. We are committed to maintaining a safe platform and we have zero tolerance for child sexual abuse and exploitation."
       />
 
-      <article className="container-x py-12 md:py-16 prose-bantle max-w-3xl">
+      <div className="bg-gradient-to-b from-teal-50/50 via-cream to-cream">
+        <div className="container-x py-12 md:py-16">
+          <article className="prose-bantle mx-auto max-w-3xl rounded-3xl border border-line bg-white p-6 shadow-[0_22px_60px_-28px_rgba(0,60,52,0.28)] md:p-10">
         <section>
           <h2>Our commitment</h2>
           <p>
@@ -161,7 +163,9 @@ export default function ChildSafetyStandardsPage() {
           <h2>Last updated</h2>
           <p>June 2026</p>
         </section>
-      </article>
+          </article>
+        </div>
+      </div>
     </>
   );
 }

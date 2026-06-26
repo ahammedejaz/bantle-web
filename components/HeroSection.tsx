@@ -122,21 +122,19 @@ function AppPreviewVisual() {
           {/* app header */}
           <div className="flex items-center justify-between px-5 pt-4">
             <span className="inline-flex items-center gap-2">
-              <span className="inline-flex h-8 w-8 items-center justify-center overflow-hidden rounded-[9px] shadow-[0_8px_22px_rgba(0,60,52,0.22)] ring-1 ring-teal-900/10">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src="/brand/bantle-icon.png"
-                  alt=""
-                  width={32}
-                  height={32}
-                  className="h-full w-full object-cover"
-                />
-              </span>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/brand/bantle-mark.png"
+                alt=""
+                width={28}
+                height={28}
+                className="h-7 w-7 shrink-0 object-contain"
+              />
               <span>
-                <span className="block font-sans text-base font-semibold leading-none text-teal-900">
+                <span className="block font-sans text-[15px] font-medium leading-none tracking-[-0.01em] text-teal-900">
                   Bantle
                 </span>
-                <span className="mt-0.5 block text-[11px] leading-none text-ink-muted">
+                <span className="mt-1 block text-[11px] leading-none text-ink-muted">
                   Trust-ready slots
                 </span>
               </span>

@@ -327,7 +327,8 @@ export default function FAQPage() {
         title="Common questions, answered directly."
         intro="If you don't see your question here, write to us — we read every email and update this page when patterns emerge."
       />
-      <article className="container-x py-12 md:py-16 max-w-3xl">
+      <div className="bg-gradient-to-b from-teal-50/50 via-cream to-cream">
+        <article className="container-x py-12 md:py-16 max-w-3xl">
         <div className="space-y-14">
           {sections.map((section) => (
             <section key={section.heading}>
@@ -338,7 +339,7 @@ export default function FAQPage() {
                 {section.items.map((item) => (
                   <details
                     key={item.q}
-                    className="group border border-line bg-cream-card rounded-card p-5 open:bg-cream-card"
+                    className="group rounded-2xl border border-line bg-white p-5 shadow-[0_10px_30px_-18px_rgba(0,60,52,0.18)] transition-shadow duration-300 open:shadow-[0_18px_44px_-22px_rgba(0,60,52,0.26)]"
                   >
                     <summary className="cursor-pointer list-none flex items-start justify-between gap-4">
                       <span className="font-medium text-[16px] text-ink leading-snug">
@@ -372,7 +373,8 @@ export default function FAQPage() {
             for the fastest way to reach a real person.
           </p>
         </div>
-      </article>
+        </article>
+      </div>
     </>
   );
 }

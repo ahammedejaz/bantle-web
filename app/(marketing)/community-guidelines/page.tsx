@@ -16,7 +16,9 @@ export default function CommunityGuidelinesPage() {
         title="The way Bantle works only if everyone keeps it small and kind."
         intro={`Last updated ${POLICY_EFFECTIVE_DATE}. These guidelines sit alongside our terms of service and apply to every Bantle member.`}
       />
-      <article className="container-x py-12 md:py-16 prose-bantle max-w-3xl">
+      <div className="bg-gradient-to-b from-teal-50/50 via-cream to-cream">
+        <div className="container-x py-12 md:py-16">
+          <article className="prose-bantle mx-auto max-w-3xl rounded-3xl border border-line bg-white p-6 shadow-[0_22px_60px_-28px_rgba(0,60,52,0.28)] md:p-10">
         <section>
           <h2>1. Be honest</h2>
           <ul>
@@ -175,7 +177,9 @@ export default function CommunityGuidelinesPage() {
             <Link href="/safety">safety page</Link>.
           </p>
         </section>
-      </article>
+          </article>
+        </div>
+      </div>
     </>
   );
 }

@@ -24,7 +24,9 @@ export default function PrivacyPage() {
         title="What Bantle does with your data, in plain language."
         intro={`Last updated ${POLICY_EFFECTIVE_DATE}. Effective ${POLICY_EFFECTIVE_DATE}.`}
       />
-      <article className="container-x py-12 md:py-16 prose-bantle max-w-3xl">
+      <div className="bg-gradient-to-b from-teal-50/50 via-cream to-cream">
+        <div className="container-x py-12 md:py-16">
+          <article className="prose-bantle mx-auto max-w-3xl rounded-3xl border border-line bg-white p-6 shadow-[0_22px_60px_-28px_rgba(0,60,52,0.28)] md:p-10">
         <section>
           <h2>In short</h2>
           <p>
@@ -337,7 +339,9 @@ export default function PrivacyPage() {
             For postal contact: {POSTAL_ADDRESS}.
           </p>
         </section>
-      </article>
+          </article>
+        </div>
+      </div>
     </>
   );
 }
