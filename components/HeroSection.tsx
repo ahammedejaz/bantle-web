@@ -1,332 +1,242 @@
 import type { ReactNode } from "react";
 import {
+  BadgeCheck,
   Bell,
   Bookmark,
   CheckCircle2,
-  ChevronRight,
-  Home,
-  Menu,
   MessageCircle,
-  Plus,
-  Search,
   ShieldCheck,
-  UserCircle,
+  TrendingUp,
 } from "lucide-react";
 import { ComingSoonBadges } from "@/components/ComingSoonBadges";
-import { BrandMark } from "@/components/BrandMark";
 
-const listings = [
+// Marketing homepage hero. Light/cream premium to match the rest of the
+// marketing site, with mint/green accents that nod to the mobile app. The
+// right-hand "app preview" is a light app-style card built entirely in
+// HTML/CSS with neutral placeholder data — no real mobile screenshots, no
+// personal/test names, no provider logos.
+
+const slots = [
   {
-    initials: "HS",
-    title: "Household streaming plan",
-    meta: "Monthly sharing · Rules noted",
-    slots: "2 slots open",
-    tone: "bg-teal-900 text-cream",
+    initials: "PV",
+    title: "Prime Video",
+    meta: "Family plan",
+    price: "₹120/mo",
+    note: "2 slots left",
+    tone: "bg-gradient-to-br from-teal-300 to-teal-400 text-[#02241E]",
   },
   {
-    initials: "FM",
-    title: "Family music plan",
-    meta: "Family-plan access · Chat first",
-    slots: "1 slot open",
-    tone: "bg-teal-100 text-teal-900",
+    initials: "MP",
+    title: "Music Premium",
+    meta: "Household plan",
+    price: "₹70/mo",
+    note: "Monthly",
+    tone: "bg-gradient-to-br from-teal-400 to-teal-500 text-cream",
   },
   {
     initials: "CS",
-    title: "Cloud storage plan",
-    meta: "Shared household plan",
-    slots: "Access confirmed directly",
-    tone: "bg-[#EAF6FF] text-[#0C447C]",
+    title: "Cloud Storage",
+    meta: "Family plan",
+    price: "₹90/mo",
+    note: "Shared",
+    tone: "bg-teal-100 text-teal-800",
   },
-];
-
-const detailRows = [
-  ["Plan type", "Family-plan access"],
-  ["Access notes", "Confirm in chat"],
-  ["Provider rules", "Review first"],
-  ["Payment", "Outside Bantle"],
 ];
 
 export function HeroSection() {
   return (
-    <section className="relative overflow-hidden border-b border-line bg-cream">
-      <div className="container-x pt-12 pb-16 md:pt-20 md:pb-24">
-        <div className="grid gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:items-center lg:gap-16">
-          <div>
-            <p className="mb-5 text-xs uppercase tracking-[0.14em] text-teal-600">
+    <section className="relative overflow-hidden border-b border-line bg-gradient-to-b from-teal-50 via-cream to-cream">
+      {/* one soft mint highlight, kept subtle on the light background */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute -top-32 -right-24 h-[420px] w-[420px] rounded-full bg-teal-200/40 blur-[130px]"
+      />
+      <div className="container-x relative pt-14 pb-20 md:pt-20 md:pb-28">
+        <div className="grid gap-14 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:gap-16">
+          <div className="bantle-fade-up">
+            <span className="inline-flex items-center gap-2 rounded-full border border-teal-200 bg-teal-50 px-3 py-1.5 text-xs uppercase tracking-[0.14em] text-teal-700">
+              <span className="h-1.5 w-1.5 rounded-full bg-teal-500" />
               Coming soon · Made in India
-            </p>
-            <h1 className="max-w-3xl text-balance font-serif text-4xl italic leading-[1.05] text-teal-900 tracking-tightish sm:text-5xl md:text-6xl">
-              Coordinate household subscription access clearly.
+            </span>
+            <h1 className="mt-6 max-w-2xl text-balance font-serif text-4xl italic leading-[1.05] tracking-tightish text-teal-900 sm:text-5xl md:text-6xl">
+              Split subscriptions with{" "}
+              <span className="text-teal-500">more trust</span>.
             </h1>
             <p className="mt-6 max-w-xl text-lg leading-8 text-ink-muted">
-              Bantle helps people in India coordinate household and
-              family-plan arrangements with people they already trust. Users
-              confirm provider rules, access, and payments directly outside
+              Find active subscription slots, review the details, and propose a
+              deal when everything looks right. Bantle keeps trust signals,
+              chat, and safety checks clear — while payments stay outside
               Bantle.
             </p>
-            <div className="mt-6 grid max-w-2xl gap-3 text-sm text-ink-muted sm:grid-cols-3">
-              <SafetyPill>Follow provider rules</SafetyPill>
-              <SafetyPill>Payments stay outside Bantle</SafetyPill>
-              <SafetyPill>Clear coordination records</SafetyPill>
+            <div className="mt-7 grid max-w-2xl gap-3 text-sm sm:grid-cols-3">
+              <HeroPill>Propose a deal first</HeroPill>
+              <HeroPill>Payments stay outside Bantle</HeroPill>
+              <HeroPill>Private trust verification</HeroPill>
             </div>
-            <div className="mt-8">
+            <div className="mt-9">
               <ComingSoonBadges />
               <p className="mt-4 text-sm text-ink-muted">
                 Launching first on Android, with iOS to follow.
               </p>
             </div>
           </div>
-          <AppVisual />
+          <AppPreviewVisual />
         </div>
       </div>
     </section>
   );
 }
 
-function SafetyPill({ children }: { children: ReactNode }) {
+function HeroPill({ children }: { children: ReactNode }) {
   return (
     <span className="inline-flex min-h-11 items-center gap-2 rounded-button border border-teal-200 bg-teal-50 px-3 py-2 text-teal-800">
-      <CheckCircle2 className="h-4 w-4 shrink-0" strokeWidth={1.8} />
+      <CheckCircle2 className="h-4 w-4 shrink-0 text-teal-600" strokeWidth={1.9} />
       <span className="leading-snug">{children}</span>
     </span>
   );
 }
 
-function AppVisual() {
+function AppPreviewVisual() {
   return (
     <div
-      className="mx-auto w-full max-w-[680px]"
+      className="bantle-scene bantle-fade-up-delayed relative mx-auto w-full max-w-[420px]"
       role="img"
-      aria-label="Generic Bantle app preview with household plan listings and coordination details"
+      aria-label="Illustrative Bantle app preview showing example subscription slots with neutral placeholder data, a verified host, a propose-a-deal action, and a note that chat starts after a deal request"
     >
-      <div className="grid items-center gap-5 sm:grid-cols-[minmax(0,1fr)_minmax(220px,0.72fr)]">
-        <PhoneFrame>
-          <MobileHomePreview />
-        </PhoneFrame>
-        <div className="grid gap-4">
-          <DetailPanel />
-          <SafetyPanel />
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function PhoneFrame({ children }: { children: ReactNode }) {
-  return (
-    <div className="mx-auto w-full max-w-[360px] rounded-[38px] border border-line bg-white p-3 shadow-[0_28px_90px_rgba(0,60,52,0.16)]">
-      <div className="overflow-hidden rounded-[30px] border border-line bg-cream">
-        {children}
-      </div>
-    </div>
-  );
-}
-
-function MobileHomePreview() {
-  return (
-    <div className="flex min-h-[650px] flex-col bg-cream">
-      <div className="flex items-center justify-between px-5 pt-5 text-ink">
-        <span className="text-sm font-semibold">9:41</span>
-        <div className="flex items-center gap-1.5">
-          <span className="h-2.5 w-4 rounded-sm bg-ink" />
-          <span className="h-2.5 w-4 rounded-sm border border-ink" />
-        </div>
-      </div>
-      <div className="flex items-center justify-between px-5 pt-6">
-        <div className="flex items-center gap-3">
-          <Menu className="h-6 w-6 text-ink" strokeWidth={1.8} />
-          <BrandMark size="sm" />
-        </div>
-        <Bell className="h-6 w-6 text-ink" strokeWidth={1.8} />
-      </div>
-      <div className="px-5 pt-7">
-        <div className="flex h-12 items-center gap-3 rounded-[18px] border border-line bg-white px-4 text-ink-muted">
-          <Search className="h-5 w-5 shrink-0" strokeWidth={1.8} />
-          <span className="text-sm">Search household plans</span>
-        </div>
-      </div>
-      <div className="flex gap-2 overflow-hidden px-5 pt-5">
-        {["All", "Streaming", "Music", "Cloud"].map((label, index) => (
-          <span
-            key={label}
-            className={`shrink-0 rounded-full border px-4 py-2 text-xs font-medium ${
-              index === 0
-                ? "border-teal-600 bg-teal-600 text-white"
-                : "border-line bg-white text-ink-muted"
-            }`}
-          >
-            {label}
-          </span>
-        ))}
-      </div>
-      <div className="px-5 pt-5">
-        <div className="flex items-center justify-between rounded-[20px] border border-teal-100 bg-teal-50 px-4 py-4">
-          <div>
-            <p className="text-base font-semibold text-ink">
-              Safe. Simple. Transparent.
-            </p>
-            <p className="mt-1 text-xs leading-5 text-teal-800">
-              Payments are made outside Bantle.
-            </p>
+      {/* soft mint halo behind the card for depth */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute -inset-6 -z-10 rounded-[48px] bg-gradient-to-br from-teal-200/50 to-transparent blur-2xl"
+      />
+      <div className="bantle-float">
+        <div className="bantle-tilt rounded-[40px] border border-line bg-white p-3 shadow-[0_40px_90px_-30px_rgba(0,60,52,0.45)] ring-1 ring-teal-900/5">
+        <div className="overflow-hidden rounded-[32px] border border-line bg-cream">
+          {/* status bar */}
+          <div className="flex items-center justify-between px-5 pt-4 text-ink">
+            <span className="text-[13px] font-semibold">9:41</span>
+            <div className="flex items-center gap-1">
+              <span className="h-2.5 w-3.5 rounded-[3px] bg-ink/80" />
+              <span className="h-2.5 w-3.5 rounded-[3px] border border-ink/40" />
+            </div>
           </div>
-          <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-[14px] bg-teal-700 text-white">
-            <ShieldCheck className="h-6 w-6" strokeWidth={1.9} />
-          </span>
-        </div>
-      </div>
-      <div className="flex items-center justify-between px-5 pt-6">
-        <p className="font-sans text-lg font-semibold text-ink">
-          Popular listings
-        </p>
-        <span className="text-sm font-medium text-teal-600">See all</span>
-      </div>
-      <div className="grid gap-0 px-5 pt-3">
-        {listings.map((listing, index) => (
-          <PreviewListing key={listing.title} listing={listing} index={index} />
-        ))}
-      </div>
-      <div className="mt-auto border-t border-line bg-white px-5 py-4">
-        <div className="grid grid-cols-5 items-end gap-2 text-[10px] font-medium text-ink-muted">
-          <NavItem active icon={<Home className="h-5 w-5" />} label="Home" />
-          <NavItem icon={<ShieldCheck className="h-5 w-5" />} label="Deals" />
-          <NavItem raised icon={<Plus className="h-5 w-5" />} label="Post" />
-          <NavItem
-            icon={<MessageCircle className="h-5 w-5" />}
-            label="Chats"
-          />
-          <NavItem icon={<UserCircle className="h-5 w-5" />} label="Profile" />
-        </div>
-      </div>
-    </div>
-  );
-}
 
-function PreviewListing({
-  listing,
-  index,
-}: {
-  listing: (typeof listings)[number];
-  index: number;
-}) {
-  return (
-    <div
-      className={`flex items-center gap-4 border border-line bg-white p-3.5 ${
-        index === 0 ? "rounded-t-[20px]" : "-mt-px"
-      } ${index === listings.length - 1 ? "rounded-b-[20px]" : ""}`}
-    >
-      <span
-        className={`inline-flex h-14 w-14 shrink-0 items-center justify-center rounded-[16px] text-base font-semibold ${listing.tone}`}
-      >
-        {listing.initials}
-      </span>
-      <div className="min-w-0 flex-1">
-        <p className="truncate text-sm font-semibold text-ink">
-          {listing.title}
-        </p>
-        <p className="mt-1 truncate text-xs text-ink-muted">{listing.meta}</p>
-        <p className="mt-1 text-xs font-medium text-teal-700">
-          {listing.slots}
-        </p>
-      </div>
-      <Bookmark className="h-5 w-5 shrink-0 text-ink-muted" strokeWidth={1.7} />
-    </div>
-  );
-}
-
-function NavItem({
-  active = false,
-  raised = false,
-  icon,
-  label,
-}: {
-  active?: boolean;
-  raised?: boolean;
-  icon: ReactNode;
-  label: string;
-}) {
-  return (
-    <span
-      className={`flex min-w-0 flex-col items-center gap-1 ${
-        active ? "text-teal-700" : "text-ink-muted"
-      }`}
-    >
-      <span
-        className={
-          raised
-            ? "inline-flex h-11 w-11 -translate-y-2 items-center justify-center rounded-full bg-teal-700 text-white shadow-[0_12px_26px_rgba(0,60,52,0.20)]"
-            : "inline-flex h-6 w-6 items-center justify-center"
-        }
-      >
-        {icon}
-      </span>
-      <span className="truncate">{label}</span>
-    </span>
-  );
-}
-
-function DetailPanel() {
-  return (
-    <section className="rounded-[28px] border border-line bg-white p-5 shadow-[0_18px_54px_rgba(0,60,52,0.10)]">
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <p className="text-xs uppercase tracking-[0.14em] text-teal-600">
-            Listing details
-          </p>
-          <p className="mt-2 font-sans text-lg font-semibold text-ink">
-            Family plan access
-          </p>
-        </div>
-        <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-[14px] bg-teal-50 text-teal-800">
-          <CheckCircle2 className="h-5 w-5" strokeWidth={1.9} />
-        </span>
-      </div>
-      <div className="mt-5 grid gap-2">
-        {detailRows.map(([label, value]) => (
-          <div
-            key={label}
-            className="flex items-center justify-between gap-3 rounded-[16px] border border-line bg-cream px-3.5 py-3"
-          >
-            <span className="text-xs text-ink-muted">{label}</span>
-            <span className="text-right text-xs font-semibold text-ink">
-              {value}
+          {/* app header */}
+          <div className="flex items-center justify-between px-5 pt-4">
+            <span className="inline-flex items-center gap-2">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/brand/bantle-mark.png"
+                alt=""
+                width={148}
+                height={197}
+                className="h-6 w-auto shrink-0 object-contain"
+              />
+              <span>
+                <span className="block font-sans text-[15px] font-medium leading-none tracking-[-0.01em] text-teal-900">
+                  Bantle
+                </span>
+                <span className="mt-1 block text-[11px] leading-none text-ink-muted">
+                  Trust-ready slots
+                </span>
+              </span>
+            </span>
+            <span className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-line bg-white text-ink-muted">
+              <Bell className="h-4 w-4" strokeWidth={1.8} />
             </span>
           </div>
-        ))}
-      </div>
-    </section>
-  );
-}
 
-function SafetyPanel() {
-  return (
-    <section className="rounded-[28px] border border-teal-100 bg-teal-900 p-5 text-cream shadow-[0_18px_54px_rgba(0,60,52,0.14)]">
-      <div className="flex items-start gap-3">
-        <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-[14px] bg-cream/12 text-cream">
-          <ShieldCheck className="h-5 w-5" strokeWidth={1.9} />
-        </span>
-        <div>
-          <p className="font-sans text-base font-semibold">
-            Coordination only
-          </p>
-          <p className="mt-2 text-sm leading-6 text-cream/78">
-            Bantle keeps terms, chat, and updates in one place. Users handle
-            access and payments directly outside the app.
-          </p>
+          {/* activity summary (mint accent card) */}
+          <div className="px-5 pt-4">
+            <div className="rounded-2xl bg-gradient-to-br from-teal-600 to-teal-800 p-4 text-cream shadow-[0_16px_40px_-18px_rgba(0,60,52,0.55)]">
+              <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.14em] text-cream/75">
+                <TrendingUp className="h-3.5 w-3.5" strokeWidth={2} />
+                Activity
+              </div>
+              <p className="mt-2 font-sans text-xl font-semibold">
+                ₹280<span className="text-sm font-medium text-cream/80">/mo savings</span>
+              </p>
+              <div className="mt-3 flex gap-2">
+                <span className="rounded-full bg-cream/15 px-2.5 py-1 text-[11px] font-medium">
+                  3 active deals
+                </span>
+                <span className="rounded-full bg-cream/15 px-2.5 py-1 text-[11px] font-medium">
+                  2 pending proposals
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* popular slots */}
+          <div className="flex items-center justify-between px-5 pt-5">
+            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-teal-700">
+              Popular slots
+            </p>
+            <span className="text-[11px] font-medium text-teal-600">See all</span>
+          </div>
+          <div className="grid gap-2 px-5 pt-2.5">
+            {slots.map((slot) => (
+              <div
+                key={slot.title}
+                className="flex items-center gap-3 rounded-2xl border border-line bg-white p-2.5 shadow-[0_8px_20px_-14px_rgba(0,60,52,0.3)]"
+              >
+                <span
+                  className={`inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-[13px] text-sm font-semibold ${slot.tone}`}
+                >
+                  {slot.initials}
+                </span>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm font-semibold text-teal-900">
+                    {slot.title}
+                  </p>
+                  <p className="mt-0.5 truncate text-[11px] text-ink-muted">
+                    {slot.meta}
+                  </p>
+                </div>
+                <div className="text-right">
+                  <p className="text-sm font-semibold text-teal-700">
+                    {slot.price}
+                  </p>
+                  <p className="mt-0.5 text-[10px] text-ink-muted">{slot.note}</p>
+                </div>
+                <Bookmark className="h-4 w-4 shrink-0 text-ink-muted/60" strokeWidth={1.7} />
+              </div>
+            ))}
+          </div>
+
+          {/* selected listing */}
+          <div className="px-5 pb-5 pt-4">
+            <div className="rounded-2xl border border-teal-100 bg-teal-50/60 p-4">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <p className="font-sans text-sm font-semibold text-teal-900">
+                    Microsoft 365 Family
+                  </p>
+                  <p className="mt-0.5 text-[12px] text-ink-muted">
+                    ₹120/month · 2 slots left
+                  </p>
+                </div>
+                <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-white px-2.5 py-1 text-[11px] font-medium text-teal-700 ring-1 ring-teal-200">
+                  <BadgeCheck className="h-3.5 w-3.5" strokeWidth={2} />
+                  Verified host
+                </span>
+              </div>
+              <div className="mt-3 flex h-11 items-center justify-center rounded-xl bg-gradient-to-r from-teal-500 to-teal-700 text-sm font-semibold text-cream shadow-[0_12px_28px_-12px_rgba(0,60,52,0.6)]">
+                Propose a deal
+              </div>
+              <div className="mt-2.5 flex items-center justify-center gap-1.5 text-[11px] text-ink-muted">
+                <MessageCircle className="h-3.5 w-3.5 text-teal-600" strokeWidth={1.9} />
+                Chat starts after your deal request
+              </div>
+            </div>
+          </div>
+
+          <div className="flex items-center justify-center gap-2 border-t border-line bg-white px-5 py-3 text-[11px] text-ink-muted">
+            <ShieldCheck className="h-4 w-4 text-teal-600" strokeWidth={1.9} />
+            Identity verification is private and manually reviewed
+          </div>
+        </div>
         </div>
       </div>
-      <div className="mt-5 grid gap-2">
-        {["Provider rules first", "No payment processing", "No access promise"].map(
-          (item) => (
-            <div
-              key={item}
-              className="flex items-center justify-between rounded-[16px] bg-cream/10 px-3 py-2.5 text-sm"
-            >
-              <span>{item}</span>
-              <ChevronRight className="h-4 w-4" strokeWidth={1.7} />
-            </div>
-          )
-        )}
-      </div>
-    </section>
+    </div>
   );
 }

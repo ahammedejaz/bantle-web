@@ -1,12 +1,14 @@
 import Link from "next/link";
 import {
   Ban,
+  BadgeCheck,
   CircleHelp,
   FileCheck2,
   HandCoins,
   HeartHandshake,
   ListChecks,
   MessageCircle,
+  Search,
   ShieldCheck,
 } from "lucide-react";
 import { HeroSection } from "@/components/HeroSection";
@@ -17,11 +19,12 @@ import {
   CONTACT_EMAIL,
   SITE_DESCRIPTION,
   SITE_URL,
+  TAGLINE,
 } from "@/lib/constants";
 
 export const metadata = {
   title: {
-    absolute: "Bantle — Household subscription access coordination",
+    absolute: `${TAGLINE} | ${BRAND_NAME}`,
   },
   description: SITE_DESCRIPTION,
   alternates: {
@@ -29,23 +32,24 @@ export const metadata = {
   },
 };
 
-const structuredData = [
-  {
-    "@context": "https://schema.org",
-    "@type": "Organization",
-    name: BRAND_NAME,
-    url: SITE_URL,
-    email: CONTACT_EMAIL,
-  },
-  {
-    "@context": "https://schema.org",
-    "@type": "WebSite",
-    name: BRAND_NAME,
-    url: SITE_URL,
-    description: SITE_DESCRIPTION,
-    inLanguage: "en-IN",
-  },
-];
+const structuredData = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      name: BRAND_NAME,
+      url: SITE_URL,
+      email: CONTACT_EMAIL,
+    },
+    {
+      "@type": "WebSite",
+      name: BRAND_NAME,
+      url: SITE_URL,
+      description: SITE_DESCRIPTION,
+      inLanguage: "en-IN",
+    },
+  ],
+};
 
 export default function Home() {
   return (
@@ -67,15 +71,21 @@ export default function Home() {
   );
 }
 
+function Eyebrow({ children }: { children: React.ReactNode }) {
+  return (
+    <p className="mb-4 text-xs uppercase tracking-[0.14em] text-teal-600">
+      {children}
+    </p>
+  );
+}
+
 function WhyBantle() {
   return (
     <section className="border-t border-line">
       <div className="container-x py-16 md:py-24">
-        <div className="max-w-2xl mb-12 md:mb-16">
-          <p className="text-xs uppercase tracking-[0.14em] text-teal-600 mb-4">
-            Why Bantle
-          </p>
-          <h2 className="font-serif text-3xl md:text-4xl text-teal-900 leading-tight tracking-tightish text-balance">
+        <div className="mb-12 max-w-2xl md:mb-16">
+          <Eyebrow>Why Bantle</Eyebrow>
+          <h2 className="text-balance font-serif text-3xl leading-tight tracking-tightish text-teal-900 md:text-4xl">
             A clearer place for direct coordination.
           </h2>
         </div>
@@ -104,50 +114,63 @@ function WhyBantle() {
 function HowItWorks() {
   const steps = [
     {
+      icon: Search,
+      title: "Discover subscription slots",
+      body: "Browse active listings and compare the access type, expected duration, pricing notes, and how many slots are open.",
+    },
+    {
       icon: ListChecks,
-      title: "Add the access you coordinate",
-      body: "Choose monthly sharing or one-time access, then add the details another person should review before the arrangement moves forward.",
+      title: "Review the listing details",
+      body: "Check provider-rule reminders, host trust signals, and the terms another person should confirm before anything moves forward.",
+    },
+    {
+      icon: HeartHandshake,
+      title: "Propose a deal",
+      body: "Buyers propose first. Send a deal request on the listing when the details look right for you.",
     },
     {
       icon: MessageCircle,
-      title: "Confirm details in chat",
-      body: "Use Bantle chat to confirm provider rules, access, duration, timing, and expectations directly with the other user.",
+      title: "Chat after the request",
+      body: "Chat opens after a deal request or accepted proposal, so you confirm provider rules, access, timing, and expectations directly.",
     },
     {
       icon: HandCoins,
       title: "Handle payments outside Bantle",
-      body: "Users choose their own outside-Bantle payment method. Bantle does not collect, route, verify, insure, or reverse payments.",
+      body: "Verify the details, then choose your own outside-Bantle payment method. Bantle does not collect, route, verify, insure, or reverse payments.",
     },
   ];
 
   return (
-    <section className="bg-cream-card border-t border-line">
+    <section className="border-t border-line bg-cream-card">
       <div className="container-x py-16 md:py-24">
-        <div className="max-w-2xl mb-12 md:mb-16">
-          <p className="text-xs uppercase tracking-[0.14em] text-teal-600 mb-4">
-            How it works
-          </p>
-          <h2 className="font-serif text-3xl md:text-4xl text-teal-900 leading-tight tracking-tightish text-balance">
-            From clear terms to a direct conversation.
+        <div className="mb-12 max-w-2xl md:mb-16">
+          <Eyebrow>How it works</Eyebrow>
+          <h2 className="text-balance font-serif text-3xl leading-tight tracking-tightish text-teal-900 md:text-4xl">
+            From discovering a slot to a direct conversation.
           </h2>
         </div>
-        <ol className="grid gap-10 md:grid-cols-3">
+        <ol className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
           {steps.map((step, i) => {
             const Icon = step.icon;
 
             return (
-              <li key={step.title} className="flex flex-col gap-4">
-                <span
-                  aria-hidden="true"
-                  className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-teal-900 text-teal-900 font-medium"
-                >
-                  {i + 1}
-                </span>
-                <Icon className="h-5 w-5 text-teal-700" strokeWidth={1.8} />
-                <h3 className="font-serif text-xl text-teal-900">
+              <li
+                key={step.title}
+                className="group flex h-full flex-col gap-3 rounded-2xl border border-teal-900/10 bg-white p-5 shadow-[0_10px_30px_-14px_rgba(0,60,52,0.18)] transition-all duration-300 hover:-translate-y-1 hover:border-teal-300 hover:shadow-[0_22px_46px_-24px_rgba(0,60,52,0.28)]"
+              >
+                <div className="flex items-center gap-2.5">
+                  <span
+                    aria-hidden="true"
+                    className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-teal-500 to-teal-700 text-[13px] font-semibold text-cream shadow-[0_8px_18px_-8px_rgba(0,60,52,0.6)]"
+                  >
+                    {i + 1}
+                  </span>
+                  <Icon className="h-5 w-5 text-teal-700" strokeWidth={1.8} />
+                </div>
+                <h3 className="font-serif text-base leading-snug text-teal-900">
                   {step.title}
                 </h3>
-                <p className="text-[15px] leading-7 text-ink-muted">
+                <p className="text-[13.5px] leading-6 text-ink-muted">
                   {step.body}
                 </p>
               </li>
@@ -176,8 +199,8 @@ function AppPreview() {
     },
     {
       icon: MessageCircle,
-      title: "Chat context",
-      body: "Users confirm access, timing, expectations, and next steps directly with each other before moving ahead outside Bantle.",
+      title: "Proposal-first chat",
+      body: "Chat opens after a deal request or accepted proposal, so users confirm access, timing, and next steps before moving ahead outside Bantle.",
     },
     {
       icon: ListChecks,
@@ -196,15 +219,13 @@ function AppPreview() {
       <div className="container-x py-16 md:py-24">
         <div className="grid gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:items-start">
           <div>
-            <p className="text-xs uppercase tracking-[0.14em] text-teal-600 mb-4">
-              App preview
-            </p>
-            <h2 className="font-serif text-3xl md:text-4xl text-teal-900 leading-tight tracking-tightish text-balance">
+            <Eyebrow>App preview</Eyebrow>
+            <h2 className="text-balance font-serif text-3xl leading-tight tracking-tightish text-teal-900 md:text-4xl">
               A preview grounded in the real app flow.
             </h2>
-            <p className="mt-5 text-[16px] leading-8 text-ink-muted max-w-xl">
-              The launch page uses generic examples so provider names and
-              private user context stay off the public website.
+            <p className="mt-5 max-w-xl text-[16px] leading-8 text-ink-muted">
+              These highlights mirror how the Bantle mobile app keeps discovery,
+              proposals, chat, and safety clear for both sides.
             </p>
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
@@ -214,9 +235,9 @@ function AppPreview() {
               return (
                 <article
                   key={item.title}
-                  className="rounded-card border border-line bg-white p-6 shadow-[0_18px_54px_rgba(0,60,52,0.08)]"
+                  className="group rounded-3xl border border-teal-900/10 bg-white p-6 shadow-[0_10px_30px_-14px_rgba(0,60,52,0.18)] transition-all duration-300 hover:-translate-y-1 hover:border-teal-300 hover:shadow-[0_24px_50px_-22px_rgba(0,60,52,0.28)]"
                 >
-                  <span className="inline-flex h-10 w-10 items-center justify-center rounded-button bg-teal-100 text-teal-900">
+                  <span className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-teal-100 to-teal-50 text-teal-700 ring-1 ring-teal-200/70 transition-colors duration-300 group-hover:text-teal-900">
                     <Icon className="h-5 w-5" strokeWidth={1.8} />
                   </span>
                   <h3 className="mt-5 font-serif text-xl text-teal-900">
@@ -237,9 +258,10 @@ function AppPreview() {
 
 function SafetyAndLimits() {
   const safetyNotes = [
-    "Users coordinate directly with people they already trust.",
+    "Buyers propose first, and chat opens after a deal request or accepted proposal.",
     "Every arrangement should follow the provider's household or family-plan rules.",
-    "Bantle keeps terms, chat, and updates organized for moderation context.",
+    "Optional identity verification keeps selfies private, manually reviewed, off public profiles, and without location tracking.",
+    "Reviewed and verified badges are trust signals, not guarantees of any outcome.",
   ];
   const limits = [
     "Bantle does not collect, hold, route, verify, insure, or reverse payments.",
@@ -248,20 +270,21 @@ function SafetyAndLimits() {
   ];
 
   return (
-    <section className="bg-cream-card border-t border-line">
+    <section className="border-t border-line bg-cream-card">
       <div className="container-x py-16 md:py-24">
         <div className="grid gap-10 md:grid-cols-2 md:gap-16">
           <div>
-            <p className="text-xs uppercase tracking-[0.14em] text-teal-600 mb-4">
-              Safety and transparency
-            </p>
-            <h2 className="font-serif text-3xl md:text-4xl text-teal-900 leading-tight tracking-tightish text-balance">
+            <Eyebrow>Safety and transparency</Eyebrow>
+            <h2 className="text-balance font-serif text-3xl leading-tight tracking-tightish text-teal-900 md:text-4xl">
               Built around clear responsibilities.
             </h2>
             <ul className="mt-8 grid gap-4">
               {safetyNotes.map((note) => (
-                <li key={note} className="flex gap-3 text-[15px] leading-7">
-                  <ShieldCheck
+                <li
+                  key={note}
+                  className="flex gap-3 text-[15px] leading-7 text-ink"
+                >
+                  <BadgeCheck
                     className="mt-1 h-5 w-5 shrink-0 text-teal-700"
                     strokeWidth={1.8}
                   />
@@ -270,9 +293,9 @@ function SafetyAndLimits() {
               ))}
             </ul>
           </div>
-          <div className="rounded-card border border-line bg-white p-6 md:p-8">
+          <div className="rounded-3xl border border-teal-900/10 bg-white p-6 shadow-[0_18px_50px_-20px_rgba(0,60,52,0.25)] md:p-8">
             <div className="flex items-center gap-3">
-              <span className="inline-flex h-10 w-10 items-center justify-center rounded-button bg-teal-100 text-teal-900">
+              <span className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-teal-100 to-teal-50 text-teal-700 ring-1 ring-teal-200/70">
                 <Ban className="h-5 w-5" strokeWidth={1.8} />
               </span>
               <h3 className="font-serif text-2xl text-teal-900">
@@ -281,7 +304,10 @@ function SafetyAndLimits() {
             </div>
             <ul className="mt-6 grid gap-4">
               {limits.map((line) => (
-                <li key={line} className="flex gap-3 text-[15px] leading-7">
+                <li
+                  key={line}
+                  className="flex gap-3 text-[15px] leading-7 text-ink"
+                >
                   <span
                     aria-hidden="true"
                     className="mt-3 h-1.5 w-1.5 shrink-0 rounded-full bg-teal-600"
@@ -304,8 +330,8 @@ function FAQPreview() {
       a: "No. Any payment is coordinated directly between users outside Bantle.",
     },
     {
-      q: "Can every subscription be coordinated?",
-      a: "No. Users must check and follow each provider's household or family-plan rules.",
+      q: "When does chat start?",
+      a: "Buyers propose first. Chat opens after a deal request or accepted proposal.",
     },
     {
       q: "Does Bantle promise access?",
@@ -316,11 +342,9 @@ function FAQPreview() {
   return (
     <section className="border-t border-line">
       <div className="container-x py-16 md:py-24">
-        <div className="max-w-2xl mb-10">
-          <p className="text-xs uppercase tracking-[0.14em] text-teal-600 mb-4">
-            FAQ
-          </p>
-          <h2 className="font-serif text-3xl md:text-4xl text-teal-900 leading-tight tracking-tightish text-balance">
+        <div className="mb-10 max-w-2xl">
+          <Eyebrow>FAQ</Eyebrow>
+          <h2 className="text-balance font-serif text-3xl leading-tight tracking-tightish text-teal-900 md:text-4xl">
             The important boundaries are visible upfront.
           </h2>
         </div>
@@ -328,12 +352,11 @@ function FAQPreview() {
           {faqs.map((item) => (
             <article
               key={item.q}
-              className="rounded-card border border-line bg-white p-6"
+              className="group rounded-3xl border border-teal-900/10 bg-white p-6 shadow-[0_10px_30px_-14px_rgba(0,60,52,0.18)] transition-all duration-300 hover:-translate-y-1 hover:border-teal-300 hover:shadow-[0_24px_50px_-22px_rgba(0,60,52,0.28)]"
             >
-              <CircleHelp
-                className="h-5 w-5 text-teal-700"
-                strokeWidth={1.8}
-              />
+              <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-teal-50 text-teal-700 ring-1 ring-teal-100">
+                <CircleHelp className="h-5 w-5" strokeWidth={1.8} />
+              </span>
               <h3 className="mt-4 font-serif text-xl text-teal-900">
                 {item.q}
               </h3>
@@ -358,16 +381,16 @@ function FAQPreview() {
 
 function ComingSoonCTA() {
   return (
-    <section className="bg-teal-900 text-cream border-t border-teal-800">
-      <div className="container-x py-16 md:py-24 text-center">
-        <h2 className="font-serif italic text-3xl md:text-5xl tracking-tightish text-balance max-w-3xl mx-auto">
+    <section className="border-t border-teal-800 bg-teal-900 text-cream">
+      <div className="container-x py-16 text-center md:py-24">
+        <h2 className="mx-auto max-w-3xl text-balance font-serif text-3xl italic leading-[1.15] tracking-tightish md:text-5xl md:leading-[1.12]">
           Be the first to know when Bantle opens.
         </h2>
-        <p className="mt-5 text-lg leading-8 text-cream/80 max-w-2xl mx-auto">
+        <p className="mx-auto mt-5 max-w-2xl text-lg leading-8 text-cream/80">
           Bantle is opening up in early access. Request access if you want
           launch updates, or bookmark the store badges below.
         </p>
-        <div className="mt-10">
+        <div className="mt-10 flex justify-center">
           <ComingSoonBadges align="center" />
         </div>
         <p className="mt-8 text-sm text-cream/70">

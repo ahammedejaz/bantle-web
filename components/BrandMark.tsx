@@ -1,43 +1,38 @@
 interface BrandMarkProps {
+  /** Use on dark backgrounds (e.g. the footer): renders the cream wordmark.
+   *  Otherwise renders the dark-teal wordmark for light backgrounds. The mint
+   *  mark reads cleanly on both, so the same logo image is used either way. */
   light?: boolean;
   size?: "sm" | "md" | "lg";
 }
 
+// The mark is a tightly-cropped (zero-padding) glyph at 148x197, so a very
+// small gap reads as one wordmark unit.
 const sizeClasses = {
-  sm: {
-    mark: "h-7 w-7 rounded-[8px] text-[15px]",
-    text: "text-[18px]",
-    gap: "gap-2",
-  },
-  md: {
-    mark: "h-8 w-8 rounded-[9px] text-[17px]",
-    text: "text-[21px]",
-    gap: "gap-2.5",
-  },
-  lg: {
-    mark: "h-10 w-10 rounded-[11px] text-[21px]",
-    text: "text-[26px]",
-    gap: "gap-3",
-  },
+  sm: { mark: "h-7 w-auto", text: "text-[21px]", gap: "gap-1" },
+  md: { mark: "h-7 w-auto", text: "text-[24px]", gap: "gap-2.5" },
+  lg: { mark: "h-8 w-auto", text: "text-[28px]", gap: "gap-2.5" },
 };
 
+// Marketing-only brand lockup (header, mobile nav, footer). The admin panel
+// uses its own text branding and does not import this component, so changes
+// here do not affect admin. Clean transparent mint mark with no chip; the
+// "Bantle" wordmark uses a semibold, tight treatment beside the mark.
 export function BrandMark({ light = false, size = "md" }: BrandMarkProps) {
   const classes = sizeClasses[size];
 
   return (
     <span className={`inline-flex items-center ${classes.gap}`}>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src="/brand/bantle-mark.png"
+        alt=""
+        width={148}
+        height={197}
+        className={`${classes.mark} shrink-0 object-contain`}
+      />
       <span
-        aria-hidden="true"
-        className={`${classes.mark} inline-flex shrink-0 items-center justify-center font-semibold leading-none ${
-          light
-            ? "bg-cream text-teal-900"
-            : "bg-teal-900 text-cream shadow-[0_10px_26px_rgba(0,60,52,0.18)]"
-        }`}
-      >
-        B
-      </span>
-      <span
-        className={`${classes.text} font-semibold leading-none ${
+        className={`${classes.text} font-medium leading-none tracking-[-0.02em] ${
           light ? "text-cream" : "text-teal-900"
         }`}
       >

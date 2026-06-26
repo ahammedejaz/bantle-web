@@ -39,7 +39,9 @@ export default function AboutPage() {
         title="A clearer way to coordinate subscription access."
         intro="Bantle exists because subscription coordination usually happens in messy chats. We keep monthly sharing and one-time access terms visible, while payment and access confirmation stay direct between users."
       />
-      <article className="container-x py-12 md:py-16 prose-bantle max-w-3xl">
+      <div className="bg-gradient-to-b from-teal-50/50 via-cream to-cream">
+        <div className="container-x py-12 md:py-16">
+          <article className="prose-bantle mx-auto max-w-3xl rounded-3xl border border-line bg-white p-6 shadow-[0_22px_60px_-28px_rgba(0,60,52,0.28)] md:p-10">
         <section>
           <h2>Our story</h2>
           <p>
@@ -80,7 +82,7 @@ export default function AboutPage() {
             {principles.map((p) => (
               <div
                 key={p.title}
-                className="bg-cream-card border border-line rounded-card p-6"
+                className="rounded-2xl border border-line bg-cream p-6 shadow-[0_10px_30px_-18px_rgba(0,60,52,0.2)]"
               >
                 <h3 className="font-serif text-xl text-teal-900 mb-2">
                   {p.title}
@@ -119,7 +121,9 @@ export default function AboutPage() {
             to a human reply.
           </p>
         </section>
-      </article>
+          </article>
+        </div>
+      </div>
     </>
   );
 }

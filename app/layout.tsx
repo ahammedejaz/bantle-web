@@ -26,7 +26,7 @@ const lora = Lora({
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: `${BRAND_NAME} — ${TAGLINE}`,
+    default: `${TAGLINE} | ${BRAND_NAME}`,
     template: `%s | ${BRAND_NAME}`,
   },
   description: SITE_DESCRIPTION,
@@ -51,12 +51,12 @@ export const metadata: Metadata = {
     locale: "en_IN",
     url: SITE_URL,
     siteName: BRAND_NAME,
-    title: `${BRAND_NAME} — ${TAGLINE}`,
+    title: `${TAGLINE} | ${BRAND_NAME}`,
     description: SITE_DESCRIPTION,
   },
   twitter: {
     card: "summary_large_image",
-    title: `${BRAND_NAME} — ${TAGLINE}`,
+    title: `${TAGLINE} | ${BRAND_NAME}`,
     description: SITE_DESCRIPTION,
   },
   robots: {
@@ -70,17 +70,17 @@ export const metadata: Metadata = {
       "max-video-preview": -1,
     },
   },
-  icons: {
-    icon: "/icon.svg",
-    apple: "/apple-icon.svg",
-  },
 };
 
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${inter.variable} ${lora.variable}`}>
+    <html
+      lang="en"
+      data-scroll-behavior="smooth"
+      className={`${inter.variable} ${lora.variable}`}
+    >
       <body className="bg-cream text-ink">{children}</body>
     </html>
   );

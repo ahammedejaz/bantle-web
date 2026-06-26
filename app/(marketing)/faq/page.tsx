@@ -172,12 +172,27 @@ const sections: Section[] = [
         q: "How does Bantle keep things safe?",
         a: (
           <p>
-            The strongest safety signal on Bantle is that everyone on a
-            plan already lives with each other — trust is built into the
-            household, not bolted on with a badge. On top of that, every
-            account is email-verified, every plan is private to the
-            members invited to it, and any member can report or block at
-            any time.
+            Every account is email-verified, and users can also submit a
+            selfie for identity verification that our team reviews manually
+            and keeps private — it is never shown on public profiles. Plans
+            and chats stay private to the people involved, buyers propose
+            before full chat opens, and any member can report or block at any
+            time. A reviewed badge is a helpful signal, not a guarantee about
+            any user.
+          </p>
+        ),
+      },
+      {
+        q: "Is my identity verification selfie public?",
+        a: (
+          <p>
+            No. If you submit a selfie for identity verification, it is
+            uploaded to private storage, reviewed manually by our team through
+            short-lived access, and is never shown on your public profile or
+            used for marketing. Bantle does not use biometric matching or
+            liveness detection, and does not request your location for
+            verification. You can read more in our{" "}
+            <Link href="/privacy">privacy policy</Link>.
           </p>
         ),
       },
@@ -312,7 +327,8 @@ export default function FAQPage() {
         title="Common questions, answered directly."
         intro="If you don't see your question here, write to us — we read every email and update this page when patterns emerge."
       />
-      <article className="container-x py-12 md:py-16 max-w-3xl">
+      <div className="bg-gradient-to-b from-teal-50/50 via-cream to-cream">
+        <article className="container-x py-12 md:py-16 max-w-3xl">
         <div className="space-y-14">
           {sections.map((section) => (
             <section key={section.heading}>
@@ -323,7 +339,7 @@ export default function FAQPage() {
                 {section.items.map((item) => (
                   <details
                     key={item.q}
-                    className="group border border-line bg-cream-card rounded-card p-5 open:bg-cream-card"
+                    className="group rounded-2xl border border-line bg-white p-5 shadow-[0_10px_30px_-18px_rgba(0,60,52,0.18)] transition-shadow duration-300 open:shadow-[0_18px_44px_-22px_rgba(0,60,52,0.26)]"
                   >
                     <summary className="cursor-pointer list-none flex items-start justify-between gap-4">
                       <span className="font-medium text-[16px] text-ink leading-snug">
@@ -357,7 +373,8 @@ export default function FAQPage() {
             for the fastest way to reach a real person.
           </p>
         </div>
-      </article>
+        </article>
+      </div>
     </>
   );
 }

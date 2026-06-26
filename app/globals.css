@@ -75,3 +75,55 @@
     text-wrap: pretty;
   }
 }
+
+/* Marketing motion helpers. CSS-only, no dependencies. All motion is gated
+   behind prefers-reduced-motion: no-preference so reduced-motion users get a
+   static, fully-visible layout. These utility classes only animate where they
+   are explicitly applied (marketing pages); they do not affect admin. */
+@keyframes bantle-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes bantle-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 3D perspective container + a subtle resting tilt that levels on hover. */
+.bantle-scene {
+  perspective: 1400px;
+}
+.bantle-tilt {
+  transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .bantle-float {
+    animation: bantle-float 7s ease-in-out infinite;
+    will-change: transform;
+  }
+  .bantle-fade-up {
+    animation: bantle-fade-up 0.7s ease-out both;
+  }
+  .bantle-fade-up-delayed {
+    animation: bantle-fade-up 0.7s ease-out 0.12s both;
+  }
+  .bantle-tilt {
+    transform: rotateX(3deg) rotateY(-6deg);
+  }
+  .bantle-tilt:hover {
+    transform: rotateX(0deg) rotateY(0deg);
+  }
+}
