@@ -1,7 +1,7 @@
 import { ImageResponse } from "next/og";
 
 export const runtime = "edge";
-export const alt = "Split subscriptions with more trust. | Bantle";
+export const alt = "Bantle - Split or buy subscriptions with more trust";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -50,7 +50,7 @@ export default async function OGImage() {
               maxWidth: "920px",
             }}
           >
-            Split subscriptions with more trust.
+            Split or buy subscriptions with more trust.
           </div>
           <div
             style={{
