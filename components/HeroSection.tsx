@@ -53,7 +53,7 @@ export function HeroSection() {
       />
       <div className="container-x relative pt-14 pb-20 md:pt-20 md:pb-28">
         <div className="grid gap-14 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:gap-16">
-          <div>
+          <div className="bantle-fade-up">
             <span className="inline-flex items-center gap-2 rounded-full border border-teal-200 bg-teal-50 px-3 py-1.5 text-xs uppercase tracking-[0.14em] text-teal-700">
               <span className="h-1.5 w-1.5 rounded-full bg-teal-500" />
               Coming soon · Made in India
@@ -99,7 +99,7 @@ function HeroPill({ children }: { children: ReactNode }) {
 function AppPreviewVisual() {
   return (
     <div
-      className="relative mx-auto w-full max-w-[420px]"
+      className="bantle-scene bantle-fade-up-delayed relative mx-auto w-full max-w-[420px]"
       role="img"
       aria-label="Illustrative Bantle app preview showing example subscription slots with neutral placeholder data, a verified host, a propose-a-deal action, and a note that chat starts after a deal request"
     >
@@ -108,7 +108,8 @@ function AppPreviewVisual() {
         aria-hidden="true"
         className="pointer-events-none absolute -inset-6 -z-10 rounded-[48px] bg-gradient-to-br from-teal-200/50 to-transparent blur-2xl"
       />
-      <div className="rounded-[40px] border border-line bg-white p-3 shadow-[0_40px_90px_-30px_rgba(0,60,52,0.45)] ring-1 ring-teal-900/5">
+      <div className="bantle-float">
+        <div className="bantle-tilt rounded-[40px] border border-line bg-white p-3 shadow-[0_40px_90px_-30px_rgba(0,60,52,0.45)] ring-1 ring-teal-900/5">
         <div className="overflow-hidden rounded-[32px] border border-line bg-cream">
           {/* status bar */}
           <div className="flex items-center justify-between px-5 pt-4 text-ink">
@@ -126,8 +127,8 @@ function AppPreviewVisual() {
               <img
                 src="/brand/bantle-mark.png"
                 alt=""
-                width={168}
-                height={214}
+                width={148}
+                height={197}
                 className="h-6 w-auto shrink-0 object-contain"
               />
               <span>
@@ -233,6 +234,7 @@ function AppPreviewVisual() {
             <ShieldCheck className="h-4 w-4 text-teal-600" strokeWidth={1.9} />
             Identity verification is private and manually reviewed
           </div>
+        </div>
         </div>
       </div>
     </div>

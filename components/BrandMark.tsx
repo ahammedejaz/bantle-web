@@ -6,17 +6,18 @@ interface BrandMarkProps {
   size?: "sm" | "md" | "lg";
 }
 
+// The mark is a tightly-cropped (zero-padding) glyph at 148x197, so a small
+// gap reads as one wordmark unit.
 const sizeClasses = {
-  sm: { mark: "h-6 w-auto", text: "text-[18px]", gap: "gap-2" },
-  md: { mark: "h-7 w-auto", text: "text-[20px]", gap: "gap-2" },
-  lg: { mark: "h-9 w-auto", text: "text-[25px]", gap: "gap-2.5" },
+  sm: { mark: "h-7 w-auto", text: "text-[20px]", gap: "gap-1.5" },
+  md: { mark: "h-9 w-auto", text: "text-[23px]", gap: "gap-1.5" },
+  lg: { mark: "h-11 w-auto", text: "text-[29px]", gap: "gap-2" },
 };
 
 // Marketing-only brand lockup (header, mobile nav, footer). The admin panel
 // uses its own text branding and does not import this component, so changes
-// here do not affect admin. The logo is the clean transparent mint mark with
-// no chip/background; the "Bantle" wordmark uses a lighter, tighter treatment
-// to match the mobile app's visual tone.
+// here do not affect admin. Clean transparent mint mark with no chip; the
+// "Bantle" wordmark uses a semibold, tight treatment beside the mark.
 export function BrandMark({ light = false, size = "md" }: BrandMarkProps) {
   const classes = sizeClasses[size];
 
@@ -26,12 +27,12 @@ export function BrandMark({ light = false, size = "md" }: BrandMarkProps) {
       <img
         src="/brand/bantle-mark.png"
         alt=""
-        width={168}
-        height={214}
+        width={148}
+        height={197}
         className={`${classes.mark} shrink-0 object-contain`}
       />
       <span
-        className={`${classes.text} font-medium leading-none tracking-[-0.01em] ${
+        className={`${classes.text} font-semibold leading-none tracking-[-0.02em] ${
           light ? "text-cream" : "text-teal-900"
         }`}
       >
