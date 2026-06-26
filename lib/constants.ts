@@ -1,8 +1,8 @@
 export const BRAND_NAME = "Bantle";
-export const TAGLINE = "Household subscription access coordination";
+export const TAGLINE = "Split subscriptions with more trust.";
 export const SITE_URL = "https://bantle.in";
 export const SITE_DESCRIPTION =
-  "Bantle helps people in India coordinate household and family-plan subscription access with people they already trust. Users follow provider rules and handle payments directly outside Bantle.";
+  "Find active subscription slots, review the details, and propose a deal with clearer trust signals. Bantle keeps chat, safety checks, and identity verification clear — while payments stay outside Bantle.";
 
 export const CONTACT_EMAIL = "support@bantle.in";
 export const FEEDBACK_EMAIL = "feedback@bantle.in";

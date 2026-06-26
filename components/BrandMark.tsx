@@ -10,8 +10,8 @@ interface BrandMarkProps {
 // small gap reads as one wordmark unit.
 const sizeClasses = {
   sm: { mark: "h-7 w-auto", text: "text-[21px]", gap: "gap-1" },
-  md: { mark: "h-10 w-auto", text: "text-[24px]", gap: "gap-1" },
-  lg: { mark: "h-12 w-auto", text: "text-[30px]", gap: "gap-1.5" },
+  md: { mark: "h-7 w-auto", text: "text-[24px]", gap: "gap-2.5" },
+  lg: { mark: "h-8 w-auto", text: "text-[28px]", gap: "gap-2.5" },
 };
 
 // Marketing-only brand lockup (header, mobile nav, footer). The admin panel

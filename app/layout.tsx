@@ -26,7 +26,7 @@ const lora = Lora({
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: `${BRAND_NAME} — ${TAGLINE}`,
+    default: `${TAGLINE} | ${BRAND_NAME}`,
     template: `%s | ${BRAND_NAME}`,
   },
   description: SITE_DESCRIPTION,
@@ -51,12 +51,12 @@ export const metadata: Metadata = {
     locale: "en_IN",
     url: SITE_URL,
     siteName: BRAND_NAME,
-    title: `${BRAND_NAME} — ${TAGLINE}`,
+    title: `${TAGLINE} | ${BRAND_NAME}`,
     description: SITE_DESCRIPTION,
   },
   twitter: {
     card: "summary_large_image",
-    title: `${BRAND_NAME} — ${TAGLINE}`,
+    title: `${TAGLINE} | ${BRAND_NAME}`,
     description: SITE_DESCRIPTION,
   },
   robots: {

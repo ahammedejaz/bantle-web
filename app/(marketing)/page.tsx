@@ -19,11 +19,12 @@ import {
   CONTACT_EMAIL,
   SITE_DESCRIPTION,
   SITE_URL,
+  TAGLINE,
 } from "@/lib/constants";
 
 export const metadata = {
   title: {
-    absolute: "Bantle — Household subscription access coordination",
+    absolute: `${TAGLINE} | ${BRAND_NAME}`,
   },
   description: SITE_DESCRIPTION,
   alternates: {

@@ -1,7 +1,7 @@
 import { ImageResponse } from "next/og";
 
 export const runtime = "edge";
-export const alt = "Bantle — household subscription access coordination.";
+export const alt = "Split subscriptions with more trust. | Bantle";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -50,7 +50,7 @@ export default async function TwitterImage() {
               maxWidth: "920px",
             }}
           >
-            Household subscription access coordination.
+            Split subscriptions with more trust.
           </div>
           <div
             style={{
@@ -60,8 +60,8 @@ export default async function TwitterImage() {
               maxWidth: "880px",
             }}
           >
-            Keep household and family-plan details, chat and updates clear.
-            Users follow provider rules and coordinate payments outside Bantle.
+            Find subscription slots, review details, and propose deals with
+            clearer trust signals. Payments stay outside Bantle.
           </div>
         </div>
 
