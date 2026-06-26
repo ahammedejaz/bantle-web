@@ -4,6 +4,7 @@ import { createServerClient } from "@supabase/ssr";
 import { AdminToastProvider } from "@/components/admin/AdminToastProvider";
 import { AdminNav } from "@/components/admin/AdminNav";
 import { AdminMobileHeader } from "@/components/admin/AdminMobileHeader";
+import { AdminIdleTimeout } from "@/components/admin/AdminIdleTimeout";
 import { createServiceRoleSupabase } from "@/lib/admin-supabase-server";
 
 export const metadata = {
@@ -71,6 +72,7 @@ export default async function AdminLayout({
 
   return (
     <AdminToastProvider>
+      <AdminIdleTimeout />
       <div className="min-h-screen bg-cream md:flex">
         {/* Desktop sidebar — hidden on mobile, visible on md+ */}
         <aside className="hidden md:block md:w-56 md:shrink-0">
