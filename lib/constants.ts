@@ -1,8 +1,8 @@
 export const BRAND_NAME = "Bantle";
-export const TAGLINE = "Split subscriptions with more trust.";
+export const TAGLINE = "Split or buy subscriptions with more trust.";
 export const SITE_URL = "https://bantle.in";
 export const SITE_DESCRIPTION =
-  "Find active subscription slots, review the details, and propose a deal with clearer trust signals. Bantle keeps chat, safety checks, and identity verification clear — while payments stay outside Bantle.";
+  "Bantle helps people split monthly subscriptions or buy fixed-duration access with clearer trust signals. Review listings, propose a deal, and chat after acceptance while payments stay outside Bantle.";
 
 export const CONTACT_EMAIL = "support@bantle.in";
 export const FEEDBACK_EMAIL = "feedback@bantle.in";

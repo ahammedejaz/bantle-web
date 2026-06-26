@@ -146,7 +146,7 @@ function VerifiedState() {
             Don&apos;t have the app yet?
           </h2>
           <p className="text-[15px] leading-7 text-ink-muted mb-6">
-            Bantle is launching first on Android, with iOS to follow. If you
+            Bantle is preparing early access across Android and iOS. If you
             signed up but haven&apos;t installed the app yet, watch for the
             launch announcement.
           </p>

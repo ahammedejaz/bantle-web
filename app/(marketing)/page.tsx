@@ -115,8 +115,8 @@ function HowItWorks() {
   const steps = [
     {
       icon: Search,
-      title: "Discover subscription slots",
-      body: "Browse active listings and compare the access type, expected duration, pricing notes, and how many slots are open.",
+      title: "Discover monthly slots or one-time access",
+      body: "Browse active listings — share a recurring monthly slot, or buy fixed-duration access when a seller has validity remaining. Compare price, duration, and open slots.",
     },
     {
       icon: ListChecks,
@@ -259,9 +259,11 @@ function AppPreview() {
 function SafetyAndLimits() {
   const safetyNotes = [
     "Buyers propose first, and chat opens after a deal request or accepted proposal.",
-    "Every arrangement should follow the provider's household or family-plan rules.",
-    "Optional identity verification keeps selfies private, manually reviewed, off public profiles, and without location tracking.",
-    "Reviewed and verified badges are trust signals, not guarantees of any outcome.",
+    "Posting a listing requires identity verification or an approved business or partner profile.",
+    "Identity verification keeps selfies private, manually reviewed, off public profiles, and without location tracking.",
+    "Trust badges — Identity verified, Business verified, and Partner verified — are signals that help reduce fake accounts, not guarantees of any outcome.",
+    "Unverified accounts have limited deal activity until they complete identity verification.",
+    "Businesses and partners who want to sell on Bantle can reach out to be reviewed.",
   ];
   const limits = [
     "Bantle does not collect, hold, route, verify, insure, or reverse payments.",

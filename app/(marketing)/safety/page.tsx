@@ -76,6 +76,39 @@ export default function SafetyPage() {
         </section>
 
         <section>
+          <h2>Who can list, and trust badges</h2>
+          <ul>
+            <li>
+              <strong>Verification to list.</strong> To post a listing,
+              a seller must complete identity verification (a private
+              selfie review) or be approved as a business or partner
+              profile. This helps reduce fake accounts, but it does not
+              guarantee deals, payment, or access.
+            </li>
+            <li>
+              <strong>Trust badges.</strong> Profiles may show{" "}
+              <strong>Identity verified</strong>,{" "}
+              <strong>Business verified</strong> or{" "}
+              <strong>Partner verified</strong> badges. Badges are signals
+              that Bantle reviewed an account — not guarantees of payment,
+              access, refunds, or deal safety.
+            </li>
+            <li>
+              <strong>Limits before verification.</strong> Unverified
+              accounts have limited deal activity — for example, keeping
+              only one pending or active deal at a time — until identity
+              verification, or business/partner approval, is completed.
+            </li>
+            <li>
+              <strong>Business and partner sellers.</strong> Businesses or
+              partners who want to sell on Bantle can reach out to be
+              reviewed at{" "}
+              <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.
+            </li>
+          </ul>
+        </section>
+
+        <section>
           <h2>What you control</h2>
           <ul>
             <li>
