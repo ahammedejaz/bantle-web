@@ -30,9 +30,10 @@ export default function PrivacyPage() {
         <section>
           <h2>In short</h2>
           <p>
-            Bantle is a household-coordination app for splitting family-plan
-            subscriptions. We collect the minimum data needed to verify
-            you, run the app, and protect each household&apos;s
+            Bantle is a coordination app for splitting or buying
+            subscription access where the provider&apos;s terms allow it.
+            We collect the minimum data needed to verify
+            you, run the app, and protect each user&apos;s
             information. If you choose identity verification, your selfie is
             stored privately, reviewed manually by our team, and never shown
             on your public profile. We do not collect phone numbers. We do not
@@ -69,7 +70,7 @@ export default function PrivacyPage() {
 
           <h3>Profile data</h3>
           <ul>
-            <li>Subscription plans you host or are invited to as a household member.</li>
+            <li>Subscription plans you host or are invited to as a plan member.</li>
             <li>Approximate city-level location (never precise GPS).</li>
             <li>Ratings you receive and give, with associated plan IDs.</li>
           </ul>

@@ -99,7 +99,7 @@ export default function TermsPage() {
             <li>
               <strong>Authority.</strong> If you are the host of a plan,
               you have the authority to coordinate that subscription on
-              behalf of the household, including authority to add or
+              behalf of that plan, including authority to add or
               remove members from the plan.
             </li>
             <li>
@@ -175,8 +175,8 @@ export default function TermsPage() {
             </li>
             <li>
               confirm that the Content does not contain personally
-              identifying information about anyone outside your
-              household, financial account credentials, or any
+              identifying information about anyone else without their
+              consent, financial account credentials, or any
               subscription provider&apos;s account passwords.
             </li>
           </ul>
@@ -293,22 +293,24 @@ export default function TermsPage() {
         <section>
           <h2>9. Subscription provider terms</h2>
           <p>
-            Almost every family or household subscription tier is
-            governed by terms set by the underlying provider. Providers
-            may impose rules about who is permitted to share an account
-            or plan, what counts as a household, and how address
-            verification may be performed.
+            Subscription plans are governed by terms set by the
+            underlying provider. Providers may impose rules about who is
+            permitted to share or buy access to an account or plan — for
+            example, some family or household plans may require members to
+            live in the same household or location, or to belong to an
+            approved family group — and how any address or eligibility
+            verification is performed.
           </p>
           <p>
-            <strong>You are solely responsible</strong> for ensuring
-            that the way your household coordinates a subscription
-            complies with the provider&apos;s terms. Bantle is not
-            affiliated with any subscription provider and makes no
-            representation about whether a particular sharing
-            arrangement is permitted by them. If a provider takes any
-            action against you, your household, or any member of a plan
-            you host or joined, that action is between you and the
-            provider; Bantle is not a party to it.
+            <strong>You are solely responsible</strong> for ensuring that
+            the way you list, request, or buy access complies with the
+            provider&apos;s terms. You must not use Bantle to list,
+            request, or buy access in a way that violates those terms.
+            Bantle is not affiliated with any subscription provider and
+            makes no representation about whether a particular arrangement
+            is permitted by them. If a provider takes any action against
+            you or any member of a plan you host or joined, that action is
+            between you and the provider; Bantle is not a party to it.
           </p>
         </section>
 
@@ -338,7 +340,7 @@ export default function TermsPage() {
             notice, if we reasonably believe you have violated these
             Terms or our community guidelines, or if we are required to
             do so by law. Pending plans at the time of termination
-            remain entirely between the household members involved.
+            remain entirely between the members involved.
           </p>
         </section>
 
@@ -352,7 +354,7 @@ export default function TermsPage() {
             merchantability, fitness for a particular purpose, accuracy
             and non-infringement. Bantle does not warrant that the
             Service will be uninterrupted or error-free, that any
-            household coordination will result in a successful split,
+            coordination will result in a successful split,
             that a member will provide access for any particular
             duration, that a member will refund you, or that any
             subscription provider will permit a particular sharing
@@ -384,7 +386,7 @@ export default function TermsPage() {
             affiliates, officers, employees and agents from any claim or
             demand made by a third party that arises out of (a) your
             use of the Service, (b) any Content you post, (c) any plan
-            you create, host or join with other household members,
+            you create, host or join with other members,
             (d) any claim brought by a subscription provider arising
             from your use of the Service, or (e) your violation of these
             Terms or of applicable law.

@@ -61,8 +61,8 @@ const sections: Section[] = [
         a: (
           <p>
             No. Bantle does not collect phone numbers. Your email is the
-            single identifier we use, and it&apos;s also how the people in
-            your household send each other invites to a plan.
+            single identifier we use, and it&apos;s also how the people
+            you coordinate a plan with send each other invites.
           </p>
         ),
       },
@@ -84,17 +84,19 @@ const sections: Section[] = [
         ),
       },
       {
-        q: "Why is Bantle household-only?",
+        q: "Does Bantle only work for people in the same household?",
         a: (
           <p>
-            Almost every &ldquo;family&rdquo; or &ldquo;household&rdquo;
-            subscription tier was designed for people living at the same
-            address or belonging to an approved family group. Providers
-            set and enforce those rules in different ways. A
-            stranger-discovery model for these plans can violate provider
-            terms and put both sides in an awkward position. Bantle is
-            built for the coordination use cases providers commonly
-            allow.
+            No. Bantle helps people split or buy subscription access
+            wherever the provider&apos;s terms allow it. Some
+            &ldquo;family&rdquo; or &ldquo;household&rdquo; plans do
+            require members to live at the same address or belong to an
+            approved family group, while other arrangements may be
+            permitted more broadly. Providers set and enforce those rules
+            differently, so you must check and follow the
+            provider&apos;s own terms before listing, requesting, or
+            buying access. Bantle is not a tool for bypassing provider
+            rules.
           </p>
         ),
       },
