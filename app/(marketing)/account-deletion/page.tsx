@@ -79,6 +79,11 @@ export default function AccountDeletionPage() {
             <li>saved items</li>
             <li>notification records</li>
             <li>
+              private chat attachments, report evidence uploaded by the
+              account, and identity selfies captured before account metadata is
+              removed
+            </li>
+            <li>
               chat or deal coordination records where deletion is technically
               and legally possible
             </li>
@@ -119,6 +124,12 @@ export default function AccountDeletionPage() {
               app account identifiers where deletion is technically possible
             </li>
           </ul>
+          <p>
+            In-app deletion starts with a 7-day recovery window. Once that
+            window ends, private-file cleanup and account deletion are processed
+            by retryable background jobs. A transient provider failure may delay
+            final completion; it does not make the files publicly accessible.
+          </p>
         </section>
 
         <section>

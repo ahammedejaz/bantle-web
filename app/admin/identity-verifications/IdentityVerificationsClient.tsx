@@ -11,7 +11,7 @@ import {
 import { useAdminToast } from "@/components/admin/AdminToastProvider";
 import { cn } from "@/lib/utils";
 
-type ReviewStatus = "pending" | "approved" | "rejected" | "cancelled";
+type ReviewStatus = "pending" | "approved" | "rejected";
 type StatusFilter = ReviewStatus | "all";
 
 interface IdentityVerificationListItem {
@@ -37,7 +37,6 @@ const STATUS_OPTIONS: Array<{ value: StatusFilter; label: string }> = [
   { value: "all", label: "All statuses" },
   { value: "approved", label: "Approved" },
   { value: "rejected", label: "Rejected" },
-  { value: "cancelled", label: "Cancelled" },
 ];
 
 export function IdentityVerificationsClient() {
@@ -48,6 +47,8 @@ export function IdentityVerificationsClient() {
   const [total, setTotal] = useState(0);
   const [pageSize, setPageSize] = useState(20);
   const [loading, setLoading] = useState(true);
+  const [reviewEnabled, setReviewEnabled] = useState(false);
+  const [identityEnabled, setIdentityEnabled] = useState(false);
 
   const fetchItems = useCallback(async () => {
     setLoading(true);
@@ -71,10 +72,21 @@ export function IdentityVerificationsClient() {
         verifications: IdentityVerificationListItem[];
         total: number;
         page_size: number;
+        feature_config?: {
+          identity_verification_enabled?: boolean;
+          identity_admin_review_enabled?: boolean;
+        } | null;
       };
       setItems(data.verifications);
       setTotal(data.total);
       setPageSize(data.page_size);
+      setIdentityEnabled(
+        data.feature_config?.identity_verification_enabled === true,
+      );
+      setReviewEnabled(
+        data.feature_config?.identity_verification_enabled === true &&
+          data.feature_config?.identity_admin_review_enabled === true,
+      );
     } catch (error) {
       toast.show(
         error instanceof Error
@@ -99,6 +111,13 @@ export function IdentityVerificationsClient() {
 
   return (
     <div>
+      {!reviewEnabled ? (
+        <div className="mb-6 rounded-card border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
+          {identityEnabled
+            ? "Identity review decisions are paused. The queue remains read-only for authorized investigation."
+            : "Identity verification is disabled. The queue remains read-only for authorized investigation."}
+        </div>
+      ) : null}
       <div className="flex flex-wrap items-center gap-3 mb-6">
         <div className="inline-flex items-center gap-2 text-xs text-ink-muted">
           <Filter size={14} />
@@ -231,12 +250,6 @@ function getStatusDisplay(status: ReviewStatus) {
     return {
       label: "Rejected",
       className: "bg-red-50 text-red-900 border-red-200",
-    };
-  }
-  if (status === "cancelled") {
-    return {
-      label: "Cancelled",
-      className: "bg-gray-50 text-gray-700 border-gray-200",
     };
   }
   return {

@@ -11,7 +11,7 @@ export async function GET(
 ) {
   const auth = await requireAdmin(request);
   if ("error" in auth) return auth.error;
-  const { supabase } = auth;
+  const { supabase, userClient } = auth;
 
   const { id } = await params;
 
@@ -31,11 +31,24 @@ export async function GET(
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
-  const signedUrl = await createVerificationSelfieSignedUrl(supabase, {
-    storage_bucket: verification.storage_bucket,
-    storage_path: verification.storage_path,
-    image_deleted_at: verification.image_deleted_at,
-  });
+  const isReviewableState = ["pending", "approved", "rejected"].includes(
+    verification.status,
+  );
+  const signedUrl = isReviewableState
+    ? await createVerificationSelfieSignedUrl(supabase, {
+        storage_bucket: verification.storage_bucket,
+        storage_path: verification.storage_path,
+        image_deleted_at: verification.image_deleted_at,
+      })
+    : {
+        signed_url: null,
+        signed_url_expires_in_seconds: null,
+        image_unavailable_reason: "request_not_reviewable",
+      };
+  const { data: featureRows } = await userClient.rpc(
+    "get_public_trust_feature_config",
+  );
+  const featureConfig = Array.isArray(featureRows) ? featureRows[0] : null;
 
   return NextResponse.json({
     verification: {
@@ -64,5 +77,6 @@ export async function GET(
       image_unavailable_reason: signedUrl.image_unavailable_reason,
       signed_url_ttl_seconds: SIGNED_URL_TTL_SECONDS,
     },
+    feature_config: featureConfig,
   });
 }
