@@ -75,7 +75,7 @@ export default async function TwitterImage() {
             color: "#004D43",
           }}
         >
-          <div style={{ display: "flex" }}>Android &amp; iOS · Early access</div>
+          <div style={{ display: "flex" }}>Android &amp; iOS · Available now</div>
           <div style={{ display: "flex" }}>bantle.in</div>
         </div>
       </div>

@@ -8,7 +8,7 @@ import {
   ShieldCheck,
   TrendingUp,
 } from "lucide-react";
-import { ComingSoonBadges } from "@/components/ComingSoonBadges";
+import { StoreBadges } from "@/components/StoreBadges";
 
 // Marketing homepage hero. Light/cream premium to match the rest of the
 // marketing site, with mint/green accents that nod to the mobile app. The
@@ -56,7 +56,7 @@ export function HeroSection() {
           <div className="bantle-fade-up">
             <span className="inline-flex items-center gap-2 rounded-full border border-teal-200 bg-teal-50 px-3 py-1.5 text-xs uppercase tracking-[0.14em] text-teal-700">
               <span className="h-1.5 w-1.5 rounded-full bg-teal-500" />
-              Coming soon · Made in India
+              Now live · Made in India
             </span>
             <h1 className="mt-6 max-w-2xl text-balance font-serif text-4xl italic leading-[1.05] tracking-tightish text-teal-900 sm:text-5xl md:text-6xl">
               Split or buy subscriptions with{" "}
@@ -74,9 +74,9 @@ export function HeroSection() {
               <HeroPill>Payments stay outside Bantle</HeroPill>
             </div>
             <div className="mt-9">
-              <ComingSoonBadges />
+              <StoreBadges />
               <p className="mt-4 text-sm text-ink-muted">
-                Bantle is preparing early access across Android and iOS.
+                Bantle is available now on Google Play and the App Store.
               </p>
             </div>
           </div>

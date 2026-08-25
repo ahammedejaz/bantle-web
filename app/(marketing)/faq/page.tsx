@@ -353,7 +353,7 @@ const sections: Section[] = [
         q: "What devices does Bantle support?",
         a: (
           <p>
-            Bantle is preparing early access across Android and iOS.
+            Bantle is available on Google Play and the App Store.
             Android 9 (Pie) and above is supported. There
             is no Bantle website experience for end users beyond this
             marketing site — plans, chat and settlement all live in the

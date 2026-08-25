@@ -1,16 +1,24 @@
 import { cn } from "@/lib/utils";
 
-interface ComingSoonBadgesProps {
+// Live store links. The app is published on both stores (Android package
+// in.bantle.app, iOS app id 6777968886), so these badges are real anchors —
+// the earlier disabled "coming soon" buttons are retired.
+const STORE_URLS = {
+  play: "https://play.google.com/store/apps/details?id=in.bantle.app",
+  ios: "https://apps.apple.com/in/app/id6777968886",
+} as const;
+
+interface StoreBadgesProps {
   className?: string;
   variant?: "default" | "compact";
   align?: "start" | "center";
 }
 
-export function ComingSoonBadges({
+export function StoreBadges({
   className,
   variant = "default",
   align = "start",
-}: ComingSoonBadgesProps) {
+}: StoreBadgesProps) {
   return (
     <div
       className={cn(
@@ -34,31 +42,33 @@ function StoreBadge({
 }) {
   const isCompact = variant === "compact";
   const wrapperBase =
-    "inline-flex items-center gap-3 rounded-button border border-line bg-[#1A1A1A]/85 text-cream cursor-not-allowed select-none transition-opacity hover:opacity-95";
+    "inline-flex items-center gap-3 rounded-button border border-line bg-[#1A1A1A] text-cream select-none transition-opacity hover:opacity-90";
   const dimensions = isCompact
     ? "h-12 px-4 min-w-[170px]"
     : "h-[58px] px-5 min-w-[200px]";
 
   return (
-    <button
-      type="button"
-      disabled
-      aria-disabled="true"
-      title={`${store === "play" ? "Google Play" : "App Store"} listing coming soon`}
-      className={cn(wrapperBase, dimensions, "opacity-80")}
+    <a
+      href={STORE_URLS[store]}
+      target="_blank"
+      rel="noopener noreferrer"
+      title={`${
+        store === "play" ? "Get Bantle on Google Play" : "Download Bantle on the App Store"
+      }`}
+      className={cn(wrapperBase, dimensions)}
     >
       <span className="shrink-0">
         {store === "play" ? <PlayGlyph /> : <IosGlyph />}
       </span>
       <span className="flex flex-col items-start leading-tight text-left">
         <span className="text-[10px] uppercase tracking-[0.14em] text-cream/70">
-          Coming soon to
+          {store === "play" ? "Get it on" : "Download on the"}
         </span>
         <span className="font-medium text-[15px]">
           {store === "play" ? "Google Play" : "App Store"}
         </span>
       </span>
-    </button>
+    </a>
   );
 }
 

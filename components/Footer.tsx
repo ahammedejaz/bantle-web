@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ComingSoonBadges } from "@/components/ComingSoonBadges";
+import { StoreBadges } from "@/components/StoreBadges";
 import { BrandMark } from "@/components/BrandMark";
 import { CONTACT_EMAIL, TAGLINE } from "@/lib/constants";
 
@@ -88,7 +88,7 @@ export function Footer() {
           <p className="mb-4 text-xs uppercase tracking-[0.14em] text-cream/60">
             Get the app
           </p>
-          <ComingSoonBadges />
+          <StoreBadges />
         </div>
         <div className="mt-10 flex flex-col gap-3 text-sm text-cream/60 md:flex-row md:items-center md:justify-between">
           <p>© {year} Bantle. All rights reserved.</p>

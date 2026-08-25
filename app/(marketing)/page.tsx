@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import { HeroSection } from "@/components/HeroSection";
 import { FeatureCard } from "@/components/FeatureCard";
-import { ComingSoonBadges } from "@/components/ComingSoonBadges";
+import { StoreBadges } from "@/components/StoreBadges";
 import {
   BRAND_NAME,
   CONTACT_EMAIL,
@@ -67,7 +67,7 @@ export default function Home() {
       <TrustHighlights />
       <SafetyAndLimits />
       <FAQPreview />
-      <ComingSoonCTA />
+      <DownloadCTA />
     </>
   );
 }
@@ -435,26 +435,26 @@ function FAQPreview() {
   );
 }
 
-function ComingSoonCTA() {
+function DownloadCTA() {
   return (
     <section className="border-t border-teal-800 bg-teal-900 text-cream">
       <div className="container-x py-16 text-center md:py-24">
         <h2 className="mx-auto max-w-3xl text-balance font-serif text-3xl italic leading-[1.15] tracking-tightish md:text-5xl md:leading-[1.12]">
-          Be the first to know when Bantle opens.
+          Bantle is live. Get the app.
         </h2>
         <p className="mx-auto mt-5 max-w-2xl text-lg leading-8 text-cream/80">
-          Bantle is opening up in early access. Request access if you want
-          launch updates, or bookmark the store badges below.
+          Download Bantle on Google Play or the App Store to browse listings,
+          propose deals, and find sharing partners across India.
         </p>
         <div className="mt-10 flex justify-center">
-          <ComingSoonBadges align="center" />
+          <StoreBadges align="center" />
         </div>
         <p className="mt-8 text-sm text-cream/70">
           <Link
             href="/support"
             className="underline underline-offset-2 hover:text-cream"
           >
-            Request early access →
+            Need help? Contact support →
           </Link>
         </p>
       </div>

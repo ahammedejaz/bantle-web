@@ -3,7 +3,7 @@
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { PageHeader } from "@/components/PageHeader";
-import { ComingSoonBadges } from "@/components/ComingSoonBadges";
+import { StoreBadges } from "@/components/StoreBadges";
 import { CONTACT_EMAIL } from "@/lib/constants";
 import { createBrowserSupabase } from "@/lib/supabase";
 
@@ -146,11 +146,11 @@ function VerifiedState() {
             Don&apos;t have the app yet?
           </h2>
           <p className="text-[15px] leading-7 text-ink-muted mb-6">
-            Bantle is preparing early access across Android and iOS. If you
-            signed up but haven&apos;t installed the app yet, watch for the
-            launch announcement.
+            Bantle is available on Google Play and the App Store. If you
+            signed up but haven&apos;t installed the app yet, download it to
+            continue.
           </p>
-          <ComingSoonBadges />
+          <StoreBadges />
         </section>
 
         <section className="mt-12">
@@ -245,7 +245,7 @@ function NeutralState() {
           <h2 className="font-serif italic text-2xl md:text-3xl text-teal-900 mb-4">
             Get the app
           </h2>
-          <ComingSoonBadges />
+          <StoreBadges />
         </section>
 
         <section className="mt-12">

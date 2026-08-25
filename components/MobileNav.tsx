@@ -10,7 +10,7 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { NAV_LINKS, LEGAL_LINKS } from "@/lib/constants";
-import { ComingSoonBadges } from "@/components/ComingSoonBadges";
+import { StoreBadges } from "@/components/StoreBadges";
 import { BrandMark } from "@/components/BrandMark";
 
 export function MobileNav() {
@@ -61,7 +61,7 @@ export function MobileNav() {
           </div>
         </div>
         <div className="mt-auto pt-8">
-          <ComingSoonBadges variant="compact" />
+          <StoreBadges variant="compact" />
         </div>
       </SheetContent>
     </Sheet>
