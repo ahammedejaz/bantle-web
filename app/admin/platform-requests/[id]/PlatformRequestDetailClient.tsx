@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAdminToast } from "@/components/admin/AdminToastProvider";
 import { cn } from "@/lib/utils";
+import { passesAAOnWhiteText, readableTextOn } from "@/lib/contrast-color";
 import {
   fmtDate,
   getRequestStatusDisplay,
@@ -274,6 +275,11 @@ export function PlatformRequestDetailClient({
 
   const statusDisplay = getRequestStatusDisplay(detail.status);
   const pending = detail.status === "pending";
+  const previewColor =
+    form && HEX_RE.test(form.brand_color) ? form.brand_color : "#0F766E";
+  // Warn before approval rather than after: a light brand colour still gets a
+  // readable foreground everywhere, but it is usually not what the admin meant.
+  const brandColorLowContrast = !passesAAOnWhiteText(previewColor);
 
   return (
     <div>
@@ -489,11 +495,13 @@ export function PlatformRequestDetailClient({
                   </span>
                   <div className="flex items-center gap-3">
                     <span
-                      className="inline-flex h-11 w-11 items-center justify-center rounded-button text-sm font-medium text-white"
+                      className="inline-flex h-11 w-11 items-center justify-center rounded-button text-sm font-medium"
                       style={{
-                        backgroundColor: HEX_RE.test(form.brand_color)
-                          ? form.brand_color
-                          : "#0F766E",
+                        backgroundColor: previewColor,
+                        // Contrast-picked, exactly like the app's PlatformTile.
+                        // A hardcoded white here showed a legible preview for
+                        // colours that ship illegible to users.
+                        color: readableTextOn(previewColor),
                       }}
                     >
                       {form.brand_initials || "?"}
@@ -502,6 +510,13 @@ export function PlatformRequestDetailClient({
                       {form.label || "Platform"}
                     </span>
                   </div>
+                  {brandColorLowContrast ? (
+                    <p className="mt-2 text-xs text-amber-700">
+                      This colour is light. The app will render the initials in
+                      dark ink so they stay readable — pick a darker colour if
+                      you want white initials.
+                    </p>
+                  ) : null}
                 </div>
               </div>
             </div>
