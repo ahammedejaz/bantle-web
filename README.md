@@ -48,7 +48,8 @@ flowchart TD
     A4[Identity verifications]
     A5[Name-change requests]
     A6[Listings / Deals / Reports]
-    A7[Platforms / Broadcasts / Settings / Audit]
+    A7[Platform requests]
+    A8[Platforms / Broadcasts / Settings / Audit]
   end
   Public --> DB[(Supabase / Postgres)]
   Admin --> DB
@@ -57,6 +58,17 @@ flowchart TD
 The public surface is mostly static and unauthenticated. The admin surface
 is fully gated (middleware + server checks) and performs privileged work
 with the service-role key.
+
+**Admin email alerts (server-side, lives in the mobile/core repo):** since
+2026-08-25, whenever a new item enters a review queue handled by this panel
+(platform request, identity verification submission, name-change request,
+user report), database triggers enqueue an alert and a pg_cron-driven
+`admin_email_dispatcher` Edge Function emails every active admin a digest
+within ~2 minutes (Resend API, sender `alerts@bantle.in`). Nothing in this
+repo sends those emails — the infrastructure is defined in
+`../bantle/supabase/` — but panel operators should expect email deep links
+into `/admin/platform-requests`, `/admin/identity-verifications`,
+`/admin/name-change-requests`, and `/admin/reports`.
 
 ---
 

@@ -981,6 +981,21 @@ Read `ADMIN_PANEL_PLAN.md` for full details and smoke tests. Current summary:
 - Phase 7 - Audit log viewer: verified by Syed.
 - Phase 8 - Manual incident broadcast push: verified by Syed.
 - Phase 9 - Admin dashboard analytics and refresh: shipped, awaiting Syed smoke verification.
+- Platform request review queue (2026-08-25): shipped.
+  - `/admin/platform-requests` list/detail with approve (creates or reactivates the
+    `platforms` catalogue row, resolves sibling requests for the same normalized
+    name) and reject (required user-visible message). Backed by transactional
+    `admin_approve_platform_request` / `admin_reject_platform_request` RPCs in the
+    mobile/core repo's migrations; requesters are notified through the durable
+    notification outbox.
+- Admin email alerts (2026-08-25): live, server-side, owned by the mobile/core repo.
+  - New pending items in the queues this panel serves (platform requests, identity
+    verifications on the `uploading -> pending` transition, name-change requests,
+    user reports) enqueue rows in `admin_alert_outbox`; the `admin_email_dispatcher`
+    Edge Function (pg_cron, every 2 minutes) emails all active admins one digest per
+    run via Resend from `alerts@bantle.in`, deep-linking into the matching
+    `/admin/*` section. Nothing in this repo sends email; see
+    `../bantle/reports/ADMIN_EMAIL_ALERTS_IMPLEMENTATION_REPORT.md`.
 
 Important permanent scope decision: re-engagement push notifications are out of scope permanently. Only transactional/functional/commitment/incident pushes are allowed.
 
