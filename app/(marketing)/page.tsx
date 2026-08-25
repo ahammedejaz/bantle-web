@@ -40,6 +40,10 @@ const structuredData = {
       name: BRAND_NAME,
       url: SITE_URL,
       email: CONTACT_EMAIL,
+      sameAs: [
+        "https://play.google.com/store/apps/details?id=in.bantle.app",
+        "https://apps.apple.com/in/app/id6777968886",
+      ],
     },
     {
       "@type": "WebSite",
