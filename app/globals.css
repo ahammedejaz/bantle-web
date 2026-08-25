@@ -2,6 +2,129 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ---------------------------------------------------------------------------
+   Bantle design tokens.
+
+   Two independent layers live here:
+
+   1. The legacy brand ramp (teal/cream/ink/line). These keep their original
+      values and are shared with the admin panel, so they must not change.
+      They are expressed as space-separated RGB channels so Tailwind can keep
+      applying `/opacity` modifiers (`bg-teal-900/10`, `text-cream/80`, ...).
+
+   2. The marketing surface tokens (paper/surface/fg/edge/accent/canvas/mint).
+      These are scoped to `.theme-site`, which only the marketing route group
+      renders. Dark mode overrides live on that class, so the admin panel is
+      never affected by them.
+   --------------------------------------------------------------------------- */
+
+:root {
+  /* Legacy brand ramp - values identical to the previous Tailwind config. */
+  --c-teal-50: 239 253 247;
+  --c-teal-100: 230 247 239;
+  --c-teal-200: 205 237 225;
+  --c-teal-300: 142 217 191;
+  --c-teal-400: 47 179 132;
+  --c-teal-500: 0 126 90;
+  --c-teal-600: 0 107 86;
+  --c-teal-700: 0 91 79;
+  --c-teal-800: 0 77 67;
+  --c-teal-900: 0 60 52;
+
+  --c-cream: 250 251 250;
+  --c-cream-card: 255 255 255;
+  --c-ink: 16 38 34;
+  --c-ink-muted: 104 114 111;
+  --c-line: 230 236 233;
+  --c-positive: 0 126 90;
+  --c-negative: 186 42 42;
+
+  /* Marketing surface - light. */
+  --paper: 244 247 245;
+  --paper-sub: 236 242 238;
+  --surface: 255 255 255;
+  --surface-2: 247 251 249;
+  --fg: 10 30 26;
+  --fg-muted: 88 102 97;
+  --heading: 0 51 43;
+  --edge: 223 232 227;
+  --edge-2: 203 218 211;
+  --accent: 0 118 84;
+  --accent-strong: 0 91 79;
+  --accent-sub: 232 248 241;
+
+  /* Canvas: the deep-green bands. Constant across colour schemes, because
+     these surfaces are already dark and should read the same either way. */
+  --canvas: 0 37 30;
+  --canvas-2: 0 60 47;
+  --canvas-3: 0 78 62;
+  --canvas-fg: 234 249 242;
+  --canvas-fg-muted: 154 190 176;
+  --canvas-edge: 255 255 255;
+  --mint: 122 240 199;
+  --mint-2: 2 169 136;
+
+  /* Motion. Custom curves; the CSS defaults are too weak to read as intentional. */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+}
+
+/* Dark scheme for the marketing tree.
+ *
+ * The frame-versus-body relationship is preserved rather than inverted: the
+ * canvas bands stay the darkest surface and the body sits one step above them,
+ * so the page still reads as a light body inside a dark frame.
+ *
+ * Declared twice on purpose. The media block honours the system preference
+ * unless the document explicitly opts out, and the attribute block lets an
+ * explicit `data-theme` win in either direction. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .theme-site {
+    --paper: 7 36 31;
+    --paper-sub: 5 30 26;
+    --surface: 11 45 38;
+    --surface-2: 14 53 45;
+    --fg: 232 244 239;
+    --fg-muted: 148 174 165;
+    --heading: 226 251 240;
+    --edge: 27 62 54;
+    --edge-2: 38 84 73;
+    --accent: 92 226 176;
+    --accent-strong: 130 243 202;
+    --accent-sub: 12 48 40;
+
+    --canvas: 0 24 20;
+    --canvas-2: 0 40 33;
+    --canvas-3: 0 56 46;
+    --canvas-fg-muted: 150 184 172;
+
+    /* The shared error red is too dark to read on these surfaces. */
+    --c-negative: 255 141 130;
+  }
+}
+
+:root[data-theme="dark"] .theme-site {
+  --paper: 7 36 31;
+  --paper-sub: 5 30 26;
+  --surface: 11 45 38;
+  --surface-2: 14 53 45;
+  --fg: 232 244 239;
+  --fg-muted: 148 174 165;
+  --heading: 226 251 240;
+  --edge: 27 62 54;
+  --edge-2: 38 84 73;
+  --accent: 92 226 176;
+  --accent-strong: 130 243 202;
+  --accent-sub: 12 48 40;
+
+  --canvas: 0 24 20;
+  --canvas-2: 0 40 33;
+  --canvas-3: 0 56 46;
+  --canvas-fg-muted: 150 184 172;
+
+  --c-negative: 255 141 130;
+}
+
 @layer base {
   html {
     -webkit-text-size-adjust: 100%;
@@ -9,19 +132,20 @@
   }
 
   body {
-    background-color: #FAFBFA;
-    color: #102622;
-    font-family: var(--font-inter), Inter, system-ui, -apple-system, sans-serif;
+    background-color: rgb(var(--c-cream));
+    color: rgb(var(--c-ink));
+    font-family: var(--font-sans), ui-sans-serif, system-ui, -apple-system, sans-serif;
     font-weight: 400;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
+    font-feature-settings: "cv11", "ss01";
   }
 
   h1, h2, h3, h4, h5, h6 {
-    font-family: var(--font-lora), Lora, Georgia, serif;
-    font-weight: 500;
-    letter-spacing: 0;
+    font-family: var(--font-display), ui-sans-serif, system-ui, sans-serif;
+    font-weight: 600;
+    letter-spacing: -0.02em;
   }
 
   a {
@@ -30,40 +154,89 @@
   }
 
   *:focus-visible {
-    outline: 2px solid #007E5A;
+    outline: 2px solid rgb(var(--c-teal-500));
     outline-offset: 2px;
     border-radius: 4px;
+  }
+
+  /* Marketing tree only: focus ring follows the active surface. */
+  .theme-site *:focus-visible {
+    outline-color: rgb(var(--accent));
+  }
+
+  .theme-site ::selection {
+    background-color: rgb(var(--mint) / 0.35);
+    color: rgb(var(--fg));
+  }
+
+  /* Tabular figures for prices, counts and stats. */
+  .theme-site [data-numeric] {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum";
   }
 }
 
 @layer components {
   .container-x {
-    @apply mx-auto w-full max-w-content px-5 md:px-8;
+    @apply mx-auto w-full max-w-content px-5 sm:px-6 lg:px-8;
   }
 
+  .container-prose {
+    @apply mx-auto w-full max-w-[46rem] px-5 sm:px-6 lg:px-8;
+  }
+
+  /* Long-form legal / policy typography. Used by every prose page. */
   .prose-bantle p {
-    @apply text-[15px] leading-7 text-ink mb-4;
+    @apply mb-5 text-[15.5px] leading-[1.75] text-fg-muted;
   }
   .prose-bantle p:last-child {
     @apply mb-0;
   }
   .prose-bantle h2 {
-    @apply font-serif text-2xl md:text-3xl mt-12 mb-4 text-teal-900;
+    @apply mb-4 mt-14 font-display text-[26px] font-semibold leading-tight tracking-tight text-heading md:text-[30px];
+  }
+  .prose-bantle > section:first-child > h2:first-child,
+  .prose-bantle > h2:first-child {
+    @apply mt-0;
   }
   .prose-bantle h3 {
-    @apply font-serif text-xl md:text-2xl mt-8 mb-3 text-teal-900;
+    @apply mb-3 mt-9 font-display text-[19px] font-semibold leading-snug tracking-tight text-heading md:text-[21px];
   }
   .prose-bantle ul {
-    @apply list-disc pl-6 mb-4 space-y-1.5 text-[15px] leading-7 text-ink;
+    @apply mb-5 list-none space-y-2.5 pl-0 text-[15.5px] leading-[1.75] text-fg-muted;
+  }
+  .prose-bantle ul > li {
+    @apply relative pl-6;
+  }
+  .prose-bantle ul > li::before {
+    content: "";
+    @apply absolute left-0 top-[0.7em] h-1.5 w-1.5 rounded-full bg-accent/45;
   }
   .prose-bantle ol {
-    @apply list-decimal pl-6 mb-4 space-y-1.5 text-[15px] leading-7 text-ink;
+    @apply mb-5 list-decimal space-y-2.5 pl-5 text-[15.5px] leading-[1.75] text-fg-muted marker:text-accent/70 marker:font-medium;
   }
   .prose-bantle a {
-    @apply text-teal-600 underline underline-offset-2 hover:text-teal-900;
+    @apply font-medium text-accent decoration-accent/35 underline underline-offset-[3px] transition-colors;
   }
   .prose-bantle strong {
-    @apply font-medium text-ink;
+    @apply font-semibold text-fg;
+  }
+  .prose-bantle code {
+    @apply rounded-md bg-accent-sub px-1.5 py-0.5 font-mono text-[0.85em] text-accent-strong;
+  }
+  .prose-bantle section + section {
+    @apply mt-2;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .prose-bantle a:hover {
+      @apply text-accent-strong decoration-accent;
+    }
+  }
+
+  /* Hairline that fades at both ends. Used to separate bands without a hard rule. */
+  .rule-fade {
+    @apply h-px w-full bg-gradient-to-r from-transparent via-edge-2 to-transparent;
   }
 }
 
@@ -74,56 +247,101 @@
   .text-pretty {
     text-wrap: pretty;
   }
+
+  /* Press feedback. Every pressable surface gets it; the scale is deliberately
+     small so it reads as acknowledgement, not as a bounce. */
+  .press {
+    transition: transform 160ms var(--ease-out);
+  }
+  .press:active {
+    transform: scale(0.975);
+  }
+
+  /* Fine grain over the deep-green bands. Static raster, no filter, so it
+     costs nothing while scrolling. */
+  .grain::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.5;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='0.32'/%3E%3C/svg%3E");
+  }
 }
 
-/* Marketing motion helpers. CSS-only, no dependencies. All motion is gated
-   behind prefers-reduced-motion: no-preference so reduced-motion users get a
-   static, fully-visible layout. These utility classes only animate where they
-   are explicitly applied (marketing pages); they do not affect admin. */
+/* ---------------------------------------------------------------------------
+   Motion.
+
+   Everything below is gated behind `prefers-reduced-motion: no-preference`,
+   and the scroll-reveal states additionally require the `js` class that the
+   root layout sets. Without JavaScript, or with reduced motion, every element
+   renders in its final, fully visible state.
+   --------------------------------------------------------------------------- */
+
 @keyframes bantle-float {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-10px);
-  }
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
 }
 
-@keyframes bantle-fade-up {
-  from {
-    opacity: 0;
-    transform: translateY(14px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+@keyframes bantle-rise {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-/* 3D perspective container + a subtle resting tilt that levels on hover. */
-.bantle-scene {
-  perspective: 1400px;
-}
-.bantle-tilt {
-  transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+@keyframes bantle-glow {
+  0%, 100% { opacity: 0.55; }
+  50% { opacity: 0.9; }
 }
 
 @media (prefers-reduced-motion: no-preference) {
   .bantle-float {
-    animation: bantle-float 7s ease-in-out infinite;
-    will-change: transform;
+    animation: bantle-float 9s ease-in-out infinite;
   }
-  .bantle-fade-up {
-    animation: bantle-fade-up 0.7s ease-out both;
+
+  .bantle-rise {
+    animation: bantle-rise 0.75s var(--ease-out) both;
+    animation-delay: var(--rise-delay, 0ms);
   }
-  .bantle-fade-up-delayed {
-    animation: bantle-fade-up 0.7s ease-out 0.12s both;
+
+  .bantle-glow {
+    animation: bantle-glow 7s ease-in-out infinite;
   }
-  .bantle-tilt {
-    transform: rotateX(3deg) rotateY(-6deg);
+
+  .js [data-reveal] {
+    opacity: 0;
+    transform: translateY(18px);
+    transition:
+      opacity 0.7s var(--ease-out) var(--reveal-delay, 0ms),
+      transform 0.7s var(--ease-out) var(--reveal-delay, 0ms);
   }
-  .bantle-tilt:hover {
-    transform: rotateX(0deg) rotateY(0deg);
+
+  .js [data-reveal="fade"] {
+    transform: none;
+  }
+
+  .js [data-reveal].is-visible {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* Smooth <details> disclosure where the browser can interpolate to auto. */
+  @supports (interpolate-size: allow-keywords) {
+    .theme-site {
+      interpolate-size: allow-keywords;
+    }
+    .disclosure::details-content {
+      block-size: 0;
+      overflow: clip;
+      opacity: 0;
+      transition:
+        content-visibility 260ms allow-discrete,
+        block-size 260ms var(--ease-out),
+        opacity 200ms var(--ease-out);
+    }
+    .disclosure[open]::details-content {
+      block-size: auto;
+      opacity: 1;
+    }
   }
 }

@@ -1,11 +1,34 @@
+import { isValidElement, type ReactNode } from "react";
 import Link from "next/link";
 import { PageHeader } from "@/components/PageHeader";
+import { OG_BASE, TWITTER_BASE } from "@/lib/seo";
+import { JsonLd } from "@/components/site/JsonLd";
+import {
+  breadcrumbNode,
+  faqPageNode,
+  jsonLd,
+} from "@/lib/structured-data";
+import { ArrowLink } from "@/components/site/ArrowLink";
 import { CONTACT_EMAIL } from "@/lib/constants";
 
 export const metadata = {
   title: "Frequently asked questions",
   description:
     "Common questions about Bantle: monthly sharing, one-time access, safety, account management, and why payment happens outside Bantle.",
+  alternates: {
+    canonical: "/faq",
+  },
+  openGraph: {
+    ...OG_BASE,
+    url: "/faq",
+    title: "Frequently asked questions",
+    description: "Common questions about Bantle: monthly sharing, one-time access, safety, account management, and why payment happens outside Bantle.",
+  },
+  twitter: {
+    ...TWITTER_BASE,
+    title: "Frequently asked questions",
+    description: "Common questions about Bantle: monthly sharing, one-time access, safety, account management, and why payment happens outside Bantle.",
+  },
 };
 
 interface QA {
@@ -392,61 +415,126 @@ const sections: Section[] = [
   },
 ];
 
+// FAQ answers are authored as JSX so they can carry links and emphasis. The
+// schema needs the same words as plain text, so it is derived from the rendered
+// tree rather than maintained as a second copy that could drift.
+function toPlainText(node: ReactNode): string {
+  if (node === null || node === undefined || typeof node === "boolean") return "";
+  if (typeof node === "string" || typeof node === "number") return String(node);
+  if (Array.isArray(node)) return node.map(toPlainText).join("");
+  if (isValidElement(node)) {
+    return toPlainText((node.props as { children?: ReactNode }).children);
+  }
+  return "";
+}
+
+const structuredData = jsonLd([
+  faqPageNode({
+    path: "/faq",
+    name: String(metadata.title),
+    description: String(metadata.description),
+    items: sections.flatMap((section) =>
+      section.items.map((item) => ({
+        question: item.q,
+        answer: toPlainText(item.a).replace(/\s+/g, " ").trim(),
+      }))
+    ),
+  }),
+  breadcrumbNode([{ name: "FAQ", path: "/faq" }]),
+]);
+
+function slugify(value: string) {
+  return value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+}
+
 export default function FAQPage() {
   return (
     <>
+      <JsonLd data={structuredData} />
       <PageHeader
-        eyebrow="FAQ"
+        crumb="FAQ"
         title="Common questions, answered directly."
         intro="If you don't see your question here, write to us — we read every email and update this page when patterns emerge."
       />
-      <div className="bg-gradient-to-b from-teal-50/50 via-cream to-cream">
-        <article className="container-x py-12 md:py-16 max-w-3xl">
-        <div className="space-y-14">
-          {sections.map((section) => (
-            <section key={section.heading}>
-              <h2 className="font-serif text-2xl md:text-3xl text-teal-900 mb-6 tracking-tightish">
-                {section.heading}
-              </h2>
-              <div className="space-y-6">
-                {section.items.map((item) => (
-                  <details
-                    key={item.q}
-                    className="group rounded-2xl border border-line bg-white p-5 shadow-[0_10px_30px_-18px_rgba(0,60,52,0.18)] transition-shadow duration-300 open:shadow-[0_18px_44px_-22px_rgba(0,60,52,0.26)]"
+      <div className="bg-paper">
+        <div className="container-x py-14 md:py-20">
+          <div className="mx-auto grid max-w-[64rem] gap-10 lg:grid-cols-[minmax(0,15rem)_minmax(0,1fr)] lg:gap-16">
+            {/* Jump list. Sticky on large screens; a plain index above the
+                questions everywhere else. */}
+            <nav
+              aria-label="Question categories"
+              className="lg:sticky lg:top-28 lg:self-start"
+            >
+              <p className="mb-4 font-mono text-[10px] uppercase tracking-[0.18em] text-fg-muted">
+                Categories
+              </p>
+              <ul className="flex flex-wrap gap-2 lg:flex-col lg:gap-1">
+                {sections.map((section) => (
+                  <li key={section.heading}>
+                    <a
+                      href={`#${slugify(section.heading)}`}
+                      className="inline-flex rounded-full px-3 py-1.5 text-[14px] font-medium text-fg-muted transition-colors hover:bg-accent-sub hover:text-accent lg:px-3"
+                    >
+                      {section.heading}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+
+            <div className="min-w-0">
+              <div className="space-y-16">
+                {sections.map((section) => (
+                  <section
+                    key={section.heading}
+                    id={slugify(section.heading)}
+                    className="scroll-mt-28"
                   >
-                    <summary className="cursor-pointer list-none flex items-start justify-between gap-4">
-                      <span className="font-medium text-[16px] text-ink leading-snug">
-                        {item.q}
-                      </span>
-                      <span
-                        aria-hidden="true"
-                        className="shrink-0 text-teal-600 mt-1 transition-transform group-open:rotate-45 text-xl leading-none"
-                      >
-                        +
-                      </span>
-                    </summary>
-                    <div className="mt-4 prose-bantle text-[15px] leading-7">
-                      {item.a}
+                    <h2 className="mb-2 font-display text-[26px] font-semibold tracking-tight text-heading md:text-[30px]">
+                      {section.heading}
+                    </h2>
+                    <div className="grid">
+                      {section.items.map((item) => (
+                        <details
+                          key={item.q}
+                          className="disclosure group border-b border-edge first:border-t"
+                        >
+                          <summary className="flex cursor-pointer list-none items-start justify-between gap-6 py-5">
+                            <span className="font-display text-[17px] font-semibold leading-snug tracking-tight text-heading transition-colors group-hover:text-accent">
+                              {item.q}
+                            </span>
+                            <span
+                              aria-hidden="true"
+                              className="mt-0.5 inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-accent ring-1 ring-edge-2 transition-transform duration-200 ease-out group-open:rotate-45"
+                            >
+                              <span className="relative block h-3 w-3">
+                                <span className="absolute left-1/2 top-0 h-3 w-px -translate-x-1/2 bg-current" />
+                                <span className="absolute left-0 top-1/2 h-px w-3 -translate-y-1/2 bg-current" />
+                              </span>
+                            </span>
+                          </summary>
+                          <div className="prose-bantle pb-5 pr-8">{item.a}</div>
+                        </details>
+                      ))}
                     </div>
-                  </details>
+                  </section>
                 ))}
               </div>
-            </section>
-          ))}
+
+              <div className="mt-14 rounded-panel bg-surface p-6 shadow-soft ring-1 ring-edge sm:p-7">
+                <h2 className="font-display text-[19px] font-semibold tracking-tight text-heading">
+                  Still stuck?
+                </h2>
+                <p className="mt-2 text-[15px] leading-[1.7] text-fg-muted">
+                  Support emails go straight to a person, not a triage queue.
+                </p>
+                <div className="mt-5">
+                  <ArrowLink href="/support">Head to the support page</ArrowLink>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-        <div className="mt-16 bg-teal-100 border border-line rounded-card p-6">
-          <p className="text-[15px] text-teal-900">
-            Still stuck?{" "}
-            <Link
-              href="/support"
-              className="underline underline-offset-2 hover:text-teal-700"
-            >
-              Head to the support page
-            </Link>{" "}
-            for the fastest way to reach a real person.
-          </p>
-        </div>
-        </article>
       </div>
     </>
   );

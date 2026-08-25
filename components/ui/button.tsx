@@ -3,7 +3,15 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 rounded-button font-medium transition-colors disabled:pointer-events-none disabled:opacity-60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-600",
+  [
+    "inline-flex select-none items-center justify-center gap-2 whitespace-nowrap rounded-button font-medium",
+    "transition-[background-color,border-color,color,box-shadow,transform] duration-200 ease-out",
+    "disabled:pointer-events-none disabled:opacity-60",
+    "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-600",
+    // Press feedback: the interface acknowledges the touch before anything else
+    // happens. Excluded for disabled and non-interactive variants.
+    "active:scale-[0.975]",
+  ].join(" "),
   {
     variants: {
       variant: {
@@ -12,7 +20,7 @@ const buttonVariants = cva(
           "bg-cream-card text-ink border border-line hover:border-teal-900",
         ghost: "text-teal-900 hover:bg-cream-card",
         muted:
-          "bg-[#E5E0D5]/60 text-ink/60 border border-line cursor-not-allowed",
+          "bg-[#E5E0D5]/60 text-ink/60 border border-line cursor-not-allowed active:scale-100",
       },
       size: {
         sm: "h-9 px-4 text-sm",

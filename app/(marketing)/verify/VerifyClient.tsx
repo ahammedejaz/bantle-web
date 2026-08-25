@@ -107,7 +107,7 @@ function CheckingState() {
         title="Checking your verification link."
         intro="This only takes a moment."
       />
-      <article className="container-x py-12 md:py-16 max-w-2xl" />
+      <div className="bg-paper"><div className="container-x py-14 md:py-20" /></div>
     </>
   );
 }
@@ -120,32 +120,32 @@ function VerifiedState() {
         title="Welcome to Bantle. Your email is confirmed."
         intro="You're all set. Open the Bantle app on your phone to finish setting up your account."
       />
-      <article className="container-x py-12 md:py-16 max-w-2xl">
-        <section className="bg-cream-card border border-line rounded-card p-6 md:p-8">
-          <p className="text-xs uppercase tracking-[0.14em] text-teal-600 mb-3">
+      <div className="bg-paper"><article className="container-x max-w-2xl py-14 md:py-20">
+        <section className="rounded-panel bg-surface p-6 shadow-soft ring-1 ring-edge md:p-8">
+          <p className="mb-3 font-mono text-[10px] uppercase tracking-[0.18em] text-fg-muted">
             Next step
           </p>
-          <h2 className="font-serif italic text-2xl md:text-3xl text-teal-900 mb-3">
+          <h2 className="mb-3 font-display text-[24px] font-semibold tracking-tight text-heading md:text-[28px]">
             Open the Bantle app
           </h2>
-          <p className="text-[15px] leading-7 text-ink-muted mb-6">
+          <p className="mb-6 text-[15px] leading-[1.7] text-fg-muted">
             Tap below to open Bantle on this device. If you opened this link on
             a different device, switch to your phone and open the app there —
             your verification carries across.
           </p>
           <a
             href="bantle://"
-            className="inline-block bg-teal-900 text-cream font-medium text-base px-6 py-3 rounded-card hover:bg-teal-700 transition-colors"
+            className="press inline-flex h-12 items-center rounded-full bg-canvas px-6 font-display text-[15px] font-semibold text-canvas-fg transition-colors duration-200 ease-out hover:bg-canvas-2"
           >
             Open Bantle
           </a>
         </section>
 
         <section className="mt-12">
-          <h2 className="font-serif italic text-2xl md:text-3xl text-teal-900 mb-3">
+          <h2 className="mb-3 font-display text-[24px] font-semibold tracking-tight text-heading md:text-[28px]">
             Don&apos;t have the app yet?
           </h2>
-          <p className="text-[15px] leading-7 text-ink-muted mb-6">
+          <p className="mb-6 text-[15px] leading-[1.7] text-fg-muted">
             Bantle is available on Google Play and the App Store. If you
             signed up but haven&apos;t installed the app yet, download it to
             continue.
@@ -154,23 +154,23 @@ function VerifiedState() {
         </section>
 
         <section className="mt-12">
-          <h2 className="font-serif italic text-2xl md:text-3xl text-teal-900 mb-3">
+          <h2 className="mb-3 font-display text-[24px] font-semibold tracking-tight text-heading md:text-[28px]">
             Something not working?
           </h2>
-          <p className="text-[15px] leading-7 text-ink-muted">
+          <p className="text-[15px] leading-[1.7] text-fg-muted">
             If the &ldquo;Open Bantle&rdquo; button doesn&apos;t do anything,
             the app may not be installed on this device. Try opening this link
             on your phone instead, or write to{" "}
             <a
               href={`mailto:${CONTACT_EMAIL}`}
-              className="text-teal-600 underline underline-offset-2 hover:text-teal-900"
+              className="font-medium text-accent underline underline-offset-[3px] transition-colors hover:text-accent-strong"
             >
               {CONTACT_EMAIL}
             </a>{" "}
             and we&apos;ll help you finish setting up.
           </p>
         </section>
-      </article>
+      </article></div>
     </>
   );
 }
@@ -183,20 +183,20 @@ function ErrorState() {
         title="We could not verify this link."
         intro={INVALID_LINK_COPY}
       />
-      <article className="container-x py-12 md:py-16 max-w-2xl">
-        <section className="bg-cream-card border border-line rounded-card p-6 md:p-8">
-          <p className="text-xs uppercase tracking-[0.14em] text-teal-600 mb-3">
+      <div className="bg-paper"><article className="container-x max-w-2xl py-14 md:py-20">
+        <section className="rounded-panel bg-surface p-6 shadow-soft ring-1 ring-edge md:p-8">
+          <p className="mb-3 font-mono text-[10px] uppercase tracking-[0.18em] text-fg-muted">
             Next step
           </p>
-          <h2 className="font-serif italic text-2xl md:text-3xl text-teal-900 mb-3">
+          <h2 className="mb-3 font-display text-[24px] font-semibold tracking-tight text-heading md:text-[28px]">
             Request a new link in Bantle
           </h2>
-          <p className="text-[15px] leading-7 text-ink-muted mb-6">
+          <p className="mb-6 text-[15px] leading-[1.7] text-fg-muted">
             Open the Bantle app and request a fresh verification email. If you
             still need help, write to{" "}
             <a
               href={`mailto:${CONTACT_EMAIL}`}
-              className="text-teal-600 underline underline-offset-2 hover:text-teal-900"
+              className="font-medium text-accent underline underline-offset-[3px] transition-colors hover:text-accent-strong"
             >
               {CONTACT_EMAIL}
             </a>
@@ -204,12 +204,12 @@ function ErrorState() {
           </p>
           <a
             href="bantle://"
-            className="inline-block bg-teal-900 text-cream font-medium text-base px-6 py-3 rounded-card hover:bg-teal-700 transition-colors"
+            className="press inline-flex h-12 items-center rounded-full bg-canvas px-6 font-display text-[15px] font-semibold text-canvas-fg transition-colors duration-200 ease-out hover:bg-canvas-2"
           >
             Open Bantle
           </a>
         </section>
-      </article>
+      </article></div>
     </>
   );
 }
@@ -222,44 +222,44 @@ function NeutralState() {
         title="Open Bantle to finish verification."
         intro="If you arrived here from a Bantle verification email, open the app to continue. If the link is invalid or expired, request a new verification email in the app."
       />
-      <article className="container-x py-12 md:py-16 max-w-2xl">
-        <section className="bg-cream-card border border-line rounded-card p-6 md:p-8">
-          <p className="text-xs uppercase tracking-[0.14em] text-teal-600 mb-3">
+      <div className="bg-paper"><article className="container-x max-w-2xl py-14 md:py-20">
+        <section className="rounded-panel bg-surface p-6 shadow-soft ring-1 ring-edge md:p-8">
+          <p className="mb-3 font-mono text-[10px] uppercase tracking-[0.18em] text-fg-muted">
             Next step
           </p>
-          <h2 className="font-serif italic text-2xl md:text-3xl text-teal-900 mb-3">
+          <h2 className="mb-3 font-display text-[24px] font-semibold tracking-tight text-heading md:text-[28px]">
             Open the Bantle app
           </h2>
-          <p className="text-[15px] leading-7 text-ink-muted mb-6">
+          <p className="mb-6 text-[15px] leading-[1.7] text-fg-muted">
             Continue on your phone to complete or refresh email verification.
           </p>
           <a
             href="bantle://"
-            className="inline-block bg-teal-900 text-cream font-medium text-base px-6 py-3 rounded-card hover:bg-teal-700 transition-colors"
+            className="press inline-flex h-12 items-center rounded-full bg-canvas px-6 font-display text-[15px] font-semibold text-canvas-fg transition-colors duration-200 ease-out hover:bg-canvas-2"
           >
             Open Bantle
           </a>
         </section>
 
         <section className="mt-12">
-          <h2 className="font-serif italic text-2xl md:text-3xl text-teal-900 mb-4">
+          <h2 className="mb-4 font-display text-[24px] font-semibold tracking-tight text-heading md:text-[28px]">
             Get the app
           </h2>
           <StoreBadges />
         </section>
 
         <section className="mt-12">
-          <p className="text-[15px] leading-7 text-ink-muted">
+          <p className="text-[15px] leading-[1.7] text-fg-muted">
             Already verified? Open the Bantle app on your phone to continue.{" "}
             <a
               href="bantle://"
-              className="text-teal-600 underline underline-offset-2 hover:text-teal-900"
+              className="font-medium text-accent underline underline-offset-[3px] transition-colors hover:text-accent-strong"
             >
               Open Bantle
             </a>
           </p>
         </section>
-      </article>
+      </article></div>
     </>
   );
 }

@@ -143,27 +143,46 @@ Main directories:
 
 ## 5. Design system and code style
 
-Design rules currently encoded by Tailwind and existing components:
+Two design systems share the Tailwind config. They never share tokens.
 
-- Page background: cream (`#FAF5EC`).
-- Primary brand color: deep teal (`#04342C`).
-- Secondary text: muted ink (`#6B6B6B`).
-- Borders: `line` (`#E5E0D5`).
-- Card surface: `cream-card` (`#FFFDF7`).
-- Typography:
-  - Inter for body via `next/font/google`.
-  - Lora for headings, usually italic for hero/page titles.
-  - Only weights 400 and 500 are loaded.
-- Visual style:
-  - Flat, border-based, very little motion.
-  - No gradients/shadows as a general marketing rule, though admin modals/toasts currently use `shadow-xl`/`shadow-lg`.
-  - Sentence case in UI.
-  - Lucide icons only.
+**Marketing site** (`app/(marketing)/*`, `components/*`), scoped to the
+`.theme-site` wrapper on the marketing layout:
+
+- Surface tokens are CSS variables and flip with `prefers-color-scheme`:
+  `paper`, `paper-sub`, `surface`, `surface-2`, `fg`, `fg-muted`, `heading`,
+  `edge`, `edge-2`, `accent`, `accent-strong`, `accent-sub`.
+- Deep-green band tokens, identical in both colour schemes: `canvas`,
+  `canvas-2`, `canvas-3`, `canvas-fg`, `canvas-fg-muted`, `canvas-edge`,
+  plus `mint` / `mint-2` for the bright accent.
+- Structure: every page is a dark band (header + hero or `PageHeader`), a light
+  body, and a dark band (CTA + footer).
+- Typography: Bricolage Grotesque (`font-display`), Geist (`font-sans`),
+  Geist Mono (`font-mono`). Weights 400-700.
+- Radius scale: `rounded-full`, `rounded-panel` (20px), `rounded-device` (44px).
+- Elevation: the `soft` / `lift` / `float` / `device` shadow tokens.
+- Motion: `--ease-out` / `--ease-in-out`, sub-300ms, `.press` on pressables,
+  `data-reveal` for scroll reveal. All gated behind
+  `prefers-reduced-motion: no-preference` and the `js` class.
+- Sentence case, Lucide icons only.
+
+**Admin panel** (`app/admin/*`, `components/admin/*`) is unchanged:
+
+- Flat, border-based, very little motion.
+- Original brand ramp: `teal-*`, `cream`, `cream-card`, `ink`, `ink-muted`,
+  `line`. Values are unchanged; they are now expressed as
+  `rgb(var(--c-…) / <alpha-value>)` so `/opacity` modifiers keep working.
+- Inter was replaced by Geist for body text; headings still use `font-serif`
+  (Lora, loaded with `preload: false`).
+- Sentence case in UI, Lucide icons only.
 
 Utility classes in `app/globals.css`:
 
-- `.container-x` - centered max-width 1200px with responsive horizontal padding.
+- `.container-x` - centered max-width 1240px with responsive horizontal padding.
+- `.container-prose` - narrower measure for long-form reading.
 - `.prose-bantle` - long-form page typography.
+- `.press` - the shared press-feedback transform.
+- `.grain` - fine static grain over the deep-green bands.
+- `.disclosure` - smooth `<details>` open/close where the browser supports it.
 - `.text-balance`, `.text-pretty` - CSS text-wrap helpers.
 
 `lib/utils.ts` exports `cn(...inputs)` using `clsx` and `tailwind-merge`.
@@ -213,7 +232,9 @@ If terms change, update this file, `/terms`, and the equivalent mobile repo cons
 
 Root layout: `app/layout.tsx`
 
-- Loads Inter and Lora.
+- Loads Bricolage Grotesque, Geist and Geist Mono; also Lora with
+  `preload: false` for the admin panel's `font-serif`.
+- Injects the inline `js` flag script that gates scroll-reveal.
 - Imports `app/globals.css`.
 - Defines site-wide metadata and SEO defaults.
 - Renders only `<html>` and `<body>`.
@@ -485,15 +506,20 @@ All public pages live in `app/(marketing)/`.
 - Uses lucide icons in bottom nav.
 - This is placeholder artwork until real app screenshots are available.
 
-`components/ComingSoonBadges.tsx`
+`components/StoreBadges.tsx`
 
-- Disabled Play Store and App Store badge-like buttons.
-- Variants: `default` and `compact`.
-- Uses inline SVG glyphs for Play and Apple.
+- Live Play Store and App Store links with the real store marks.
+- Props: `tone` (`dark` on light surfaces, `light` on the deep-green bands),
+  `size`, `align`.
 
-`components/FeatureCard.tsx`
+`components/site/*`
 
-- Small icon card used on homepage.
+- `Section`, `SectionHeading`, `Kicker` - band + heading primitives.
+- `ArrowLink` - the shared "read more" affordance.
+- `ProseShell` - reading container for every long-form page.
+- `JsonLd` - renders a graph built by `lib/structured-data.ts`.
+- `NavLink` - desktop nav link with current-page state.
+- `ScrollReveal` - one IntersectionObserver for all `data-reveal` elements.
 
 `components/PageHeader.tsx`
 
@@ -1037,7 +1063,7 @@ These are not necessarily urgent bugs, but future agents should know them.
 1. `README.md` and `BANTLE_WEB_PROJECT_DUMP.md` are outdated about "no backend, no auth." The admin panel now has route handlers and auth.
 2. `BANTLE_WEB_PROJECT_DUMP.md` still has marketplace-era descriptions. Current product positioning is household coordination.
 3. `app/(marketing)/support/page.tsx` still references OTP/SMS delivery, contradicting email-only/no-phone positioning.
-4. `app/(marketing)/opengraph-image.tsx` says "trusted neighbours" and "Play Store & App Store." This may be stale relative to household-only copy and Android-first messaging.
+4. Resolved: the social card now lives at `app/og.png/route.tsx` and carries the current positioning.
 5. Some report/perma-ban comments and modal copy still say "soft-delete" or "7-day cron" for permanent bans. Current code sets `profiles.permanently_banned = true` and should not self-restore through `deleted_at`.
 6. Permanent-ban audit action type is currently `user_soft_deleted` in report and user ban routes. This is semantically stale; a future cleanup could introduce/use `user_banned` with payload `{ type: "permanent" }` or add `user_permanently_banned`.
 7. `components/ui/button.tsx` exposes `asChild?: boolean` but ignores it. Do not rely on shadcn Slot behavior unless you implement it.
@@ -1262,8 +1288,13 @@ Marketing components:
 - `components/Footer.tsx`
 - `components/MobileNav.tsx`
 - `components/HeroSection.tsx`
-- `components/ComingSoonBadges.tsx`
-- `components/FeatureCard.tsx`
+- `components/StoreBadges.tsx`
+- `components/site/Section.tsx`
+- `components/site/ArrowLink.tsx`
+- `components/site/ProseShell.tsx`
+- `components/site/JsonLd.tsx`
+- `components/site/NavLink.tsx`
+- `components/site/ScrollReveal.tsx`
 - `components/PageHeader.tsx`
 - `components/ui/button.tsx`
 - `components/ui/sheet.tsx`

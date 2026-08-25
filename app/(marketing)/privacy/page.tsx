@@ -1,5 +1,13 @@
 import Link from "next/link";
 import { PageHeader } from "@/components/PageHeader";
+import { OG_BASE, TWITTER_BASE } from "@/lib/seo";
+import { JsonLd } from "@/components/site/JsonLd";
+import {
+  breadcrumbNode,
+  jsonLd,
+  webPageNode,
+} from "@/lib/structured-data";
+import { ProseShell } from "@/components/site/ProseShell";
 import {
   COMPANY_NAME,
   CONTACT_EMAIL,
@@ -14,19 +22,42 @@ export const metadata = {
   title: "Privacy policy",
   description:
     "How Bantle collects, uses, shares and protects your information. Written in plain language with India DPDP Act 2023 in mind.",
+  alternates: {
+    canonical: "/privacy",
+  },
+  openGraph: {
+    ...OG_BASE,
+    url: "/privacy",
+    title: "Privacy policy",
+    description: "How Bantle collects, uses, shares and protects your information. Written in plain language with India DPDP Act 2023 in mind.",
+  },
+  twitter: {
+    ...TWITTER_BASE,
+    title: "Privacy policy",
+    description: "How Bantle collects, uses, shares and protects your information. Written in plain language with India DPDP Act 2023 in mind.",
+  },
 };
+
+const structuredData = jsonLd([
+  webPageNode({
+    path: "/privacy",
+    name: String(metadata.title),
+    description: String(metadata.description),
+    type: "WebPage",
+  }),
+  breadcrumbNode([{ name: "Privacy policy", path: "/privacy" }]),
+]);
 
 export default function PrivacyPage() {
   return (
     <>
+      <JsonLd data={structuredData} />
       <PageHeader
-        eyebrow="Privacy policy"
+        crumb="Privacy policy"
         title="What Bantle does with your data, in plain language."
         intro={`Last updated ${POLICY_EFFECTIVE_DATE}. Effective ${POLICY_EFFECTIVE_DATE}.`}
       />
-      <div className="bg-gradient-to-b from-teal-50/50 via-cream to-cream">
-        <div className="container-x py-12 md:py-16">
-          <article className="prose-bantle mx-auto max-w-3xl rounded-3xl border border-line bg-white p-6 shadow-[0_22px_60px_-28px_rgba(0,60,52,0.28)] md:p-10">
+      <ProseShell>
         <section>
           <h2>In short</h2>
           <p>
@@ -344,9 +375,7 @@ export default function PrivacyPage() {
             For postal contact: {POSTAL_ADDRESS}.
           </p>
         </section>
-          </article>
-        </div>
-      </div>
+      </ProseShell>
     </>
   );
 }

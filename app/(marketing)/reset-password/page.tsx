@@ -47,7 +47,7 @@ function ResetPasswordFallback() {
         title="Just a moment."
         intro="Validating your reset link."
       />
-      <article className="container-x py-12 md:py-16 max-w-2xl" />
+      <div className="bg-paper"><div className="container-x py-14 md:py-20" /></div>
     </>
   );
 }

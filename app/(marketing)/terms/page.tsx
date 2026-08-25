@@ -1,5 +1,13 @@
 import Link from "next/link";
 import { PageHeader } from "@/components/PageHeader";
+import { OG_BASE, TWITTER_BASE } from "@/lib/seo";
+import { JsonLd } from "@/components/site/JsonLd";
+import {
+  breadcrumbNode,
+  jsonLd,
+  webPageNode,
+} from "@/lib/structured-data";
+import { ProseShell } from "@/components/site/ProseShell";
 import {
   COMPANY_NAME,
   JURISDICTION_CITY,
@@ -11,19 +19,42 @@ export const metadata = {
   title: "Terms of service",
   description:
     "The terms that govern your use of Bantle. We coordinate monthly sharing and one-time access; arrangements and payments happen directly between users.",
+  alternates: {
+    canonical: "/terms",
+  },
+  openGraph: {
+    ...OG_BASE,
+    url: "/terms",
+    title: "Terms of service",
+    description: "The terms that govern your use of Bantle. We coordinate monthly sharing and one-time access; arrangements and payments happen directly between users.",
+  },
+  twitter: {
+    ...TWITTER_BASE,
+    title: "Terms of service",
+    description: "The terms that govern your use of Bantle. We coordinate monthly sharing and one-time access; arrangements and payments happen directly between users.",
+  },
 };
+
+const structuredData = jsonLd([
+  webPageNode({
+    path: "/terms",
+    name: String(metadata.title),
+    description: String(metadata.description),
+    type: "WebPage",
+  }),
+  breadcrumbNode([{ name: "Terms of service", path: "/terms" }]),
+]);
 
 export default function TermsPage() {
   return (
     <>
+      <JsonLd data={structuredData} />
       <PageHeader
-        eyebrow={`Terms of service · v${CURRENT_VERSION}`}
+        crumb="Terms of service"
         title="The rules of using Bantle."
         intro={`Version ${CURRENT_VERSION}. Effective ${EFFECTIVE_DATE_DISPLAY}. By using Bantle you agree to these terms.`}
       />
-      <div className="bg-gradient-to-b from-teal-50/50 via-cream to-cream">
-        <div className="container-x py-12 md:py-16">
-          <article className="prose-bantle mx-auto max-w-3xl rounded-3xl border border-line bg-white p-6 shadow-[0_22px_60px_-28px_rgba(0,60,52,0.28)] md:p-10">
+      <ProseShell>
         <section>
           <h2>1. Acceptance and eligibility</h2>
           <p>
@@ -432,9 +463,7 @@ export default function TermsPage() {
             Bantle Service is operated by {COMPANY_NAME}.
           </p>
         </section>
-          </article>
-        </div>
-      </div>
+      </ProseShell>
     </>
   );
 }

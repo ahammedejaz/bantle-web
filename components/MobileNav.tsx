@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Menu } from "lucide-react";
+import { usePathname } from "next/navigation";
+import { ArrowUpRight, Menu } from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -12,9 +13,11 @@ import {
 import { NAV_LINKS, LEGAL_LINKS } from "@/lib/constants";
 import { StoreBadges } from "@/components/StoreBadges";
 import { BrandMark } from "@/components/BrandMark";
+import { cn } from "@/lib/utils";
 
 export function MobileNav() {
   const [open, setOpen] = useState(false);
+  const pathname = usePathname();
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
@@ -22,46 +25,60 @@ export function MobileNav() {
         <button
           type="button"
           aria-label="Open menu"
-          className="md:hidden inline-flex items-center justify-center h-10 w-10 rounded-button text-ink hover:bg-cream-card transition-colors"
+          className="press inline-flex h-10 w-10 items-center justify-center rounded-full text-canvas-fg transition-colors hover:bg-canvas-edge/10 md:hidden"
         >
-          <Menu className="h-6 w-6" />
+          <Menu className="h-5 w-5" strokeWidth={1.75} />
         </button>
       </SheetTrigger>
-      <SheetContent side="right" className="flex flex-col">
-        <SheetTitle className="mb-6">
-          <BrandMark />
+      <SheetContent side="right" className="flex flex-col overflow-y-auto">
+        <SheetTitle className="mb-8">
+          <BrandMark tone="light" />
         </SheetTitle>
-        <nav aria-label="Mobile" className="flex flex-col gap-1">
-          {NAV_LINKS.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              onClick={() => setOpen(false)}
-              className="text-[17px] py-3 border-b border-line text-ink hover:text-teal-900 transition-colors"
-            >
-              {link.label}
-            </Link>
-          ))}
+
+        <nav aria-label="Mobile" className="flex flex-col">
+          {NAV_LINKS.map((link) => {
+            const isActive = pathname === link.href;
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                onClick={() => setOpen(false)}
+                aria-current={isActive ? "page" : undefined}
+                className={cn(
+                  "group flex items-center justify-between border-b border-canvas-edge/10 py-3.5 font-display text-[19px] font-medium tracking-tight transition-colors",
+                  isActive ? "text-mint" : "text-canvas-fg"
+                )}
+              >
+                {link.label}
+                <ArrowUpRight
+                  className="h-4 w-4 shrink-0 text-canvas-fg-muted/60 transition-transform duration-200 ease-out group-hover:translate-x-0.5"
+                  strokeWidth={1.75}
+                />
+              </Link>
+            );
+          })}
         </nav>
+
         <div className="mt-8">
-          <p className="text-xs uppercase tracking-[0.14em] text-ink-muted mb-3">
+          <p className="mb-3 font-mono text-[10px] uppercase tracking-[0.18em] text-canvas-fg-muted">
             Legal
           </p>
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-2.5">
             {LEGAL_LINKS.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
                 onClick={() => setOpen(false)}
-                className="text-sm text-ink-muted hover:text-teal-900 transition-colors"
+                className="text-[14px] text-canvas-fg-muted transition-colors hover:text-canvas-fg"
               >
                 {link.label}
               </Link>
             ))}
           </div>
         </div>
-        <div className="mt-auto pt-8">
-          <StoreBadges variant="compact" />
+
+        <div className="mt-auto pt-10">
+          <StoreBadges tone="light" size="sm" className="sm:flex-col" />
         </div>
       </SheetContent>
     </Sheet>

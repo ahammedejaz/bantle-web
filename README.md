@@ -88,8 +88,15 @@ Values come from `package.json`.
 | `lucide-react` | `^1.14.0` | Icons. |
 | `class-variance-authority`, `clsx`, `tailwind-merge` | — | `cn()` helper + variant styling. |
 
-Fonts: Lora (serif headings) + Inter (sans body) via `next/font/google`.
-OG/Twitter images are generated at the edge via `next/og`.
+Fonts via `next/font/google`: Bricolage Grotesque (display), Geist (body/UI),
+Geist Mono (numerals and micro-labels). Lora is still loaded, `preload: false`,
+solely for the admin panel's `font-serif` headings.
+
+The shared social card is generated with `next/og` at the stable path
+`/og.png`, and referenced from `lib/seo.ts` (`OG_BASE`, `TWITTER_BASE`). It is
+deliberately not Next's hashed `opengraph-image` file convention: a page that
+declares its own `openGraph` block opts out of that convention and would ship
+with no image at all.
 
 ---
 
@@ -138,7 +145,7 @@ app/
 │   ├── account-deletion, child-safety-standards
 │   ├── verify/ (+ VerifyClient.tsx)        noindex; email verification landing
 │   ├── reset-password/ (+ ResetPasswordClient.tsx)  noindex, no-store; password reset
-│   ├── opengraph-image.tsx / twitter-image.tsx
+│   (social card lives at app/og.png/route.tsx)
 └── admin/                        ADMIN panel (gated)
     ├── layout.tsx                Server layout: getUser + is_admin guard; mounts AdminIdleTimeout
     ├── login/                    Admin login page
@@ -152,7 +159,10 @@ app/
     └── api/                      Route handlers — every mutation calls requireAdmin
 components/
 ├── Header.tsx, Footer.tsx, MobileNav.tsx, PageHeader.tsx, BrandMark.tsx
-├── HeroSection.tsx, FeatureCard.tsx, ComingSoonBadges.tsx
+├── HeroSection.tsx, StoreBadges.tsx
+├── site/                         Marketing primitives: Section, SectionHeading,
+│                                 Kicker, ArrowLink, ProseShell, JsonLd,
+│                                 NavLink, ScrollReveal
 ├── admin/                        Admin UI (rows, modals, tabs, AdminIdleTimeout, AdminNav, …)
 └── ui/                           button, sheet primitives
 lib/
@@ -302,15 +312,51 @@ the service-role client inside `requireAdmin`-gated routes.
 
 ## 8. Design rules in force
 
-These match the Bantle mobile app's design system:
+Two systems live side by side. They share a Tailwind config but never share
+tokens, so a change to one cannot leak into the other.
 
-- **Flat design.** No heavy shadows/gradients/blur for content surfaces;
-  depth comes from cream/teal contrast and 1px borders.
-- **Sentence case** for UI text (except small tracked-out eyebrow labels).
-- **Font weights** limited to `font-normal` (400) and `font-medium` (500).
-- **Brand colours** via the `tailwind.config.ts` tokens (`teal-900`,
-  `cream`, `ink`, `line`). Avoid raw hex except literal store-badge colors.
-- **Icons:** Lucide only; no emoji as functional icons.
+### Marketing site (`app/(marketing)/*`, `components/*`)
+
+- **Dark frame, light body.** Every page opens on the deep-green canvas
+  (header + hero or `PageHeader`) and closes on it (CTA + footer). The content
+  between them is light. That frame is the site's strongest brand signal.
+- **Surface tokens, not brand-ramp tokens.** Use `paper`, `paper-sub`,
+  `surface`, `surface-2`, `fg`, `fg-muted`, `heading`, `edge`, `edge-2`,
+  `accent`, `accent-sub`, `canvas*`, `mint`. These are CSS variables scoped to
+  the `.theme-site` wrapper on the marketing layout, which is what lets the
+  marketing tree flip to a dark palette without touching admin.
+- **One accent.** Mint/emerald, everywhere. No second accent hue.
+- **One radius scale.** `rounded-full` for pills and controls, `rounded-panel`
+  (20px) for cards and bands, `rounded-device` (44px) for the phone rendering.
+- **Type.** `font-display` (Bricolage Grotesque) for headings and numerals in
+  UI chrome, `font-sans` (Geist) for body, `font-mono` (Geist Mono) for
+  micro-labels and tabular figures. Weights 400/500/600/700 are all in use.
+- **Elevation is tinted.** Use the `soft` / `lift` / `float` / `device` shadow
+  tokens rather than raw `rgba(0,0,0,…)`.
+- **Motion.** Custom curves only (`--ease-out`, `--ease-in-out`). Enter and
+  hover transitions stay under 300ms. Every pressable surface gets `.press`.
+  Scroll reveal is opt-in per element via `data-reveal` plus an optional
+  `--reveal-delay`; the observer lives in `components/site/ScrollReveal.tsx`.
+  All of it is gated behind `prefers-reduced-motion: no-preference` and the
+  `js` class, so reduced-motion users and crawlers get the static layout.
+- **Section rhythm.** No two consecutive sections may share a layout family,
+  and the small tracked-out kicker label is rationed to roughly one per three
+  sections.
+- **Sentence case** for UI text (except the kicker labels).
+- **Icons:** Lucide only, `strokeWidth` 1.75-1.9; no emoji as functional icons.
+
+### Admin panel (`app/admin/*`, `components/admin/*`)
+
+Unchanged, and matching the Bantle mobile app's flatter in-product system:
+
+- **Flat design.** Depth comes from cream/teal contrast and 1px borders.
+- **Brand colours** via the original tokens (`teal-*`, `cream`, `ink`, `line`).
+  These keep their original values; they are now expressed as CSS variables
+  only so that `/opacity` modifiers keep working.
+- **Font weights** limited to `font-normal` (400) and `font-medium` (500), and
+  `font-serif` (Lora) for headings.
+- **Sentence case** for UI text.
+- **Icons:** Lucide only.
 
 ---
 

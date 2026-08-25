@@ -1,27 +1,58 @@
 import type { Metadata } from "next";
 import { PageHeader } from "@/components/PageHeader";
+import { OG_BASE, TWITTER_BASE } from "@/lib/seo";
+import { JsonLd } from "@/components/site/JsonLd";
+import {
+  breadcrumbNode,
+  jsonLd,
+  webPageNode,
+} from "@/lib/structured-data";
+import { ProseShell } from "@/components/site/ProseShell";
 import { CONTACT_EMAIL } from "@/lib/constants";
 
 export const metadata: Metadata = {
   title: "Bantle Child Safety Standards",
   description:
     "Bantle’s standards for preventing, reporting, and responding to child sexual abuse and exploitation.",
+  alternates: {
+    canonical: "/child-safety-standards",
+  },
+  openGraph: {
+    ...OG_BASE,
+    url: "/child-safety-standards",
+    title: "Bantle Child Safety Standards",
+    description: "Bantle’s standards for preventing, reporting, and responding to child sexual abuse and exploitation.",
+  },
+  twitter: {
+    ...TWITTER_BASE,
+    title: "Bantle Child Safety Standards",
+    description: "Bantle’s standards for preventing, reporting, and responding to child sexual abuse and exploitation.",
+  },
 };
+
+const structuredData = jsonLd([
+  webPageNode({
+    path: "/child-safety-standards",
+    name: String(metadata.title),
+    description: String(metadata.description),
+    type: "WebPage",
+  }),
+  breadcrumbNode([{ name: "Child safety standards", path: "/child-safety-standards" }]),
+]);
 
 const childSafetySubject = "Child Safety Concern - Bantle";
 
 export default function ChildSafetyStandardsPage() {
   return (
     <>
+      <JsonLd data={structuredData} />
       <PageHeader
-        eyebrow="Child safety standards"
+        crumb="Child safety standards"
         title="Bantle Child Safety Standards"
         intro="Bantle is intended for adults aged 18 and over. We are committed to maintaining a safe platform and we have zero tolerance for child sexual abuse and exploitation."
       />
 
-      <div className="bg-gradient-to-b from-teal-50/50 via-cream to-cream">
-        <div className="container-x py-12 md:py-16">
-          <article className="prose-bantle mx-auto max-w-3xl rounded-3xl border border-line bg-white p-6 shadow-[0_22px_60px_-28px_rgba(0,60,52,0.28)] md:p-10">
+      <ProseShell>
         <section>
           <h2>Our commitment</h2>
           <p>
@@ -131,7 +162,7 @@ export default function ChildSafetyStandardsPage() {
           </ul>
         </section>
 
-        <section className="bg-cream-card border border-line rounded-card p-6">
+        <section className="rounded-panel bg-paper-sub p-6 ring-1 ring-edge">
           <h2 className="mt-0">Child safety point of contact</h2>
           <p>For child safety concerns, contact:</p>
           <p>
@@ -163,9 +194,7 @@ export default function ChildSafetyStandardsPage() {
           <h2>Last updated</h2>
           <p>June 2026</p>
         </section>
-          </article>
-        </div>
-      </div>
+      </ProseShell>
     </>
   );
 }

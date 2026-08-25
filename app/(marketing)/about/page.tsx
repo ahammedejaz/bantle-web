@@ -1,12 +1,44 @@
 import Link from "next/link";
 import { PageHeader } from "@/components/PageHeader";
+import { OG_BASE, TWITTER_BASE } from "@/lib/seo";
+import { ProseShell } from "@/components/site/ProseShell";
+import { JsonLd } from "@/components/site/JsonLd";
+import {
+  breadcrumbNode,
+  jsonLd,
+  webPageNode,
+} from "@/lib/structured-data";
 import { CONTACT_EMAIL } from "@/lib/constants";
 
 export const metadata = {
   title: "About",
   description:
     "Bantle is a small, India-first team building a clearer way to coordinate monthly sharing and one-time access for subscriptions.",
+  alternates: {
+    canonical: "/about",
+  },
+  openGraph: {
+    ...OG_BASE,
+    url: "/about",
+    title: "About",
+    description: "Bantle is a small, India-first team building a clearer way to coordinate monthly sharing and one-time access for subscriptions.",
+  },
+  twitter: {
+    ...TWITTER_BASE,
+    title: "About",
+    description: "Bantle is a small, India-first team building a clearer way to coordinate monthly sharing and one-time access for subscriptions.",
+  },
 };
+
+const structuredData = jsonLd([
+  webPageNode({
+    path: "/about",
+    name: String(metadata.title),
+    description: String(metadata.description),
+    type: "AboutPage",
+  }),
+  breadcrumbNode([{ name: "About", path: "/about" }]),
+]);
 
 const principles = [
   {
@@ -34,14 +66,13 @@ const principles = [
 export default function AboutPage() {
   return (
     <>
+      <JsonLd data={structuredData} />
       <PageHeader
-        eyebrow="About"
+        crumb="About"
         title="A clearer way to coordinate subscription access."
         intro="Bantle exists because subscription coordination usually happens in messy chats. We keep monthly sharing and one-time access terms visible, while payment and access confirmation stay direct between users."
       />
-      <div className="bg-gradient-to-b from-teal-50/50 via-cream to-cream">
-        <div className="container-x py-12 md:py-16">
-          <article className="prose-bantle mx-auto max-w-3xl rounded-3xl border border-line bg-white p-6 shadow-[0_22px_60px_-28px_rgba(0,60,52,0.28)] md:p-10">
+      <ProseShell>
         <section>
           <h2>Our story</h2>
           <p>
@@ -78,17 +109,17 @@ export default function AboutPage() {
 
         <section>
           <h2>What we believe</h2>
-          <div className="not-prose grid gap-6 mt-6">
-            {principles.map((p) => (
+          <div className="not-prose mt-7 grid">
+            {principles.map((principle) => (
               <div
-                key={p.title}
-                className="rounded-2xl border border-line bg-cream p-6 shadow-[0_10px_30px_-18px_rgba(0,60,52,0.2)]"
+                key={principle.title}
+                className="border-b border-edge py-6 first:border-t"
               >
-                <h3 className="font-serif text-xl text-teal-900 mb-2">
-                  {p.title}
+                <h3 className="mb-2 font-display text-[19px] font-semibold tracking-tight text-heading">
+                  {principle.title}
                 </h3>
-                <p className="text-[15px] leading-7 text-ink-muted">
-                  {p.body}
+                <p className="text-[15.5px] leading-[1.75] text-fg-muted">
+                  {principle.body}
                 </p>
               </div>
             ))}
@@ -121,9 +152,7 @@ export default function AboutPage() {
             to a human reply.
           </p>
         </section>
-          </article>
-        </div>
-      </div>
+      </ProseShell>
     </>
   );
 }

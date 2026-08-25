@@ -1,12 +1,44 @@
 import type { Metadata } from "next";
 import { PageHeader } from "@/components/PageHeader";
+import { OG_BASE, TWITTER_BASE } from "@/lib/seo";
+import { JsonLd } from "@/components/site/JsonLd";
+import {
+  breadcrumbNode,
+  jsonLd,
+  webPageNode,
+} from "@/lib/structured-data";
+import { ProseShell } from "@/components/site/ProseShell";
 import { CONTACT_EMAIL } from "@/lib/constants";
 
 export const metadata: Metadata = {
   title: "Bantle Account and Data Deletion",
   description:
     "Learn how to request deletion of your Bantle account or specific Bantle data.",
+  alternates: {
+    canonical: "/account-deletion",
+  },
+  openGraph: {
+    ...OG_BASE,
+    url: "/account-deletion",
+    title: "Bantle Account and Data Deletion",
+    description: "Learn how to request deletion of your Bantle account or specific Bantle data.",
+  },
+  twitter: {
+    ...TWITTER_BASE,
+    title: "Bantle Account and Data Deletion",
+    description: "Learn how to request deletion of your Bantle account or specific Bantle data.",
+  },
 };
+
+const structuredData = jsonLd([
+  webPageNode({
+    path: "/account-deletion",
+    name: String(metadata.title),
+    description: String(metadata.description),
+    type: "WebPage",
+  }),
+  breadcrumbNode([{ name: "Account deletion", path: "/account-deletion" }]),
+]);
 
 const accountDeletionSubject = "Bantle account deletion request";
 const dataDeletionSubject = "Bantle data deletion request";
@@ -14,15 +46,14 @@ const dataDeletionSubject = "Bantle data deletion request";
 export default function AccountDeletionPage() {
   return (
     <>
+      <JsonLd data={structuredData} />
       <PageHeader
-        eyebrow="Account and data deletion"
+        crumb="Account deletion"
         title="Bantle Account and Data Deletion"
         intro="Bantle gives users control over their account and data."
       />
 
-      <div className="bg-gradient-to-b from-teal-50/50 via-cream to-cream">
-        <div className="container-x py-12 md:py-16">
-          <article className="prose-bantle mx-auto max-w-3xl rounded-3xl border border-line bg-white p-6 shadow-[0_22px_60px_-28px_rgba(0,60,52,0.28)] md:p-10">
+      <ProseShell>
         <section>
           <p>
             You can request deletion of your Bantle account and associated
@@ -161,16 +192,14 @@ export default function AccountDeletionPage() {
           </p>
         </section>
 
-        <section className="bg-cream-card border border-line rounded-card p-6">
+        <section className="rounded-panel bg-paper-sub p-6 ring-1 ring-edge">
           <h2 className="mt-0">Contact</h2>
           <p>For account or data deletion requests, contact:</p>
           <p>
             <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>
           </p>
         </section>
-          </article>
-        </div>
-      </div>
+      </ProseShell>
     </>
   );
 }

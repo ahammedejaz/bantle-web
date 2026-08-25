@@ -1,11 +1,35 @@
 import Link from "next/link";
 import { PageHeader } from "@/components/PageHeader";
+import { OG_BASE, TWITTER_BASE } from "@/lib/seo";
+import { JsonLd } from "@/components/site/JsonLd";
+import {
+  breadcrumbNode,
+  howToNode,
+  jsonLd,
+  webPageNode,
+} from "@/lib/structured-data";
+import { ProseShell } from "@/components/site/ProseShell";
 
 export const metadata = {
   title: "How it works",
   description:
     "How Bantle helps users coordinate monthly sharing and one-time access while payment and access confirmation stay outside Bantle.",
+  alternates: {
+    canonical: "/how-it-works",
+  },
+  openGraph: {
+    ...OG_BASE,
+    url: "/how-it-works",
+    title: "How it works",
+    description: "How Bantle helps users coordinate monthly sharing and one-time access while payment and access confirmation stay outside Bantle.",
+  },
+  twitter: {
+    ...TWITTER_BASE,
+    title: "How it works",
+    description: "How Bantle helps users coordinate monthly sharing and one-time access while payment and access confirmation stay outside Bantle.",
+  },
 };
+
 
 const steps = [
   {
@@ -58,37 +82,64 @@ const steps = [
   },
 ];
 
+const structuredData = jsonLd([
+  webPageNode({
+    path: "/how-it-works",
+    name: String(metadata.title),
+    description: String(metadata.description),
+    type: "WebPage",
+  }),
+  howToNode({
+    name: "How to split or buy subscription access on Bantle",
+    description: String(metadata.description),
+    path: "/how-it-works",
+    steps: steps.map((step) => ({
+      name: step.title,
+      text: step.body.join(" "),
+    })),
+  }),
+  breadcrumbNode([{ name: "How it works", path: "/how-it-works" }]),
+]);
+
 export default function HowItWorksPage() {
   return (
     <>
+      <JsonLd data={structuredData} />
       <PageHeader
-        eyebrow="How it works"
+        crumb="How it works"
         title="From listed terms to direct coordination, in six steps."
         intro="Bantle coordinates monthly sharing and one-time access. Payment and access confirmation happen directly between users outside Bantle."
       />
-      <div className="bg-gradient-to-b from-teal-50/50 via-cream to-cream">
-        <div className="container-x py-12 md:py-16">
-          <article className="prose-bantle mx-auto max-w-3xl rounded-3xl border border-line bg-white p-6 shadow-[0_22px_60px_-28px_rgba(0,60,52,0.28)] md:p-10">
-        <ol className="not-prose space-y-12">
+      <ProseShell>
+        <ol className="not-prose relative grid">
           {steps.map((s) => (
-            <li key={s.n} className="flex flex-col md:flex-row gap-6 md:gap-10">
+            <li
+              key={s.n}
+              id={`step-${s.n}`}
+              className="relative grid scroll-mt-28 grid-cols-[auto_minmax(0,1fr)] gap-x-5 border-b border-edge py-8 first:border-t sm:gap-x-7"
+            >
+              {/* The rail runs behind the markers and stops at the last step. */}
               <span
                 aria-hidden="true"
-                className="shrink-0 inline-flex items-center justify-center h-12 w-12 rounded-full border border-teal-900 text-teal-900 font-serif text-xl"
+                className="absolute bottom-0 left-[19px] top-12 w-px bg-edge sm:left-[23px]"
+              />
+              <span
+                aria-hidden="true"
+                className="relative z-10 inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-accent-sub font-mono text-[12px] font-medium text-accent ring-1 ring-edge-2 sm:h-12 sm:w-12 sm:text-[13px]"
               >
-                {s.n}
+                {String(s.n).padStart(2, "0")}
               </span>
-              <div className="flex-1">
-                <h2 className="font-serif text-2xl md:text-3xl text-teal-900 mb-4">
+              <div className="min-w-0">
+                <h2 className="mb-3 mt-1 font-display text-[22px] font-semibold leading-tight tracking-tight text-heading md:text-[26px]">
                   {s.title}
                 </h2>
-                <div className="space-y-4">
-                  {s.body.map((p, i) => (
+                <div className="space-y-3.5">
+                  {s.body.map((paragraph, i) => (
                     <p
                       key={i}
-                      className="text-[15px] leading-7 text-ink"
+                      className="text-[15.5px] leading-[1.75] text-fg-muted"
                     >
-                      {p}
+                      {paragraph}
                     </p>
                   ))}
                 </div>
@@ -97,7 +148,7 @@ export default function HowItWorksPage() {
           ))}
         </ol>
 
-        <section className="mt-16">
+        <section className="mt-14">
           <h2>A note on subscription provider terms</h2>
           <p>
             Subscription provider rules vary and change over time. Some
@@ -117,9 +168,7 @@ export default function HowItWorksPage() {
             for the full version.
           </p>
         </section>
-          </article>
-        </div>
-      </div>
+      </ProseShell>
     </>
   );
 }

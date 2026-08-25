@@ -1,26 +1,47 @@
-import type { Metadata } from "next";
-import { Inter, Lora } from "next/font/google";
+import type { Metadata, Viewport } from "next";
+import { Bricolage_Grotesque, Geist, Geist_Mono, Lora } from "next/font/google";
 import "./globals.css";
 import { BRAND_NAME, SITE_DESCRIPTION, SITE_TITLE, SITE_URL } from "@/lib/constants";
+import { OG_BASE, TWITTER_BASE } from "@/lib/seo";
 
 // Root layout. Site-wide concerns only: html/body, fonts, globals,
 // site-wide metadata. NO Header/Footer here — those belong to the
 // marketing route group's layout (app/(marketing)/layout.tsx).
 // The admin panel (app/admin/*) supplies its own chrome.
 
-const inter = Inter({
+// Display face. Only the weight axis is loaded: the optical-size and width
+// axes are never driven by the design, and shipping them roughly triples the
+// file.
+const bricolage = Bricolage_Grotesque({
   subsets: ["latin"],
-  variable: "--font-inter",
-  weight: ["400", "500"],
+  variable: "--font-display",
   display: "swap",
 });
 
+// Body / UI face.
+const geist = Geist({
+  subsets: ["latin"],
+  variable: "--font-sans",
+  display: "swap",
+});
+
+// Numerals, prices and micro-labels. The variable file covers both weights the
+// design uses in a single request.
+const geistMono = Geist_Mono({
+  subsets: ["latin"],
+  variable: "--font-mono",
+  display: "swap",
+});
+
+// Admin-only. `preload: false` keeps it off the marketing critical path; the
+// browser fetches it only where `font-serif` actually renders text.
 const lora = Lora({
   subsets: ["latin"],
   variable: "--font-lora",
   weight: ["400", "500"],
   style: ["normal", "italic"],
   display: "swap",
+  preload: false,
 });
 
 export const metadata: Metadata = {
@@ -33,10 +54,12 @@ export const metadata: Metadata = {
   keywords: [
     "Bantle",
     "split subscriptions",
-    "subscription sharing",
+    "subscription sharing app",
+    "share OTT subscription India",
     "buy subscription access",
     "one-time subscription access",
     "monthly subscription slots",
+    "family plan sharing India",
     "verified sellers",
     "subscription deals India",
   ],
@@ -49,15 +72,13 @@ export const metadata: Metadata = {
     canonical: "/",
   },
   openGraph: {
-    type: "website",
-    locale: "en_IN",
+    ...OG_BASE,
     url: SITE_URL,
-    siteName: BRAND_NAME,
     title: SITE_TITLE,
     description: SITE_DESCRIPTION,
   },
   twitter: {
-    card: "summary_large_image",
+    ...TWITTER_BASE,
     title: SITE_TITLE,
     description: SITE_DESCRIPTION,
   },
@@ -72,17 +93,44 @@ export const metadata: Metadata = {
       "max-video-preview": -1,
     },
   },
+  manifest: "/manifest.webmanifest",
+  formatDetection: {
+    telephone: false,
+  },
 };
+
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#00251E" },
+    { media: "(prefers-color-scheme: dark)", color: "#00251E" },
+  ],
+  colorScheme: "light dark",
+};
+
+// Marks the document as JavaScript-capable before first paint. Scroll-reveal
+// styles are gated on `.js`, so a client with scripting disabled (or a crawler
+// that does not execute scripts) renders every section fully visible.
+// If hydration never happens (a script error, a blocked bundle), the flag is
+// dropped again after a few seconds and every revealed element falls back to
+// its visible state.
+const JS_FLAG =
+  "document.documentElement.classList.add('js');" +
+  "setTimeout(function(){if(!window.__bantleReveal)" +
+  "document.documentElement.classList.remove('js')},4000)";
 
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html
-      lang="en"
+      lang="en-IN"
       data-scroll-behavior="smooth"
-      className={`${inter.variable} ${lora.variable}`}
+      suppressHydrationWarning
+      className={`${bricolage.variable} ${geist.variable} ${geistMono.variable} ${lora.variable}`}
     >
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: JS_FLAG }} />
+      </head>
       <body className="bg-cream text-ink">{children}</body>
     </html>
   );

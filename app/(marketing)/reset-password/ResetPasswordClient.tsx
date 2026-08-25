@@ -208,7 +208,7 @@ export function ResetPasswordClient() {
           title="Validating your reset link."
           intro="Just a moment."
         />
-        <article className="container-x py-12 md:py-16 max-w-2xl" />
+        <div className="bg-paper"><div className="container-x py-14 md:py-20" /></div>
       </>
     );
   }
@@ -221,15 +221,15 @@ export function ResetPasswordClient() {
           title="Couldn't reset your password."
           intro="Your reset link may have expired or already been used. Request a new one from the Bantle app to continue."
         />
-        <article className="container-x py-12 md:py-16 max-w-2xl">
-          <section className="bg-cream-card border border-line rounded-card p-6 md:p-8">
-            <p className="text-xs uppercase tracking-[0.14em] text-teal-600 mb-3">
+        <div className="bg-paper"><article className="container-x max-w-2xl py-14 md:py-20">
+          <section className="rounded-panel bg-surface p-6 shadow-soft ring-1 ring-edge md:p-8">
+            <p className="mb-3 font-mono text-[10px] uppercase tracking-[0.18em] text-fg-muted">
               Next step
             </p>
-            <h2 className="font-serif italic text-2xl md:text-3xl text-teal-900 mb-3">
+            <h2 className="mb-3 font-display text-[24px] font-semibold tracking-tight text-heading md:text-[28px]">
               Request a new reset link
             </h2>
-            <p className="text-[15px] leading-7 text-ink-muted">
+            <p className="text-[15px] leading-[1.7] text-fg-muted">
               Open the Bantle app on your phone, tap{" "}
               <span className="font-medium">Forgot password?</span> on
               the sign-in screen, and enter your email to receive a
@@ -238,21 +238,21 @@ export function ResetPasswordClient() {
           </section>
 
           <section className="mt-12">
-            <h2 className="font-serif italic text-2xl md:text-3xl text-teal-900 mb-3">
+            <h2 className="mb-3 font-display text-[24px] font-semibold tracking-tight text-heading md:text-[28px]">
               Need help?
             </h2>
-            <p className="text-[15px] leading-7 text-ink-muted">
+            <p className="text-[15px] leading-[1.7] text-fg-muted">
               If you keep running into trouble, write to{" "}
               <a
                 href={`mailto:${CONTACT_EMAIL}`}
-                className="text-teal-600 underline underline-offset-2 hover:text-teal-900"
+                className="font-medium text-accent underline underline-offset-[3px] transition-colors hover:text-accent-strong"
               >
                 {CONTACT_EMAIL}
               </a>{" "}
               and we&apos;ll help you sort it out.
             </p>
           </section>
-        </article>
+        </article></div>
       </>
     );
   }
@@ -265,25 +265,25 @@ export function ResetPasswordClient() {
           title="Your password has been changed."
           intro="Open the Bantle app on your phone and sign in with your new password."
         />
-        <article className="container-x py-12 md:py-16 max-w-2xl">
-          <section className="bg-cream-card border border-line rounded-card p-6 md:p-8">
+        <div className="bg-paper"><article className="container-x max-w-2xl py-14 md:py-20">
+          <section className="rounded-panel bg-surface p-6 shadow-soft ring-1 ring-edge md:p-8">
             <div className="flex items-center gap-3 mb-4">
-              <CheckCircle2 size={24} className="text-teal-900" />
-              <h2 className="font-serif italic text-2xl md:text-3xl text-teal-900">
+              <CheckCircle2 size={24} className="text-accent" />
+              <h2 className="font-display text-[24px] font-semibold tracking-tight text-heading md:text-[28px]">
                 You&apos;re all set
               </h2>
             </div>
-            <p className="text-[15px] leading-7 text-ink-muted mb-6">
+            <p className="mb-6 text-[15px] leading-[1.7] text-fg-muted">
               For your security, all other sessions on your account
               have been signed out. Open the Bantle app and sign in
               with your new password to continue.
             </p>
-            <p className="text-[14px] leading-7 text-ink-muted">
+            <p className="text-[14px] leading-[1.7] text-fg-muted">
               Open the Bantle app on your phone and sign in with your new
               password to continue.
             </p>
           </section>
-        </article>
+        </article></div>
       </>
     );
   }
@@ -295,11 +295,11 @@ export function ResetPasswordClient() {
         title="Set a new password for Bantle."
         intro="Choose a password you haven't used before. After you reset it, sign in fresh on the Bantle app to continue."
       />
-      <article className="container-x py-12 md:py-16 max-w-2xl">
-        <section className="bg-cream-card border border-line rounded-card p-6 md:p-8">
+      <div className="bg-paper"><article className="container-x max-w-2xl py-14 md:py-20">
+        <section className="rounded-panel bg-surface p-6 shadow-soft ring-1 ring-edge md:p-8">
           <div className="flex items-center gap-3 mb-6">
-            <Lock size={20} className="text-teal-900" />
-            <h2 className="font-serif italic text-2xl md:text-3xl text-teal-900">
+            <Lock size={20} className="text-accent" />
+            <h2 className="font-display text-[24px] font-semibold tracking-tight text-heading md:text-[28px]">
               New password
             </h2>
           </div>
@@ -308,7 +308,7 @@ export function ResetPasswordClient() {
             <div>
               <label
                 htmlFor="new-password"
-                className="block text-sm font-medium text-teal-900 mb-2"
+                className="mb-2 block text-[13.5px] font-medium text-fg"
               >
                 New password
               </label>
@@ -319,10 +319,10 @@ export function ResetPasswordClient() {
                 onChange={(e) => setPassword(e.target.value)}
                 autoComplete="new-password"
                 placeholder="At least 8 characters, mixed case + number"
-                className="w-full px-4 py-3 border border-line rounded-card bg-cream text-teal-900 placeholder:text-ink-muted focus:outline-none focus:ring-2 focus:ring-teal-900"
+                className="w-full rounded-[14px] border border-edge-2 bg-paper px-4 py-3 text-[15px] text-fg transition-colors placeholder:text-fg-muted/70 focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/35"
               />
               {passwordError ? (
-                <p className="mt-2 text-sm text-red-700">
+                <p className="mt-2 text-[13.5px] font-medium text-negative">
                   {passwordError}
                 </p>
               ) : null}
@@ -331,7 +331,7 @@ export function ResetPasswordClient() {
             <div>
               <label
                 htmlFor="confirm-password"
-                className="block text-sm font-medium text-teal-900 mb-2"
+                className="mb-2 block text-[13.5px] font-medium text-fg"
               >
                 Confirm password
               </label>
@@ -342,10 +342,10 @@ export function ResetPasswordClient() {
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 autoComplete="new-password"
                 placeholder="Re-enter your new password"
-                className="w-full px-4 py-3 border border-line rounded-card bg-cream text-teal-900 placeholder:text-ink-muted focus:outline-none focus:ring-2 focus:ring-teal-900"
+                className="w-full rounded-[14px] border border-edge-2 bg-paper px-4 py-3 text-[15px] text-fg transition-colors placeholder:text-fg-muted/70 focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/35"
               />
               {confirmError ? (
-                <p className="mt-2 text-sm text-red-700">
+                <p className="mt-2 text-[13.5px] font-medium text-negative">
                   {confirmError}
                 </p>
               ) : null}
@@ -355,7 +355,7 @@ export function ResetPasswordClient() {
               type="button"
               onClick={handleSubmit}
               disabled={phase === "submitting"}
-              className="w-full bg-teal-900 text-cream font-medium text-base px-6 py-3 rounded-card hover:bg-teal-700 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+              className="press inline-flex h-12 w-full items-center justify-center rounded-full bg-canvas px-6 font-display text-[15px] font-semibold text-canvas-fg transition-colors duration-200 ease-out hover:bg-canvas-2 disabled:cursor-not-allowed disabled:opacity-60"
             >
               {phase === "submitting" ? "Setting password..." : "Set new password"}
             </button>
@@ -363,12 +363,12 @@ export function ResetPasswordClient() {
         </section>
 
         <section className="mt-8 flex items-center justify-center gap-2">
-          <ShieldCheck size={14} className="text-ink-muted" />
-          <p className="text-[12px] text-ink-muted">
+          <ShieldCheck size={14} className="text-fg-muted" />
+          <p className="text-[12px] text-fg-muted">
             Your password is encrypted and never shared.
           </p>
         </section>
-      </article>
+      </article></div>
     </>
   );
 }

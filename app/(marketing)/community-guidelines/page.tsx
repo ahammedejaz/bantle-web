@@ -1,24 +1,55 @@
 import Link from "next/link";
 import { PageHeader } from "@/components/PageHeader";
+import { OG_BASE, TWITTER_BASE } from "@/lib/seo";
+import { JsonLd } from "@/components/site/JsonLd";
+import {
+  breadcrumbNode,
+  jsonLd,
+  webPageNode,
+} from "@/lib/structured-data";
+import { ProseShell } from "@/components/site/ProseShell";
 import { CONTACT_EMAIL, POLICY_EFFECTIVE_DATE } from "@/lib/constants";
 
 export const metadata = {
   title: "Community guidelines",
   description:
     "What we expect from every Bantle member: honest listing terms, honoured deals, civil chat, and clear outside-Bantle coordination.",
+  alternates: {
+    canonical: "/community-guidelines",
+  },
+  openGraph: {
+    ...OG_BASE,
+    url: "/community-guidelines",
+    title: "Community guidelines",
+    description: "What we expect from every Bantle member: honest listing terms, honoured deals, civil chat, and clear outside-Bantle coordination.",
+  },
+  twitter: {
+    ...TWITTER_BASE,
+    title: "Community guidelines",
+    description: "What we expect from every Bantle member: honest listing terms, honoured deals, civil chat, and clear outside-Bantle coordination.",
+  },
 };
+
+const structuredData = jsonLd([
+  webPageNode({
+    path: "/community-guidelines",
+    name: String(metadata.title),
+    description: String(metadata.description),
+    type: "WebPage",
+  }),
+  breadcrumbNode([{ name: "Community guidelines", path: "/community-guidelines" }]),
+]);
 
 export default function CommunityGuidelinesPage() {
   return (
     <>
+      <JsonLd data={structuredData} />
       <PageHeader
-        eyebrow="Community guidelines"
+        crumb="Community guidelines"
         title="The way Bantle works only if everyone keeps it small and kind."
         intro={`Last updated ${POLICY_EFFECTIVE_DATE}. These guidelines sit alongside our terms of service and apply to every Bantle member.`}
       />
-      <div className="bg-gradient-to-b from-teal-50/50 via-cream to-cream">
-        <div className="container-x py-12 md:py-16">
-          <article className="prose-bantle mx-auto max-w-3xl rounded-3xl border border-line bg-white p-6 shadow-[0_22px_60px_-28px_rgba(0,60,52,0.28)] md:p-10">
+      <ProseShell>
         <section>
           <h2>1. Be honest</h2>
           <ul>
@@ -177,9 +208,7 @@ export default function CommunityGuidelinesPage() {
             <Link href="/safety">safety page</Link>.
           </p>
         </section>
-          </article>
-        </div>
-      </div>
+      </ProseShell>
     </>
   );
 }

@@ -17,7 +17,7 @@ const SheetOverlay = React.forwardRef<
   <DialogPrimitive.Overlay
     ref={ref}
     className={cn(
-      "fixed inset-0 z-40 bg-teal-900/40 transition-opacity duration-200 data-[state=closed]:opacity-0 data-[state=open]:opacity-100",
+      "fixed inset-0 z-40 bg-canvas/60 backdrop-blur-sm transition-opacity duration-200 ease-out data-[state=closed]:opacity-0 data-[state=open]:opacity-100",
       className
     )}
     {...props}
@@ -38,12 +38,14 @@ const SheetContent = React.forwardRef<
     <SheetOverlay />
     <DialogPrimitive.Content
       ref={ref}
+      // The iOS drawer curve: fast out of the gate, long settle. Slides by its
+      // own width, so the panel width can change without retuning the motion.
       className={cn(
-        "fixed z-50 bg-cream p-6 transition-transform duration-300 ease-out",
+        "fixed z-50 bg-canvas p-6 transition-transform duration-[420ms] ease-[cubic-bezier(0.32,0.72,0,1)]",
         side === "right" &&
-          "right-0 top-0 h-full w-[88vw] max-w-sm border-l border-line data-[state=closed]:translate-x-full data-[state=open]:translate-x-0",
+          "right-0 top-0 h-full w-[88vw] max-w-sm border-l border-canvas-edge/10 data-[state=closed]:translate-x-full data-[state=open]:translate-x-0",
         side === "left" &&
-          "left-0 top-0 h-full w-[88vw] max-w-sm border-r border-line data-[state=closed]:-translate-x-full data-[state=open]:translate-x-0",
+          "left-0 top-0 h-full w-[88vw] max-w-sm border-r border-canvas-edge/10 data-[state=closed]:-translate-x-full data-[state=open]:translate-x-0",
         className
       )}
       {...props}
@@ -51,9 +53,9 @@ const SheetContent = React.forwardRef<
       {children}
       <DialogPrimitive.Close
         aria-label="Close menu"
-        className="absolute right-4 top-4 rounded-button p-2 text-ink hover:bg-cream-card transition-colors"
+        className="press absolute right-4 top-4 rounded-full p-2 text-canvas-fg-muted transition-colors hover:bg-canvas-edge/10 hover:text-canvas-fg"
       >
-        <X className="h-5 w-5" />
+        <X className="h-5 w-5" strokeWidth={1.75} />
       </DialogPrimitive.Close>
     </DialogPrimitive.Content>
   </SheetPortal>
@@ -66,7 +68,7 @@ const SheetTitle = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <DialogPrimitive.Title
     ref={ref}
-    className={cn("font-serif text-lg text-teal-900", className)}
+    className={cn("font-display text-lg text-canvas-fg", className)}
     {...props}
   />
 ));
@@ -78,7 +80,7 @@ const SheetDescription = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <DialogPrimitive.Description
     ref={ref}
-    className={cn("text-sm text-ink-muted", className)}
+    className={cn("text-sm text-canvas-fg-muted", className)}
     {...props}
   />
 ));

@@ -1,24 +1,55 @@
 import Link from "next/link";
 import { PageHeader } from "@/components/PageHeader";
+import { OG_BASE, TWITTER_BASE } from "@/lib/seo";
+import { ProseShell } from "@/components/site/ProseShell";
+import { JsonLd } from "@/components/site/JsonLd";
+import {
+  breadcrumbNode,
+  jsonLd,
+  webPageNode,
+} from "@/lib/structured-data";
 import { CONTACT_EMAIL } from "@/lib/constants";
 
 export const metadata = {
   title: "Safety",
   description:
     "How Bantle helps keep monthly sharing and one-time access coordination clear, with payment and access confirmation outside Bantle.",
+  alternates: {
+    canonical: "/safety",
+  },
+  openGraph: {
+    ...OG_BASE,
+    url: "/safety",
+    title: "Safety",
+    description: "How Bantle helps keep monthly sharing and one-time access coordination clear, with payment and access confirmation outside Bantle.",
+  },
+  twitter: {
+    ...TWITTER_BASE,
+    title: "Safety",
+    description: "How Bantle helps keep monthly sharing and one-time access coordination clear, with payment and access confirmation outside Bantle.",
+  },
 };
+
+const structuredData = jsonLd([
+  webPageNode({
+    path: "/safety",
+    name: String(metadata.title),
+    description: String(metadata.description),
+    type: "WebPage",
+  }),
+  breadcrumbNode([{ name: "Safety", path: "/safety" }]),
+]);
 
 export default function SafetyPage() {
   return (
     <>
+      <JsonLd data={structuredData} />
       <PageHeader
-        eyebrow="Trust &amp; safety"
+        crumb="Safety"
         title="A quiet, layered approach to keeping Bantle safe."
         intro="Bantle keeps subscription coordination explicit: email verification, listing terms, chat, blocks, reports, ratings and mandatory deal safety acknowledgements all support safer direct coordination."
       />
-      <div className="bg-gradient-to-b from-teal-50/50 via-cream to-cream">
-        <div className="container-x py-12 md:py-16">
-          <article className="prose-bantle mx-auto max-w-3xl rounded-3xl border border-line bg-white p-6 shadow-[0_22px_60px_-28px_rgba(0,60,52,0.28)] md:p-10">
+      <ProseShell>
         <section>
           <h2>Trust starts with clear terms</h2>
           <p>
@@ -243,9 +274,7 @@ export default function SafetyPage() {
             specific household arrangement.
           </p>
         </section>
-          </article>
-        </div>
-      </div>
+      </ProseShell>
     </>
   );
 }

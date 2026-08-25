@@ -1,24 +1,55 @@
 import Link from "next/link";
 import { PageHeader } from "@/components/PageHeader";
+import { OG_BASE, TWITTER_BASE } from "@/lib/seo";
+import { JsonLd } from "@/components/site/JsonLd";
+import {
+  breadcrumbNode,
+  jsonLd,
+  webPageNode,
+} from "@/lib/structured-data";
+import { ProseShell } from "@/components/site/ProseShell";
 import { CONTACT_EMAIL, POLICY_EFFECTIVE_DATE } from "@/lib/constants";
 
 export const metadata = {
   title: "Refund policy",
   description:
     "Bantle is free to use and never holds your money. Here's exactly how refunds, disputes and money flow work on Bantle.",
+  alternates: {
+    canonical: "/refund-policy",
+  },
+  openGraph: {
+    ...OG_BASE,
+    url: "/refund-policy",
+    title: "Refund policy",
+    description: "Bantle is free to use and never holds your money. Here's exactly how refunds, disputes and money flow work on Bantle.",
+  },
+  twitter: {
+    ...TWITTER_BASE,
+    title: "Refund policy",
+    description: "Bantle is free to use and never holds your money. Here's exactly how refunds, disputes and money flow work on Bantle.",
+  },
 };
+
+const structuredData = jsonLd([
+  webPageNode({
+    path: "/refund-policy",
+    name: String(metadata.title),
+    description: String(metadata.description),
+    type: "WebPage",
+  }),
+  breadcrumbNode([{ name: "Refund policy", path: "/refund-policy" }]),
+]);
 
 export default function RefundPolicyPage() {
   return (
     <>
+      <JsonLd data={structuredData} />
       <PageHeader
-        eyebrow="Refund policy"
+        crumb="Refund policy"
         title="Bantle doesn't hold your money. Here's how that affects refunds."
         intro={`Last updated ${POLICY_EFFECTIVE_DATE}.`}
       />
-      <div className="bg-gradient-to-b from-teal-50/50 via-cream to-cream">
-        <div className="container-x py-12 md:py-16">
-          <article className="prose-bantle mx-auto max-w-3xl rounded-3xl border border-line bg-white p-6 shadow-[0_22px_60px_-28px_rgba(0,60,52,0.28)] md:p-10">
+      <ProseShell>
         <section>
           <h2>1. Bantle is free</h2>
           <p>
@@ -114,9 +145,7 @@ export default function RefundPolicyPage() {
             <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.
           </p>
         </section>
-          </article>
-        </div>
-      </div>
+      </ProseShell>
     </>
   );
 }

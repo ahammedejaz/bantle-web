@@ -1,24 +1,58 @@
 import Link from "next/link";
+import { ArrowUpRight } from "lucide-react";
 import { PageHeader } from "@/components/PageHeader";
+import { OG_BASE, TWITTER_BASE } from "@/lib/seo";
+import { JsonLd } from "@/components/site/JsonLd";
+import {
+  breadcrumbNode,
+  jsonLd,
+  webPageNode,
+} from "@/lib/structured-data";
 import { CONTACT_EMAIL, FEEDBACK_EMAIL } from "@/lib/constants";
 
 export const metadata = {
   title: "Support",
   description:
     "Reach a real person at Bantle. Support, feedback and press contacts, plus a quick troubleshooting checklist before you write.",
+  alternates: {
+    canonical: "/support",
+  },
+  openGraph: {
+    ...OG_BASE,
+    url: "/support",
+    title: "Support",
+    description: "Reach a real person at Bantle. Support, feedback and press contacts, plus a quick troubleshooting checklist before you write.",
+  },
+  twitter: {
+    ...TWITTER_BASE,
+    title: "Support",
+    description: "Reach a real person at Bantle. Support, feedback and press contacts, plus a quick troubleshooting checklist before you write.",
+  },
 };
+
+const structuredData = jsonLd([
+  webPageNode({
+    path: "/support",
+    name: String(metadata.title),
+    description: String(metadata.description),
+    type: "ContactPage",
+  }),
+  breadcrumbNode([{ name: "Support", path: "/support" }]),
+]);
 
 export default function SupportPage() {
   return (
     <>
+      <JsonLd data={structuredData} />
       <PageHeader
-        eyebrow="Support"
+        crumb="Support"
         title="Talk to a real person at Bantle."
         intro="We're a small team — emails come straight to humans, not a triage queue. We aim to reply within two business days."
       />
-      <div className="bg-gradient-to-b from-teal-50/50 via-cream to-cream">
-        <article className="container-x py-12 md:py-16 max-w-3xl">
-        <section className="grid gap-6 md:grid-cols-2">
+      <div className="bg-paper">
+        <div className="container-x py-14 md:py-20">
+          <div className="mx-auto max-w-[46rem]">
+        <section className="grid gap-4 sm:grid-cols-2">
           <ContactCard
             label="General support"
             email={CONTACT_EMAIL}
@@ -87,7 +121,8 @@ export default function SupportPage() {
             <code>[PARTNERSHIP]</code>.
           </p>
         </section>
-        </article>
+          </div>
+        </div>
       </div>
     </>
   );
@@ -103,17 +138,22 @@ function ContactCard({
   body: string;
 }) {
   return (
-    <div className="rounded-2xl border border-line bg-white p-6 shadow-[0_12px_34px_-20px_rgba(0,60,52,0.22)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_22px_50px_-24px_rgba(0,60,52,0.3)]">
-      <p className="text-xs uppercase tracking-[0.14em] text-teal-600 mb-3">
+    <a
+      href={`mailto:${email}`}
+      className="press group flex flex-col rounded-panel bg-surface p-6 shadow-soft ring-1 ring-edge transition-[box-shadow,border-color] duration-200 ease-out hover:shadow-lift hover:ring-accent/40"
+    >
+      <p className="mb-3 font-mono text-[10px] uppercase tracking-[0.18em] text-fg-muted">
         {label}
       </p>
-      <a
-        href={`mailto:${email}`}
-        className="block font-serif text-xl text-teal-900 underline underline-offset-2 hover:text-teal-700"
-      >
+      <span className="inline-flex items-center gap-1.5 font-display text-[19px] font-semibold tracking-tight text-heading transition-colors group-hover:text-accent">
         {email}
-      </a>
-      <p className="mt-3 text-[15px] leading-7 text-ink-muted">{body}</p>
-    </div>
+        <ArrowUpRight
+          className="h-4 w-4 shrink-0 text-accent transition-transform duration-200 ease-out group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+          strokeWidth={2}
+          aria-hidden="true"
+        />
+      </span>
+      <p className="mt-3 text-[15px] leading-[1.7] text-fg-muted">{body}</p>
+    </a>
   );
 }

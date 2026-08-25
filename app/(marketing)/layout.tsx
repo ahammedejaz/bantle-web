@@ -1,13 +1,15 @@
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { ScrollReveal } from "@/components/site/ScrollReveal";
 
 // Marketing layout. Wraps every public-facing page on bantle.in
 // (homepage, about, faq, terms, privacy, etc.) with the brand
 // Header and Footer. Lives in a route group so the `(marketing)`
 // directory does not appear in any URL.
 //
-// The admin panel under app/admin/* uses a different layout and
-// never renders this chrome.
+// `theme-site` scopes the marketing surface tokens (and their dark-mode
+// overrides) to this subtree. The admin panel under app/admin/* uses a
+// different layout, never renders this chrome, and is unaffected by them.
 
 export default function MarketingLayout({
   children,
@@ -15,10 +17,10 @@ export default function MarketingLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="theme-site flex min-h-screen flex-col bg-paper text-fg">
       <a
         href="#main"
-        className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:bg-teal-900 focus:text-cream focus:px-3 focus:py-2 focus:rounded-button"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-50 focus:rounded-full focus:bg-mint focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-canvas"
       >
         Skip to content
       </a>
@@ -27,6 +29,7 @@ export default function MarketingLayout({
         {children}
       </main>
       <Footer />
+      <ScrollReveal />
     </div>
   );
 }
