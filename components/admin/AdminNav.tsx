@@ -7,6 +7,7 @@ import {
   Flag,
   Handshake,
   Home,
+  Inbox,
   Layers,
   ListChecks,
   LogOut,
@@ -39,6 +40,11 @@ const NAV_ITEMS = [
   { href: "/admin/audit", label: "Audit", icon: ScrollText },
   { href: "/admin/broadcasts", label: "Broadcasts", icon: Megaphone },
   { href: "/admin/platforms", label: "Platforms", icon: Layers },
+  {
+    href: "/admin/platform-requests",
+    label: "Platform Requests",
+    icon: Inbox,
+  },
 ];
 
 interface AdminNavProps {

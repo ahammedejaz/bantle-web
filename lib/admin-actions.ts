@@ -37,7 +37,9 @@ export type AdminActionType =
   | "identity_verification_approved"
   | "identity_verification_rejected"
   | "name_change_approved"
-  | "name_change_rejected";
+  | "name_change_rejected"
+  | "platform_request_approved"
+  | "platform_request_rejected";
 
 export interface AdminActionInput {
   admin_id: string;

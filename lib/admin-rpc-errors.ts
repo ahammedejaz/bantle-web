@@ -53,6 +53,23 @@ const ERROR_RESPONSES: Record<string, { message: string; status: number }> = {
     message: "Only pending or active deals can be force-terminated.",
     status: 409,
   },
+  PLATFORM_REQUEST_NOT_FOUND: {
+    message: "Platform request not found.",
+    status: 404,
+  },
+  PLATFORM_REQUEST_ALREADY_DECIDED: {
+    message: "This platform request has already been decided.",
+    status: 409,
+  },
+  PLATFORM_REQUEST_SLUG_TAKEN: {
+    message:
+      "That slug already belongs to an active platform. Reject this request as a duplicate instead.",
+    status: 409,
+  },
+  PLATFORM_REQUEST_INVALID: {
+    message: "Invalid platform request details.",
+    status: 400,
+  },
 };
 
 export function adminRpcErrorResponse(
