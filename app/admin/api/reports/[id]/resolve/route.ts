@@ -1,30 +1,7 @@
-// POST /admin/api/reports/[id]/resolve — take action on a report.
-// Body: { action: 'resolve' | 'dismiss' | 'warn' | 'ban_temp' | 'ban_perm',
-//         reason?: string (REQUIRED for warn/ban_*) }
-//
-// Side effects:
-//   resolve   — marks report resolved, no user-facing action
-//   dismiss   — marks report dismissed
-//   warn      — sends moderation push, marks report resolved
-//   ban_temp  — sets profile.banned_until = now() + 7 days,
-//               sends push, marks report resolved
-//   ban_perm  — soft-deletes the reported user (existing 7-day
-//               cron hard-deletes), sends push, marks report resolved
-//
-// Every state-changing action writes an admin_actions row AFTER the
-// primary action succeeds.
-
 import { type NextRequest, NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/admin-auth";
-import {
-  logAdminAction,
-  type AdminActionType,
-} from "@/lib/admin-actions";
-import { sendAdminPush } from "@/lib/admin-push";
-import {
-  adminErrorResponse,
-  safeAdminErrorLog,
-} from "@/lib/admin-safe-errors";
+import { adminRpcErrorResponse } from "@/lib/admin-rpc-errors";
+import { dispatchNotificationOutbox } from "@/lib/notification-outbox";
 
 const VALID_ACTIONS = new Set([
   "resolve",
@@ -34,289 +11,50 @@ const VALID_ACTIONS = new Set([
   "ban_perm",
 ]);
 
-const TEMP_BAN_DAYS = 7;
-
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
   const auth = await requireAdmin(request);
   if ("error" in auth) return auth.error;
-  const { admin, supabase } = auth;
-
+  const { userClient, supabase } = auth;
   const { id } = await params;
-  const reportId = id;
 
-  let body: { action?: string; reason?: string };
+  let body: { action?: unknown; reason?: unknown };
   try {
-    body = (await request.json()) as { action?: string; reason?: string };
+    body = (await request.json()) as { action?: unknown; reason?: unknown };
   } catch {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
 
-  const action = body.action ?? "";
-  const reason = (body.reason ?? "").trim() || null;
-
+  const action = typeof body.action === "string" ? body.action : "";
+  const reason = typeof body.reason === "string" ? body.reason.trim() : "";
   if (!VALID_ACTIONS.has(action)) {
     return NextResponse.json({ error: "Invalid action" }, { status: 400 });
   }
-
   if (["warn", "ban_temp", "ban_perm"].includes(action) && !reason) {
     return NextResponse.json(
       { error: "Reason is required for this action" },
       { status: 400 },
     );
   }
-
-  const { data: report, error: reportError } = await supabase
-    .from("user_reports")
-    .select("id, reported_id, status")
-    .eq("id", reportId)
-    .maybeSingle();
-
-  if (reportError || !report) {
-    return NextResponse.json({ error: "Report not found" }, { status: 404 });
+  if (reason.length > 1000) {
+    return NextResponse.json({ error: "Reason is too long" }, { status: 400 });
   }
 
-  if (report.status !== "pending") {
-    return NextResponse.json(
-      { error: "Report already triaged" },
-      { status: 409 },
-    );
-  }
-
-  const reportedId = report.reported_id as string | null;
-  let resolutionAction = "none";
-  let auditActionType: AdminActionType;
-
-  switch (action) {
-    case "resolve":
-      resolutionAction = "none";
-      auditActionType = "report_resolved";
-      break;
-
-    case "dismiss":
-      resolutionAction = "dismissed";
-      auditActionType = "report_dismissed";
-      break;
-
-    case "warn": {
-      if (reportedId) {
-        const pushResult = await sendAdminPush({
-          supabase,
-          recipientUserId: reportedId,
-          title: "Account warning",
-          body: "Your account received a moderation warning. Please review the community guidelines.",
-          data: { type: "moderation_warning" },
-        });
-        if (!pushResult.sent) {
-          safeAdminErrorLog("admin_report_warn_push_failed", pushResult.reason, {
-            operation: "report_resolve_warn_push",
-          });
-        }
-        // Insert in-app notification row so the user can see the
-        // record after the OS push fades. Phase 2.2.
-        const { error: notifError } = await supabase
-          .from("notifications")
-          .insert({
-            user_id: reportedId,
-            kind: "moderation_warning",
-            payload: { reason },
-          });
-        if (notifError) {
-          safeAdminErrorLog(
-            "admin_report_warn_notification_insert_failed",
-            notifError,
-            { operation: "report_resolve_notification_insert" },
-          );
-          // Don't fail the admin action — the moderation action
-          // itself succeeded; the missing inbox entry is degraded
-          // UX, not a blocker.
-        }
-      }
-      resolutionAction = "warned";
-      auditActionType = "user_warned";
-      break;
-    }
-
-    case "ban_temp": {
-      if (!reportedId) {
-        return NextResponse.json(
-          { error: "Cannot ban — reported user record missing" },
-          { status: 400 },
-        );
-      }
-      const bannedUntil = new Date();
-      bannedUntil.setDate(bannedUntil.getDate() + TEMP_BAN_DAYS);
-      const { error: banError } = await supabase
-        .from("profiles")
-        .update({
-          banned_until: bannedUntil.toISOString(),
-          banned_reason: reason,
-          banned_by: admin.id,
-        })
-        .eq("id", reportedId);
-      if (banError) {
-        const correlationId = safeAdminErrorLog(
-          "admin_report_temp_ban_failed",
-          banError,
-          { operation: "report_resolve_temp_ban" },
-        );
-        return adminErrorResponse(
-          "Report action could not be completed.",
-          500,
-          { correlationId },
-        );
-      }
-      await sendAdminPush({
-        supabase,
-        recipientUserId: reportedId,
-        title: "Account suspended",
-        body: `Your Bantle account has been suspended for ${TEMP_BAN_DAYS} days due to a community guidelines violation.`,
-        data: {
-          type: "ban_temp",
-          banned_until: bannedUntil.toISOString(),
-        },
-      });
-      // Insert in-app notification row. Phase 2.2.
-      const { error: notifError } = await supabase
-        .from("notifications")
-        .insert({
-          user_id: reportedId,
-          kind: "moderation_ban_temp",
-          payload: {
-            reason,
-            banned_until: bannedUntil.toISOString(),
-          },
-        });
-      if (notifError) {
-        safeAdminErrorLog(
-          "admin_report_temp_ban_notification_insert_failed",
-          notifError,
-          { operation: "report_resolve_notification_insert" },
-        );
-        // Don't fail the admin action.
-      }
-      resolutionAction = "banned_temp";
-      auditActionType = "user_banned";
-      break;
-    }
-
-    case "ban_perm": {
-      if (!reportedId) {
-        return NextResponse.json(
-          { error: "Cannot ban — reported user record missing" },
-          { status: 400 },
-        );
-      }
-      // Phase 2.2 — set permanently_banned instead of deleted_at.
-      // Using deleted_at (the Phase 2 implementation) routed the
-      // user through the self-delete recovery flow, where they
-      // could click "Restore" and clear the deleted_at column —
-      // reversing the admin's permanent ban. permanently_banned
-      // has no self-restore path; banned.tsx renders the perma
-      // variant and only allows sign-out.
-      const { error: banError } = await supabase
-        .from("profiles")
-        .update({
-          permanently_banned: true,
-          banned_reason: reason,
-          banned_by: admin.id,
-        })
-        .eq("id", reportedId);
-      if (banError) {
-        const correlationId = safeAdminErrorLog(
-          "admin_report_perm_ban_failed",
-          banError,
-          { operation: "report_resolve_perm_ban" },
-        );
-        return adminErrorResponse(
-          "Report action could not be completed.",
-          500,
-          { correlationId },
-        );
-      }
-      await sendAdminPush({
-        supabase,
-        recipientUserId: reportedId,
-        title: "Account permanently removed",
-        body: "Your Bantle account has been permanently removed due to a community guidelines violation.",
-        data: { type: "ban_perm" },
-      });
-      // Insert in-app notification row. Phase 2.2.
-      const { error: notifError } = await supabase
-        .from("notifications")
-        .insert({
-          user_id: reportedId,
-          kind: "moderation_ban_perm",
-          payload: { reason },
-        });
-      if (notifError) {
-        safeAdminErrorLog(
-          "admin_report_perm_ban_notification_insert_failed",
-          notifError,
-          { operation: "report_resolve_notification_insert" },
-        );
-        // Don't fail the admin action.
-      }
-      resolutionAction = "banned_perm";
-      auditActionType = "user_soft_deleted";
-      break;
-    }
-
-    default:
-      return NextResponse.json({ error: "Invalid action" }, { status: 400 });
-  }
-
-  // Map admin action → user_reports.status. Aligned with the
-  // production schema's 4-value enum.
-  let newStatus: string;
-  switch (action) {
-    case "resolve":
-      newStatus = "reviewed";
-      break;
-    case "dismiss":
-      newStatus = "dismissed";
-      break;
-    case "warn":
-    case "ban_temp":
-    case "ban_perm":
-      newStatus = "actioned";
-      break;
-    default:
-      return NextResponse.json({ error: "Invalid action" }, { status: 400 });
-  }
-
-  const { error: updateError } = await supabase
-    .from("user_reports")
-    .update({
-      status: newStatus,
-      resolved_at: new Date().toISOString(),
-      resolved_by: admin.id,
-      resolution_action: resolutionAction,
-    })
-    .eq("id", reportId);
-
-  if (updateError) {
-    const correlationId = safeAdminErrorLog(
-      "admin_report_update_failed",
-      updateError,
-      { operation: "report_resolve_update" },
-    );
-    return adminErrorResponse("Report action could not be completed.", 500, {
-      correlationId,
-    });
-  }
-
-  await logAdminAction(supabase, {
-    admin_id: admin.id,
-    action_type: auditActionType,
-    target_user_id: reportedId,
-    target_resource_id: reportId,
-    target_resource_type: "user_report",
-    reason,
-    payload: { action, resolution_action: resolutionAction },
+  const { data, error } = await userClient.rpc("admin_resolve_report", {
+    p_report_id: id,
+    p_action: action,
+    p_reason: reason || null,
   });
+  if (error) {
+    return adminRpcErrorResponse(
+      "report_resolution",
+      error,
+      "Report action could not be completed.",
+    );
+  }
 
-  return NextResponse.json({ success: true });
+  const delivery = await dispatchNotificationOutbox(supabase);
+  return NextResponse.json({ success: true, result: data, delivery });
 }

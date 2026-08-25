@@ -6,7 +6,13 @@ import { RefreshCw } from "lucide-react";
 import { useAdminToast } from "@/components/admin/AdminToastProvider";
 import { cn } from "@/lib/utils";
 
-type ReviewStatus = "pending" | "approved" | "rejected" | "cancelled";
+type ReviewStatus =
+  | "uploading"
+  | "pending"
+  | "approved"
+  | "rejected"
+  | "cancelled"
+  | "expired";
 
 interface IdentityVerificationDetail {
   id: string;
@@ -14,7 +20,7 @@ interface IdentityVerificationDetail {
   status: ReviewStatus;
   instruction_code: string | null;
   instruction_code_expires_at: string | null;
-  submitted_at: string;
+  submitted_at: string | null;
   reviewed_at: string | null;
   approved_at: string | null;
   rejected_at: string | null;
@@ -59,6 +65,8 @@ export function IdentityVerificationDetailClient({
   const [submitting, setSubmitting] = useState<"approve" | "reject" | null>(
     null,
   );
+  const [reviewEnabled, setReviewEnabled] = useState(false);
+  const [identityEnabled, setIdentityEnabled] = useState(false);
 
   const fetchDetail = useCallback(async () => {
     setLoading(true);
@@ -76,9 +84,20 @@ export function IdentityVerificationDetailClient({
       }
       const data = (await response.json()) as {
         verification: IdentityVerificationDetail;
+        feature_config?: {
+          identity_verification_enabled?: boolean;
+          identity_admin_review_enabled?: boolean;
+        } | null;
       };
       setVerification(data.verification);
       setAdminNote(data.verification.admin_internal_note ?? "");
+      setIdentityEnabled(
+        data.feature_config?.identity_verification_enabled === true,
+      );
+      setReviewEnabled(
+        data.feature_config?.identity_verification_enabled === true &&
+          data.feature_config?.identity_admin_review_enabled === true,
+      );
       setError(null);
     } catch (err) {
       setError(
@@ -96,7 +115,7 @@ export function IdentityVerificationDetailClient({
   }, [fetchDetail]);
 
   const approve = async () => {
-    if (submitting) return;
+    if (submitting || !reviewEnabled) return;
     setSubmitting("approve");
     try {
       await postReviewAction("approve", {
@@ -117,7 +136,7 @@ export function IdentityVerificationDetailClient({
   };
 
   const reject = async () => {
-    if (submitting) return;
+    if (submitting || !reviewEnabled) return;
     setSubmitting("reject");
     try {
       await postReviewAction("reject", {
@@ -294,7 +313,7 @@ export function IdentityVerificationDetailClient({
         <h2 className="text-xs uppercase tracking-[0.14em] text-teal-600 mb-3">
           Review action
         </h2>
-        {pending ? (
+        {pending && reviewEnabled ? (
           <div className="space-y-4">
             <label className="block">
               <span className="block text-xs uppercase tracking-[0.12em] text-teal-700 mb-1">
@@ -347,6 +366,17 @@ export function IdentityVerificationDetailClient({
                 </button>
               </div>
             </div>
+          </div>
+        ) : pending ? (
+          <div className="px-4 py-3 rounded-card border border-amber-200 bg-amber-50">
+            <p className="text-sm font-medium text-amber-900">
+              Review decisions are paused.
+            </p>
+            <p className="text-xs text-amber-900 mt-1">
+              {identityEnabled
+                ? "Admin review is disabled. This request is available read-only."
+                : "Identity verification is disabled. This request is available read-only for incident investigation."}
+            </p>
           </div>
         ) : (
           <div className="px-4 py-3 rounded-card border border-line bg-cream-card">
@@ -404,6 +434,18 @@ function getStatusDisplay(status: ReviewStatus) {
   if (status === "cancelled") {
     return {
       label: "Cancelled",
+      className: "bg-gray-50 text-gray-700 border-gray-200",
+    };
+  }
+  if (status === "uploading") {
+    return {
+      label: "Uploading",
+      className: "bg-gray-50 text-gray-700 border-gray-200",
+    };
+  }
+  if (status === "expired") {
+    return {
+      label: "Expired",
       className: "bg-gray-50 text-gray-700 border-gray-200",
     };
   }

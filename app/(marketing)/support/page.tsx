@@ -42,13 +42,15 @@ export default function SupportPage() {
               away.
             </li>
             <li>
-              Switch between Wi-Fi and mobile data, especially when an OTP
-              hasn&apos;t arrived. SMS delivery can be carrier-dependent.
+              Check your inbox, spam, and promotions folders for emails
+              from Bantle, especially when a sign-in or verification email
+              hasn&apos;t arrived. Switching between Wi-Fi and mobile data
+              can also help.
             </li>
             <li>
-              Update Bantle from the Play Store. Once we go live, we&apos;ll
-              push fixes weekly and older versions sometimes hit edge
-              cases.
+              Update Bantle to the latest available version for your device
+              on Android or iOS. Once we go live, we&apos;ll push fixes
+              regularly and older versions sometimes hit edge cases.
             </li>
             <li>
               Check the{" "}
@@ -65,7 +67,7 @@ export default function SupportPage() {
             We can help much faster if you include a few specifics up front:
           </p>
           <ul>
-            <li>The phone number or email you use to sign in (so we can find your account).</li>
+            <li>The email address you use to sign in (so we can find your account).</li>
             <li>Your device — model, Android or iOS version, app version.</li>
             <li>What you were trying to do, and what happened instead.</li>
             <li>A screenshot if anything looked unusual.</li>

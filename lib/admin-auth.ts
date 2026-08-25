@@ -16,6 +16,9 @@ import { createServiceRoleSupabase } from "./admin-supabase-server";
 
 type RequireAdminSuccess = {
   admin: { id: string; email: string };
+  /** Authenticated user-context client for RPCs that bind to auth.uid(). */
+  userClient: ReturnType<typeof createRouteSupabase>;
+  /** Service client is reserved for post-commit dispatch/read operations. */
   supabase: ReturnType<typeof createServiceRoleSupabase>;
 };
 
@@ -81,11 +84,20 @@ export async function requireAdmin(
 
   const { data: profile, error: profileError } = await userClient
     .from("profiles")
-    .select("is_admin, email")
+    .select("is_admin, email, deleted_at, permanently_banned, banned_until")
     .eq("id", user.id)
     .maybeSingle();
 
-  if (profileError || !profile?.is_admin) {
+  const activelyBanned = Boolean(
+    profile?.banned_until && new Date(profile.banned_until).getTime() > Date.now(),
+  );
+  if (
+    profileError ||
+    !profile?.is_admin ||
+    profile.deleted_at !== null ||
+    profile.permanently_banned ||
+    activelyBanned
+  ) {
     return {
       error: NextResponse.json(
         { error: "Forbidden" },
@@ -96,6 +108,7 @@ export async function requireAdmin(
 
   return {
     admin: { id: user.id, email: profile.email ?? user.email ?? "" },
+    userClient,
     supabase: createServiceRoleSupabase(),
   };
 }

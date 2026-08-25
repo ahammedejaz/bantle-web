@@ -30,9 +30,10 @@ export default function PrivacyPage() {
         <section>
           <h2>In short</h2>
           <p>
-            Bantle is a household-coordination app for splitting family-plan
-            subscriptions. We collect the minimum data needed to verify
-            you, run the app, and protect each household&apos;s
+            Bantle is a coordination app for splitting or buying
+            subscription access where the provider&apos;s terms allow it.
+            We collect the minimum data needed to verify
+            you, run the app, and protect each user&apos;s
             information. If you choose identity verification, your selfie is
             stored privately, reviewed manually by our team, and never shown
             on your public profile. We do not collect phone numbers. We do not
@@ -69,7 +70,7 @@ export default function PrivacyPage() {
 
           <h3>Profile data</h3>
           <ul>
-            <li>Subscription plans you host or are invited to as a household member.</li>
+            <li>Subscription plans you host or are invited to as a plan member.</li>
             <li>Approximate city-level location (never precise GPS).</li>
             <li>Ratings you receive and give, with associated plan IDs.</li>
           </ul>
@@ -77,6 +78,7 @@ export default function PrivacyPage() {
           <h3>Identity verification data</h3>
           <ul>
             <li>A selfie image you submit when you request identity verification. It is uploaded to private verification storage, reviewed manually by our team through short-lived, access-controlled links, and is never shown on your public profile or used for marketing.</li>
+            <li>Rejected selfie images are scheduled for deletion 30 days after the decision; approved selfie images are scheduled for deletion 180 days after the decision. Missing or transiently unavailable objects are handled through retryable cleanup, while minimum review and audit metadata may remain.</li>
             <li>Your verification status (for example: not submitted, in review, approved, rejected, or re-verification required) and, if a request is rejected, the review message we show you.</li>
             <li>Bantle does not request GPS or device location for identity verification.</li>
             <li>Identity verification is designed to support a clear privacy notice and your consent before you submit a selfie. We do not perform biometric matching, liveness detection, or facial recognition, and a reviewed badge is a signal — not a guarantee about any user.</li>
@@ -219,7 +221,10 @@ export default function PrivacyPage() {
             <li>
               <strong>Soft-deleted accounts.</strong> When you delete your
               account, we enter a 7-day grace window during which you can
-              recover it. After that, identifying data is hard deleted.
+              recover it. After that, the account becomes eligible for final
+              deletion. Known private file paths are captured and cleanup is
+              retried before the Auth account is removed, so transient provider
+              failures may extend final processing beyond the grace window.
             </li>
             <li>
               <strong>Chat messages.</strong> Retained while either

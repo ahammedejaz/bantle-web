@@ -4,7 +4,6 @@ export const REVIEW_STATUSES = [
   "pending",
   "approved",
   "rejected",
-  "cancelled",
 ] as const;
 
 export type ReviewStatus = (typeof REVIEW_STATUSES)[number];
@@ -55,9 +54,9 @@ export function parseRequiredRejectionMessage(
   if (!trimmed) {
     return { error: "User-visible rejection message is required." };
   }
-  if (trimmed.length > 1000) {
+  if (trimmed.length > 500) {
     return {
-      error: "User-visible rejection message must be 1000 characters or less.",
+      error: "User-visible rejection message must be 500 characters or less.",
     };
   }
   return { value: trimmed };

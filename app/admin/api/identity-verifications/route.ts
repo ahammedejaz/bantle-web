@@ -10,7 +10,7 @@ const PAGE_SIZE = 20;
 export async function GET(request: NextRequest) {
   const auth = await requireAdmin(request);
   if ("error" in auth) return auth.error;
-  const { supabase } = auth;
+  const { supabase, userClient } = auth;
 
   const params = request.nextUrl.searchParams;
   const status = parseReviewStatusFilter(params.get("status"));
@@ -37,6 +37,7 @@ export async function GET(request: NextRequest) {
     query = query.eq("status", status).order("submitted_at", { ascending: false });
   } else {
     query = query
+      .in("status", ["pending", "approved", "rejected"])
       .order("reviewed_at", { ascending: true, nullsFirst: true })
       .order("submitted_at", { ascending: false });
   }
@@ -47,10 +48,16 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "Server error" }, { status: 500 });
   }
 
+  const { data: featureRows } = await userClient.rpc(
+    "get_public_trust_feature_config",
+  );
+  const featureConfig = Array.isArray(featureRows) ? featureRows[0] : null;
+
   return NextResponse.json({
     verifications: data ?? [],
     total: count ?? 0,
     page,
     page_size: PAGE_SIZE,
+    feature_config: featureConfig,
   });
 }
