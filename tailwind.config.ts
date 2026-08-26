@@ -64,7 +64,9 @@ const config: Config = {
         accent: {
           DEFAULT: withAlpha("--accent"),
           strong: withAlpha("--accent-strong"),
+          deep: withAlpha("--accent-deep"),
           sub: withAlpha("--accent-sub"),
+          glow: withAlpha("--accent-glow"),
         },
       },
       fontFamily: {
@@ -90,15 +92,20 @@ const config: Config = {
         tightish: "-0.02em",
         display: "-0.038em",
       },
-      // Depth on a near-black ground: every shadow carries an offset and a soft
-      // blur, and raised surfaces add a one-pixel top highlight so they read as
-      // lit rather than merely lighter.
+      // Depth on a near-black ground. One light, above and slightly behind the
+      // viewer, so every shadow on the page falls in the same direction and
+      // raised surfaces all carry the same one-pixel top highlight. A shadow
+      // that disagrees with the others is the fastest way to make a dark page
+      // read as assembled rather than lit.
       boxShadow: {
-        soft: "inset 0 1px 0 rgb(255 255 255 / 0.05), 0 1px 2px rgb(0 0 0 / 0.5), 0 16px 40px -24px rgb(0 0 0 / 0.8)",
-        lift: "inset 0 1px 0 rgb(255 255 255 / 0.07), 0 2px 6px rgb(0 0 0 / 0.5), 0 28px 56px -24px rgb(0 0 0 / 0.85)",
-        float: "0 8px 18px rgb(0 0 0 / 0.5), 0 48px 96px -32px rgb(0 0 0 / 0.9)",
-        device: "0 2px 6px rgb(0 0 0 / 0.6), 0 60px 120px -30px rgb(0 0 0 / 0.95)",
-        mint: "0 8px 24px -8px rgb(95 227 168 / 0.45)",
+        soft: "inset 0 1px 0 rgb(255 255 255 / 0.06), 0 1px 2px rgb(0 0 0 / 0.55), 0 20px 44px -26px rgb(0 0 0 / 0.85)",
+        lift: "inset 0 1px 0 rgb(255 255 255 / 0.09), 0 2px 8px rgb(0 0 0 / 0.55), 0 34px 64px -26px rgb(0 0 0 / 0.9)",
+        float: "0 10px 24px -6px rgb(0 0 0 / 0.6), 0 56px 104px -34px rgb(0 0 0 / 0.92)",
+        device:
+          "0 2px 8px rgb(0 0 0 / 0.65), 0 24px 48px -16px rgb(0 0 0 / 0.7), 0 80px 140px -40px rgb(0 0 0 / 0.95)",
+        mint: "0 10px 30px -10px rgb(95 227 168 / 0.55)",
+        // A pressed control: the highlight moves to the bottom edge.
+        inset: "inset 0 2px 6px rgb(0 0 0 / 0.5), inset 0 -1px 0 rgb(255 255 255 / 0.06)",
       },
       transitionTimingFunction: {
         out: "cubic-bezier(0.16, 1, 0.3, 1)",

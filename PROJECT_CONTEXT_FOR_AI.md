@@ -149,24 +149,41 @@ Two design systems share the Tailwind config. They never share tokens.
 `.theme-site` wrapper on the marketing layout. Dark in one direction, with the
 palette taken from the Bantle mobile app:
 
-- Ground: `canvas` (#060908) and `canvas-2`. Never pure black, which flattens
+- Ground: `canvas` (#050807) and `canvas-2`. Never pure black, which flattens
   every shadow above it.
-- Raised: `surface`, `surface-2`, both green-tinted rather than grey.
+- Raised: `surface`, `surface-2`, both green-tinted rather than grey. These are
+  the *base* of a panel, not the whole material; see `.panel` below.
 - Lines: `edge`, `edge-2`. Text: `fg`, `fg-muted`, `heading`.
-- Accent: `accent` (#5FE3A8), `accent-strong`, `accent-sub`. One accent only.
+- Accent: `accent` (#5FE3A8), `accent-strong`, `accent-deep`, `accent-sub`,
+  `accent-glow`. One accent hue only.
 - `--c-negative` is overridden inside `.theme-site` so the shared error red
   reads on a near-black ground.
 - Bands separate by elevation and light, not colour. `Section` takes `canvas`
-  or `raised`.
-- `.panel` is the raised material: offset shadow, hairline border, one-pixel
-  top highlight.
+  or `raised`, plus optional `light="left" | "right"`.
+- `.panel` is the raised material and it is four things: a vertical luminance
+  gradient brighter at the top, a one-pixel specular top edge, a hairline
+  border, and an offset cast shadow. The gradient is the part that does the
+  work; a flat fill on this ground reads flat at any value. `.panel-accent` is
+  the tinted variant for a focal cell.
+- One light for the whole page: above and slightly behind the viewer. Every
+  shadow falls the same way.
+- `.glow` is the accent used as light (always blurred, always behind
+  something), never as a fill. `.glass` is blurred floating chrome and must
+  stay *outside* 3D scenes, because `backdrop-filter` is a grouping property
+  and computes to `none` inside `preserve-3d`; `.chip` is its in-scene
+  equivalent.
+- No gradient-text utility exists, deliberately. Accent range lives in
+  materials, not type.
 - Typography: Bricolage Grotesque (`font-display`), Geist (`font-sans`), Geist
   Mono (`font-mono`, tabular figures and store-badge captions only).
 - Radius scale: `rounded-full`, `rounded-panel` (20px), `rounded-device` (44px).
 - No kicker/eyebrow labels above section headings. `Section` exposes no such
   prop, on purpose.
 - Motion: one authored moment (the hero deal sequence), plus feedback and
-  continuity. `data-reveal` is for sibling stagger in genuine lists only, not as
+  continuity. The hero device also *rests* at a slight 3D angle
+  (`DeviceScene` `restX` / `restY`), which is what gives it volume; the
+  pointer spring modulates around that rest angle rather than from zero, and
+  the rest angle still applies under reduced motion, on touch, and with JS off. `data-reveal` is for sibling stagger in genuine lists only, not as
   a per-section entrance. All gated behind `prefers-reduced-motion:
   no-preference` and the `js` class.
 - Sentence case, Lucide icons only.

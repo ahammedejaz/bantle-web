@@ -47,7 +47,8 @@ export function Footer() {
           as a flat rectangle where the light body ends. */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute -top-40 left-1/2 h-80 w-[70rem] -translate-x-1/2 rounded-full bg-accent/10 blur-[120px]"
+        className="glow pointer-events-none absolute -top-52 left-1/2 h-[26rem] w-[70rem] -translate-x-1/2 opacity-30"
+        style={{ "--glow-blur": "120px" } as React.CSSProperties}
       />
 
       <div className="container-x relative z-10 pb-10 pt-16 md:pt-20">

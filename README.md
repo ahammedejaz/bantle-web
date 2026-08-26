@@ -325,16 +325,34 @@ should land somewhere they recognise.
 
 - **Surface tokens, not brand-ramp tokens.** Use `canvas`, `canvas-2`,
   `surface`, `surface-2`, `fg`, `fg-muted`, `heading`, `edge`, `edge-2`,
-  `accent`, `accent-strong`, `accent-sub`. They are CSS variables scoped to the
-  `.theme-site` wrapper on the marketing layout, which is what keeps them out
-  of admin.
+  `accent`, `accent-strong`, `accent-deep`, `accent-sub`, `accent-glow`. They
+  are CSS variables scoped to the `.theme-site` wrapper on the marketing
+  layout, which is what keeps them out of admin.
 - **Bands separate by elevation and light, not by colour.** `Section` takes
-  `canvas` or `raised`; everything else is done with a light source, a hairline,
-  or a raised panel.
-- **Raised material is three things, and all three matter:** a shadow with a
-  real offset, a hairline border, and a one-pixel top highlight. The `.panel`
-  class carries all of it. A dark rectangle without the highlight reads as
-  lighter, not as lit.
+  `canvas` or `raised`, and optionally `light="left" | "right"` for a single
+  soft source at one edge. Everything else is done with a hairline or a raised
+  panel.
+- **Raised material is four things, and all four matter:** a vertical luminance
+  gradient (brighter at the top), a one-pixel specular top edge, a hairline
+  border, and a cast shadow with a real vertical offset. `.panel` carries all
+  of it; `.panel-accent` is the same material tinted, for the one panel in a
+  group that is the answer rather than another option. **The gradient is the
+  part that does the work** — a flat fill on a near-black ground reads flat at
+  every value you can pick, which is how the first dark pass ended up looking
+  like text floating on black.
+- **One light, one direction.** Above and slightly behind the viewer, on every
+  band, in every shadow, on every raised edge. A shadow that disagrees with the
+  others makes a dark page read as assembled rather than lit.
+- **Accent as light vs. accent as paint.** `.glow` is the accent used as light:
+  always blurred, always behind something, never carrying text or an edge.
+  Never use it as a fill.
+- **Floating surfaces:** `.glass` (blurred) outside 3D scenes, `.chip`
+  (explicit gradient) inside them. `backdrop-filter` is a grouping property and
+  computes to `none` inside a `preserve-3d` subtree, so `.glass` must never go
+  in one.
+- **No gradient text.** There is deliberately no gradient-text utility. The
+  accent's range belongs to materials, not type; gradient-filled headings are a
+  recognisable generated-page tell.
 - **One accent.** Mint. No second accent hue.
 - **One radius scale.** `rounded-full` for pills and controls, `rounded-panel`
   (20px) for cards and bands, `rounded-device` (44px) for the phone rendering.

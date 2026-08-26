@@ -212,21 +212,22 @@ Everything below was run against the **production build**, not the dev server.
 | `npx eslint .` | clean |
 | `npm test` | 28/28 passing |
 | `npm run build` | succeeds; 50 pages prerendered |
-| Console errors, 13 routes x 3 viewports | **none** |
-| Horizontal overflow at 390 / 768 / 1440 | **none** |
+| Console errors, 12 routes x 4 viewports | **none** |
+| Horizontal overflow at 390 / 768 / 1440 / 1920 | **none** |
 | Exactly one `<h1>` per page | yes |
 | No skipped heading levels | yes |
 | Every `<img>` has `alt` | yes |
 | Canonical, description, `og:image`, valid JSON-LD per page | yes, all 12 |
-| WCAG AA contrast, every text node, 3 viewports | passing |
+| WCAG AA contrast, every text node, worst gradient stop | passing |
 | Skip link is the first tab stop and becomes visible on focus | yes |
 | Mobile nav opens, navigates, and closes | yes |
 | FAQ disclosures open and reveal their answer | yes |
 | Header CTA anchors to `#get-the-app` and the target exists | yes |
 | Impeccable design detector | **0 findings** |
 | 3D tilt, spotlight, sequence, reduced motion, touch, no-JS | all correct |
-| LCP (production, local) | 72 ms |
+| LCP (production, local) | 80 ms |
 | CLS | 0 |
+| Long tasks during 30 pointer-tilt moves | **0** |
 
 Screenshots were captured for 9 routes across mobile (390x844), tablet (768), and desktop (1440x900), in light and dark. The browser extension could not resize its viewport, so all responsive verification was done through headless Chromium at real device sizes rather than by eyeballing a desktop window.
 
@@ -298,3 +299,88 @@ Ranked by impact.
 
 **Untouched**
 Everything under `app/admin/*` and `components/admin/*`, every API route, `middleware.ts`, `next.config.mjs`, and all of `lib/` except the two new files.
+
+---
+
+## 9. Third pass: material, depth, and composition
+
+The second pass fixed the palette. Reviewing the result at 6/10, the problems
+left were not colour problems.
+
+### What was actually wrong
+
+**Surfaces were only 3% lighter than the ground.** `--surface` sat at
+`rgb(10 28 21)` over a `rgb(6 9 8)` canvas. On a real panel that separation is
+invisible, so nothing on the page read as an object and the whole site looked
+like text floating on black. Every carefully-specified shadow had nothing to
+be cast by.
+
+**The device was a sticker.** It faced the viewer dead-on. An object with no
+visible side has no volume, however good its internal detail is.
+
+**The acceptance chip collided with the status bar,** covering the time. It
+read as a mistake rather than as a floating element.
+
+**Two sections were column stubs** — a short heading pinned to the top of one
+column beside a much taller list, leaving the lower half of the band empty.
+
+**The step rail ran off past step 05** into nothing.
+
+**Every step carried both a number and an icon**, indexing the same item twice.
+
+### What changed
+
+| | Before | After |
+|---|---|---|
+| Panel fill | flat `--surface` | vertical white gradient (6% → 0.8%) over a lifted `--surface`, plus a 1px specular top edge |
+| `--surface` | `16 34 27` was `10 28 21` | lifted so the gradient and hairline have something to sit on |
+| Device | facing forward, flat | rests at `rotateY(7°) rotateX(1.5°)` in a 2100px-perspective scene, turned *toward* the copy, with a lit left flank and a contact shadow that swings with it |
+| Chip | over the status bar | beside the propose control it is the consequence of on desktop; straddling the top edge, centred, on phones |
+| Step rail | one span across the whole row, dangling after 05 | one connector per step, omitted on the last, so it terminates on a node |
+| Step index | number *and* icon | number only; step 03 (propose) carries the one filled node |
+| Trust badges | three loose pills | one raised strip divided by hairlines |
+| Store badges | flat white rectangles | gradient fill, inner top highlight, and the page's shadow model |
+| Short headings | `sticky top-28` beside a taller list | optically centred against it |
+| Section rhythm | `py-20 md:py-28` on all eight bands | alternates 20/24 and 24/32, with a single soft light on the asymmetric ones |
+
+**Light comes from one place.** Above and slightly behind the viewer, on every
+band, in every shadow, on every raised edge. A shadow that disagrees with the
+others is the fastest way to make a dark page read as assembled rather than lit.
+
+### Two things I removed after building them
+
+**A gradient-text utility.** I added `.text-mint` so the accent would have
+range across the page. The design detector flagged it, correctly: gradient-filled
+type is one of the most recognisable generated-page tells, and it was doing
+nothing a solid accent word does not. The accent's range belongs to materials —
+panel fills, badge fills, the blurred lights — not to type. Removed, and a
+comment left in `globals.css` saying why, so it does not come back.
+
+**`backdrop-filter` on the acceptance chip.** It computes to `none` inside a
+`preserve-3d` subtree, so it was buying nothing and the property is a grouping
+property that risks the depth sort. Replaced with an explicit gradient fill
+(`.chip`), and `.glass` now documents that it must stay outside 3D scenes.
+
+### Third-pass bugs found and fixed
+
+1. **The acceptance chip was hidden below `md`**, so every phone visitor saw
+   the button change to "Deal request sent" and never saw the payoff beat. It
+   now has a phone position of its own.
+2. **`md:pb-18` is not a real Tailwind class** (the spacing scale has no 18).
+   It was silently dropping. Now `md:pb-20`.
+3. **`press` writes a raw `transform`**, which would have clobbered the store
+   badges' composed hover/active transform. The badges no longer use it.
+4. **`seq-pop` held the chip at `translateZ(60px)`** while the element sat at
+   70px, so it would have snapped a plane on the last frame.
+5. **Secondary text inside the device sat at 4.48:1**, a hair under AA, and the
+   inactive tab labels at 3.11:1. Both raised.
+
+### Verification method note
+
+The contrast checker used in earlier passes reported CSS gradients as
+transparent, so it compared dark-on-mint text against the page ground and
+produced 50 false failures that had to be dismissed by hand. It now parses the
+colour stops out of every gradient in an element's ancestor chain, composites
+each combination, and keeps the worst. **Every text node on 12 routes passes AA
+against the darkest stop that can sit behind it** — no exemptions claimed, no
+findings waived.

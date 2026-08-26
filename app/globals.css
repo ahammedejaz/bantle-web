@@ -54,25 +54,33 @@
 
   /* Ground. Near-black with a green undertone, the way the app reads on an
      OLED panel. Never pure #000: it flattens every shadow above it. */
-  --canvas: 6 9 8;
-  --canvas-2: 9 15 13;
+  --canvas: 5 8 7;
+  --canvas-2: 8 13 11;
 
-  /* Raised surfaces. Green-tinted rather than grey, so a card reads as part of
-     the brand rather than as a neutral panel dropped onto it. */
-  --surface: 10 28 21;
-  --surface-2: 14 38 29;
+  /* Raised surfaces.
+     These are the *base* of a panel, not the whole story. A flat fill on a
+     near-black ground always reads flat, however carefully it is chosen, so
+     `.panel` lays a vertical white gradient over these values. What matters
+     here is that the base sits far enough above the ground for the gradient
+     and the hairline to have something to sit on: at 3% separation the panel
+     was invisible and the page read as text floating on black. */
+  --surface: 16 34 27;
+  --surface-2: 22 46 37;
 
-  --edge: 26 58 46;
-  --edge-2: 38 82 65;
+  --edge: 33 68 55;
+  --edge-2: 48 96 78;
 
   --fg: 236 245 241;
-  --fg-muted: 143 166 156;
+  --fg-muted: 149 172 162;
   --heading: 255 255 255;
 
-  /* One accent, the app's own. */
+  /* One accent, the app's own. `--accent-glow` is the same hue used as light
+     rather than as paint: it only ever appears blurred, behind something. */
   --accent: 95 227 168;
-  --accent-strong: 124 250 207;
-  --accent-sub: 10 40 30;
+  --accent-strong: 133 252 210;
+  --accent-deep: 47 179 132;
+  --accent-sub: 12 45 34;
+  --accent-glow: 60 200 145;
 
   /* Error red, lifted so it reads on a near-black ground. */
   --c-negative: 255 138 128;
@@ -133,16 +141,92 @@
     @apply mx-auto w-full max-w-content px-5 sm:px-6 lg:px-8;
   }
 
-  /* Raised material.
-     Three parts, and all three matter: a real shadow with an offset, a hairline
-     border, and a one-pixel top highlight. The highlight is what makes a dark
-     panel read as lit from above instead of as a lighter rectangle. */
+  /* ---------------------------------------------------------------------
+     Raised material.
+
+     A dark panel needs four things to read as an object rather than as a
+     lighter rectangle, and the page looks flat if any one is missing:
+
+       1. a vertical luminance gradient, brighter at the top edge. This is
+          the one that actually does the work. A flat fill on a near-black
+          ground reads flat at every value you can pick.
+       2. a one-pixel specular highlight along the top edge, which is what
+          says "lit from above" rather than "painted lighter".
+       3. a hairline border, so the shape has an edge in its own right.
+       4. a cast shadow with a real vertical offset, so it sits above the
+          ground instead of being embedded in it.
+
+     Light comes from above and slightly behind the viewer, everywhere on
+     the page. Every shadow here falls down; no shadow anywhere fights it.
+     --------------------------------------------------------------------- */
   .panel {
-    @apply rounded-panel border border-edge bg-surface;
+    @apply relative rounded-panel border border-edge;
+    background-image: linear-gradient(
+      180deg,
+      rgb(255 255 255 / 0.06) 0%,
+      rgb(255 255 255 / 0.022) 38%,
+      rgb(255 255 255 / 0.008) 100%
+    );
+    background-color: rgb(var(--surface));
     box-shadow:
-      inset 0 1px 0 rgb(255 255 255 / 0.05),
-      0 1px 2px rgb(0 0 0 / 0.5),
-      0 16px 40px -24px rgb(0 0 0 / 0.8);
+      inset 0 1px 0 rgb(255 255 255 / 0.08),
+      0 1px 2px rgb(0 0 0 / 0.55),
+      0 20px 44px -26px rgb(0 0 0 / 0.85);
+  }
+
+  /* The same material, tinted by the accent. For the one panel in a group
+     that should read as the answer rather than as another option. */
+  .panel-accent {
+    @apply relative rounded-panel border;
+    border-color: rgb(var(--accent) / 0.28);
+    background-image: linear-gradient(
+      180deg,
+      rgb(var(--accent) / 0.14) 0%,
+      rgb(var(--accent) / 0.045) 45%,
+      rgb(var(--accent) / 0.02) 100%
+    );
+    background-color: rgb(var(--surface));
+    box-shadow:
+      inset 0 1px 0 rgb(var(--accent-strong) / 0.22),
+      0 1px 2px rgb(0 0 0 / 0.55),
+      0 20px 48px -26px rgb(0 0 0 / 0.85);
+  }
+
+  /* Floating chrome that sits over other content and is *not* inside a 3D
+     scene. `backdrop-filter` is a grouping property: inside a `preserve-3d`
+     subtree the browser disables it and flattens the element out of the depth
+     sort, so anything using this must stay outside the scene. Use `.chip` for
+     floating surfaces that live in one. */
+  .glass {
+    background-color: rgb(14 30 24 / 0.82);
+    backdrop-filter: blur(20px) saturate(140%);
+    -webkit-backdrop-filter: blur(20px) saturate(140%);
+    border: 1px solid rgb(255 255 255 / 0.1);
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.1),
+      0 10px 24px -6px rgb(0 0 0 / 0.6),
+      0 40px 80px -32px rgb(0 0 0 / 0.9);
+  }
+
+  @supports not (backdrop-filter: blur(1px)) {
+    .glass {
+      background-color: rgb(14 30 24 / 0.97);
+    }
+  }
+
+  /* The same read as `.glass`, built without a grouping property so it can
+     sit inside the hero's 3D scene and still sort in front of the device. */
+  .chip {
+    background-image: linear-gradient(
+      180deg,
+      rgb(28 52 43) 0%,
+      rgb(16 33 27) 100%
+    );
+    border: 1px solid rgb(255 255 255 / 0.11);
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.11),
+      0 10px 24px -6px rgb(0 0 0 / 0.7),
+      0 40px 80px -32px rgb(0 0 0 / 0.95);
   }
 
   /* Long-form legal / policy typography. */
@@ -211,20 +295,44 @@
     transform: scale(0.975);
   }
 
-  /* Fine grain. A static raster, not a filter, so it costs nothing on scroll. */
+  /* Fine grain. A static raster, not a filter, so it costs nothing on scroll.
+     Large flat fields of near-black band badly on 8-bit panels; the grain is
+     there to break the banding as much as to add texture, which is why it
+     sits over the section grounds and the big blurred lights. */
   .grain::after {
     content: "";
     position: absolute;
     inset: 0;
     pointer-events: none;
-    opacity: 0.4;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='0.28'/%3E%3C/svg%3E");
+    opacity: 0.55;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='0.3'/%3E%3C/svg%3E");
   }
+
+  /* The accent used as light rather than as paint: always blurred, always
+     behind something, never carrying text or an edge. */
+  .glow {
+    background-image: radial-gradient(
+      closest-side,
+      rgb(var(--accent-glow) / 0.5),
+      rgb(var(--accent-glow) / 0.12) 55%,
+      transparent 100%
+    );
+    filter: blur(var(--glow-blur, 90px));
+  }
+
+  /* Note: there is deliberately no gradient-text utility here. The accent
+     needs range across the page, but that range belongs to materials — panel
+     fills, badge fills, the blurred lights above — not to type. Gradient-filled
+     headings read as decoration and are one of the most recognisable
+     generated-page tells; a solid accent word does the same job. */
 
   /* Perspective scene for the hero device. */
   .scene {
-    perspective: 1300px;
-    perspective-origin: 50% 42%;
+    /* A long lens. Short perspective distances on an element this size
+       keystone hard: the far edge shrinks so much the device reads as
+       falling over rather than as turned. */
+    perspective: 2100px;
+    perspective-origin: 50% 45%;
   }
   .scene-3d {
     transform-style: preserve-3d;
@@ -282,9 +390,13 @@
   to { opacity: 0; transform: translateY(-10px); }
 }
 
+/* The chip arrives forward of the device, so its depth has to be held across
+   the whole keyframe or it would snap back to the page plane on the last
+   frame. It never starts from scale(0): nothing in the world appears out of
+   nothing, and 0.92 still reads as "was already there, just small". */
 @keyframes seq-pop {
-  from { opacity: 0; transform: translate3d(0, 12px, 60px) scale(0.9); }
-  to { opacity: 1; transform: translate3d(0, 0, 60px) scale(1); }
+  from { opacity: 0; transform: translate3d(0, 12px, 70px) scale(0.92); }
+  to { opacity: 1; transform: translate3d(0, 0, 70px) scale(1); }
 }
 
 /* The demonstration layers are inert until the sequence runs. Without motion,

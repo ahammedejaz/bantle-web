@@ -3,12 +3,10 @@ import {
   Building2,
   Check,
   FileCheck2,
-  HandCoins,
   Handshake,
   ListChecks,
   Lock,
   MessageCircle,
-  Search,
   ShieldCheck,
   Sparkles,
   X,
@@ -112,9 +110,13 @@ function WhyBantle() {
   ];
 
   return (
-    <Section tone="canvas">
+    <Section tone="canvas" light="left" innerClassName="py-24 md:py-32">
       <div className="grid gap-12 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:gap-20">
-        <div className="lg:sticky lg:top-28 lg:self-start">
+        {/* Optically centred against the list rather than pinned to its top.
+            Sticky earns its keep when the column beside it is long enough to
+            scroll past; against three items it only leaves the lower half of
+            the band empty. */}
+        <div className="lg:self-center">
           <SectionHeading
             title={
               <>
@@ -136,9 +138,17 @@ function WhyBantle() {
                 style={
                   { "--reveal-delay": `${index * 70}ms` } as React.CSSProperties
                 }
-                className="group grid grid-cols-[auto_minmax(0,1fr)] gap-x-5 gap-y-2 border-b border-edge py-7 first:border-t sm:gap-x-7"
+                className="group relative grid grid-cols-[auto_minmax(0,1fr)] gap-x-5 gap-y-2 border-b border-edge py-8 first:border-t sm:gap-x-7"
               >
-                <span className="row-span-2 mt-0.5 inline-flex h-11 w-11 items-center justify-center rounded-full border border-edge bg-surface text-accent transition-colors duration-300 group-hover:border-accent/40 group-hover:bg-accent group-hover:text-canvas">
+                {/* The separating hairline lights up under the pointer,
+                    left to right. The row itself never moves: this is a
+                    list, and rows in a list that jump on hover read as
+                    buttons. */}
+                <span
+                  aria-hidden="true"
+                  className="pointer-events-none absolute inset-x-0 bottom-[-1px] h-px origin-left scale-x-0 bg-gradient-to-r from-accent via-accent/40 to-transparent transition-transform duration-500 ease-out group-hover:scale-x-100"
+                />
+                <span className="row-span-2 mt-0.5 inline-flex h-11 w-11 items-center justify-center rounded-full border border-edge bg-surface text-accent shadow-soft transition-colors duration-300 group-hover:border-accent/45 group-hover:bg-gradient-to-b group-hover:from-accent-strong group-hover:to-accent group-hover:text-[#04120D]">
                   <Icon
                     className="h-[18px] w-[18px]"
                     strokeWidth={1.9}
@@ -166,50 +176,45 @@ function WhyBantle() {
    --------------------------------------------------------------------------- */
 
 function HowItWorks() {
+  // No icons here. The number is already the index for each step; a second
+  // glyph beside it indexes the same thing twice and reads as decoration.
   const steps = [
     {
-      icon: Search,
       title: "Find a listing",
       body: "Browse a recurring monthly slot, or fixed-duration access when a seller has validity left.",
     },
     {
-      icon: ListChecks,
       title: "Read the terms",
       body: "Provider-rule reminders, host trust signals, and the details to confirm before you commit.",
     },
     {
-      icon: Handshake,
       title: "Propose a deal",
       body: "Buyers propose first. Send a deal request on the listing when the details look right.",
     },
     {
-      icon: MessageCircle,
       title: "Chat opens",
       body: "Confirm provider rules, access, timing, and expectations directly with the other person.",
     },
     {
-      icon: HandCoins,
       title: "Pay outside Bantle",
       body: "Choose your own method. Bantle never collects, routes, verifies, or reverses payments.",
     },
   ];
 
   return (
-    <Section tone="raised">
+    <Section tone="raised" innerClassName="py-20 md:py-24">
       <SectionHeading
         title="From discovering a slot to a direct conversation."
         lead="Five steps, in the order they actually happen inside the app."
       />
 
-      <ol className="relative mt-14 grid gap-10 sm:grid-cols-2 lg:mt-16 lg:grid-cols-5 lg:gap-6">
-        {/* The rail. Vertical on small screens, horizontal from lg upward. */}
-        <span
-          aria-hidden="true"
-          className="pointer-events-none absolute left-[21px] top-2 h-[calc(100%-1rem)] w-px bg-gradient-to-b from-accent/50 via-edge-2 to-transparent lg:left-0 lg:top-[21px] lg:h-px lg:w-full lg:bg-gradient-to-r lg:from-accent/50 lg:via-edge-2 lg:to-transparent"
-        />
-
+      <ol className="relative mt-14 grid gap-10 sm:grid-cols-2 lg:mt-20 lg:grid-cols-5 lg:gap-7">
         {steps.map((step, index) => {
-          const Icon = step.icon;
+          const isLast = index === steps.length - 1;
+          // Proposal-first is the product's actual claim, and it is the step a
+          // visitor is most likely to be surprised by, so it carries the one
+          // filled node in the rail.
+          const isPivot = index === 2;
           return (
             <li
               key={step.title}
@@ -217,20 +222,33 @@ function HowItWorks() {
               style={
                 { "--reveal-delay": `${index * 60}ms` } as React.CSSProperties
               }
-              className="relative pl-14 sm:pl-16 lg:pl-0"
+              className="relative pl-16 lg:pl-0"
             >
-              <span className="absolute left-0 top-0 inline-flex h-[42px] w-[42px] items-center justify-center rounded-full border border-edge-2 bg-canvas-2 font-mono text-[12px] font-medium text-accent lg:relative lg:mb-6 lg:flex">
+              {/* One connector per step, drawn to the *next* step and omitted
+                  on the last, so the rail terminates on a node instead of
+                  running off into empty space. It is hidden in the two-column
+                  band, where a rail would connect the wrong pairs. */}
+              {!isLast ? (
+                <span
+                  aria-hidden="true"
+                  className="pointer-events-none absolute left-[21px] top-[50px] w-px bg-gradient-to-b from-edge-2 to-edge-2/25 sm:hidden lg:bottom-auto lg:left-[52px] lg:top-[21px] lg:-right-7 lg:block lg:h-px lg:w-auto lg:bg-gradient-to-r lg:from-edge-2 lg:to-edge-2/25"
+                  style={{ bottom: "-2.5rem" }}
+                />
+              ) : null}
+
+              <span
+                className={
+                  isPivot
+                    ? "absolute left-0 top-0 inline-flex h-[42px] w-[42px] items-center justify-center rounded-full bg-gradient-to-b from-accent-strong to-accent font-mono text-[12px] font-semibold text-[#04120D] shadow-mint lg:relative lg:mb-7 lg:flex"
+                    : "absolute left-0 top-0 inline-flex h-[42px] w-[42px] items-center justify-center rounded-full border border-edge-2 bg-surface font-mono text-[12px] font-medium text-accent shadow-soft lg:relative lg:mb-7 lg:flex"
+                }
+              >
                 {String(index + 1).padStart(2, "0")}
               </span>
-              <Icon
-                className="mb-3 h-[18px] w-[18px] text-accent lg:mb-4"
-                strokeWidth={1.9}
-                aria-hidden="true"
-              />
-              <h3 className="font-display text-[18px] font-semibold leading-snug tracking-tight text-heading">
+              <h3 className="font-display text-[19px] font-semibold leading-snug tracking-tight text-heading">
                 {step.title}
               </h3>
-              <p className="mt-2 text-[14.5px] leading-[1.65] text-fg-muted">
+              <p className="mt-2.5 text-[14.5px] leading-[1.65] text-fg-muted">
                 {step.body}
               </p>
             </li>
@@ -253,7 +271,7 @@ function HowItWorks() {
 
 function AppPreview() {
   return (
-    <Section tone="canvas">
+    <Section tone="canvas" light="right" innerClassName="py-24 md:py-32">
       <SectionHeading
         title="A preview grounded in the real app flow."
         lead="These mirror how the Bantle mobile app keeps discovery, proposals, chat, and safety clear for both sides."
@@ -470,12 +488,20 @@ function TrustHighlights() {
           lead="Badges are signals that help reduce fake accounts. They are not guarantees of payment, access, refunds, or outcomes."
         />
 
-        <div className="mx-auto mt-14 grid max-w-4xl gap-8 sm:grid-cols-3">
+        {/* The three badges are one system, so they sit on one object.
+            Loose in the middle of a dark band they read as three unrelated
+            labels floating in space; a single raised strip divided by
+            hairlines says they are the same kind of thing. */}
+        <div className="panel mx-auto mt-14 grid max-w-4xl divide-y divide-edge sm:grid-cols-3 sm:divide-x sm:divide-y-0">
           {badges.map((badge) => {
             const Icon = badge.icon;
             return (
-              <div key={badge.label} className="text-center">
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-accent px-3.5 py-2 text-[13px] font-semibold text-canvas shadow-mint">
+              <div key={badge.label} className="px-6 py-8 text-center">
+                {/* A badge in the app is an object you are awarded, so it is
+                    built like one here: a fill with a gradient, a lit top
+                    edge, and a shadow that falls the same way as every other
+                    shadow on the page. */}
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-b from-accent-strong to-accent px-4 py-2 text-[13px] font-semibold text-[#04120D] shadow-[inset_0_1px_0_rgb(255_255_255_/_0.55),0_1px_2px_rgb(0_0_0_/_0.5),0_12px_28px_-10px_rgb(95_227_168_/_0.5)]">
                   <Icon
                     className="h-3.5 w-3.5"
                     strokeWidth={2.4}
@@ -483,7 +509,7 @@ function TrustHighlights() {
                   />
                   {badge.label}
                 </span>
-                <p className="mx-auto mt-4 max-w-[34ch] text-[14px] leading-[1.6] text-fg-muted">
+                <p className="mx-auto mt-5 max-w-[30ch] text-[14px] leading-[1.6] text-fg-muted">
                   {badge.body}
                 </p>
               </div>
@@ -542,7 +568,7 @@ function SafetyAndLimits() {
   ];
 
   return (
-    <Section tone="canvas">
+    <Section tone="canvas" innerClassName="py-20 md:py-24">
       <div className="grid items-start gap-12 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] lg:gap-16">
         <div>
           <SectionHeading title="Built around clear responsibilities." />
@@ -602,10 +628,10 @@ function SafetyAndLimits() {
 
 function FAQPreview() {
   return (
-    <Section tone="raised">
+    <Section tone="raised" light="left" innerClassName="py-24 md:py-32">
       <div className="grid gap-10 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] lg:gap-20">
         <SectionHeading
-          className="lg:sticky lg:top-28 lg:self-start"
+          className="lg:self-center"
           title="The important boundaries are visible upfront."
         />
 
@@ -672,8 +698,8 @@ function DownloadCTA() {
         <p className="mx-auto mt-6 max-w-xl text-pretty text-[17px] leading-[1.65] text-fg-muted md:text-[18px]">
           Browse listings, propose deals, and find sharing partners across India.
         </p>
-        <div className="mt-10 flex justify-center">
-          <StoreBadges align="center" />
+        <div className="mt-11 flex justify-center">
+          <StoreBadges align="center" size="lg" />
         </div>
         <p className="mt-10">
           <ArrowLink href="/support">Need help? Contact support</ArrowLink>

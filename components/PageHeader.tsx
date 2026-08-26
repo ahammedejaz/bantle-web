@@ -14,19 +14,28 @@ interface PageHeaderProps {
 // header earns its separation from the body with light and a hairline rather
 // than with a colour change: one offset source top-right, and a rule that
 // fades out at both ends.
+//
+// The band's ground also falls off toward its own bottom edge, so the step
+// down into the page body is something the light is already doing rather than
+// a flat tone abruptly changing at a line.
 export function PageHeader({ eyebrow, crumb, title, intro }: PageHeaderProps) {
   return (
-    <section className="grain relative isolate overflow-hidden bg-canvas text-heading">
+    <section className="grain relative isolate overflow-hidden bg-canvas-2 text-heading">
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute -right-24 -top-40 h-[28rem] w-[28rem] rounded-full bg-accent/[0.10] blur-[130px]"
+        className="glow pointer-events-none absolute -right-40 -top-72 h-[38rem] w-[38rem] opacity-40"
+        style={{ "--glow-blur": "130px" } as React.CSSProperties}
+      />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-gradient-to-b from-transparent to-canvas"
       />
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-accent/25 to-transparent"
       />
 
-      <div className="container-x relative z-10 pb-16 pt-12 md:pb-20 md:pt-16">
+      <div className="container-x relative z-10 pb-14 pt-12 md:pb-20 md:pt-16">
         {crumb ? (
           <nav aria-label="Breadcrumb" className="mb-7">
             <ol className="flex items-center gap-1.5 text-[13px] text-fg-muted">
@@ -47,8 +56,11 @@ export function PageHeader({ eyebrow, crumb, title, intro }: PageHeaderProps) {
         ) : null}
 
         {eyebrow ? (
-          <p className="mb-6 inline-flex items-center gap-2 rounded-full border border-edge bg-surface py-1.5 pl-2.5 pr-4 text-[12.5px] font-medium text-fg-muted">
-            <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-accent" />
+          <p className="glass mb-6 inline-flex items-center gap-2.5 rounded-full py-2 pl-3 pr-4 text-[12.5px] font-medium text-fg">
+            <span aria-hidden="true" className="relative flex h-2 w-2">
+              <span className="absolute inset-0 rounded-full bg-accent/40 blur-[3px]" />
+              <span className="relative h-2 w-2 rounded-full bg-accent" />
+            </span>
             {eyebrow}
           </p>
         ) : null}

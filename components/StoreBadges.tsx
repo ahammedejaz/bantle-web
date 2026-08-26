@@ -7,7 +7,7 @@ const STORE_URLS = {
   ios: "https://apps.apple.com/in/app/id6777968886",
 } as const;
 
-type Size = "sm" | "md";
+type Size = "sm" | "md" | "lg";
 
 interface StoreBadgesProps {
   className?: string;
@@ -38,8 +38,9 @@ export function StoreBadges({
 }
 
 const sizeClasses: Record<Size, string> = {
-  sm: "h-12 min-w-[168px] gap-2.5 px-4",
-  md: "h-[56px] min-w-[196px] gap-3 px-5",
+  sm: "h-[50px] min-w-[164px] gap-2.5 px-4",
+  md: "h-[58px] min-w-[194px] gap-3 px-5",
+  lg: "h-[64px] min-w-[216px] gap-3.5 px-6",
 };
 
 function StoreBadge({ store, size }: { store: "play" | "ios"; size: Size }) {
@@ -56,24 +57,36 @@ function StoreBadge({ store, size }: { store: "play" | "ios"; size: Size }) {
       aria-label={label}
       title={label}
       className={cn(
-        "press group inline-flex select-none items-center justify-center rounded-[14px]",
-        "bg-[#F4F7F5] text-canvas ring-1 ring-inset ring-black/10",
-        "transition-[background-color,box-shadow] duration-200 ease-out",
-        "hover:bg-white hover:shadow-lift",
+        // No `press` here: that class writes a raw `transform`, which would
+        // clobber the composed hover/active transform below.
+        "group relative inline-flex select-none items-center justify-center overflow-hidden rounded-[13px]",
+        // These are the brightest objects on a near-black page, which is
+        // correct: they are the thing to click. What made them read as stock
+        // assets was the finish, not the brightness. A real fill has a
+        // gradient and an inner top highlight, the same light model as every
+        // raised surface on the page, so they belong to it.
+        "bg-gradient-to-b from-white to-[#DFE7E3] text-[#050807]",
+        "shadow-[inset_0_1px_0_rgb(255_255_255_/_0.9),0_1px_2px_rgb(0_0_0_/_0.5),0_16px_32px_-18px_rgb(0_0_0_/_0.9)]",
+        "ring-1 ring-inset ring-black/[0.08]",
+        "transition-[transform,box-shadow] duration-200 ease-out",
+        "hover:-translate-y-0.5 hover:shadow-[inset_0_1px_0_rgb(255_255_255_/_0.9),0_2px_4px_rgb(0_0_0_/_0.5),0_22px_44px_-18px_rgb(0_0_0_/_0.9),0_0_0_1px_rgb(95_227_168_/_0.5),0_10px_34px_-10px_rgb(95_227_168_/_0.45)]",
+        "active:translate-y-0 active:scale-[0.985]",
         sizeClasses[size]
       )}
     >
-      <span className="shrink-0">{isPlay ? <PlayGlyph /> : <AppleGlyph />}</span>
-      <span className="flex flex-col items-start text-left leading-none">
-        <span
-          className="font-mono text-[9.5px] uppercase tracking-[0.16em] text-canvas/70"
-        >
+      <span className="relative shrink-0">
+        {isPlay ? <PlayGlyph /> : <AppleGlyph />}
+      </span>
+      <span className="relative flex flex-col items-start text-left leading-none">
+        <span className="text-[10px] font-medium uppercase tracking-[0.09em] text-[#050807]/60">
           {isPlay ? "Get it on" : "Download on the"}
         </span>
         <span
           className={cn(
-            "mt-1.5 font-display font-semibold tracking-tight",
-            size === "md" ? "text-[17px]" : "text-[15px]"
+            "mt-[5px] font-display font-semibold tracking-tight",
+            size === "lg" && "text-[19px]",
+            size === "md" && "text-[17.5px]",
+            size === "sm" && "text-[15.5px]"
           )}
         >
           {isPlay ? "Google Play" : "App Store"}
