@@ -107,7 +107,7 @@ function CheckingState() {
         title="Checking your verification link."
         intro="This only takes a moment."
       />
-      <div className="bg-paper"><div className="container-x py-14 md:py-20" /></div>
+      <div className="bg-canvas"><div className="container-x py-14 md:py-20" /></div>
     </>
   );
 }
@@ -120,9 +120,9 @@ function VerifiedState() {
         title="Welcome to Bantle. Your email is confirmed."
         intro="You're all set. Open the Bantle app on your phone to finish setting up your account."
       />
-      <div className="bg-paper"><article className="container-x max-w-2xl py-14 md:py-20">
+      <div className="bg-canvas"><article className="container-x max-w-2xl py-14 md:py-20">
         <section className="rounded-panel bg-surface p-6 shadow-soft ring-1 ring-edge md:p-8">
-          <p className="mb-3 font-mono text-[10px] uppercase tracking-[0.18em] text-fg-muted">
+          <p className="mb-3 text-[12.5px] font-medium text-accent">
             Next step
           </p>
           <h2 className="mb-3 font-display text-[24px] font-semibold tracking-tight text-heading md:text-[28px]">
@@ -135,7 +135,7 @@ function VerifiedState() {
           </p>
           <a
             href="bantle://"
-            className="press inline-flex h-12 items-center rounded-full bg-canvas px-6 font-display text-[15px] font-semibold text-canvas-fg transition-colors duration-200 ease-out hover:bg-canvas-2"
+            className="press inline-flex h-12 items-center rounded-full bg-canvas px-6 font-display text-[15px] font-semibold text-heading transition-colors duration-200 ease-out hover:bg-canvas-2"
           >
             Open Bantle
           </a>
@@ -183,9 +183,9 @@ function ErrorState() {
         title="We could not verify this link."
         intro={INVALID_LINK_COPY}
       />
-      <div className="bg-paper"><article className="container-x max-w-2xl py-14 md:py-20">
+      <div className="bg-canvas"><article className="container-x max-w-2xl py-14 md:py-20">
         <section className="rounded-panel bg-surface p-6 shadow-soft ring-1 ring-edge md:p-8">
-          <p className="mb-3 font-mono text-[10px] uppercase tracking-[0.18em] text-fg-muted">
+          <p className="mb-3 text-[12.5px] font-medium text-accent">
             Next step
           </p>
           <h2 className="mb-3 font-display text-[24px] font-semibold tracking-tight text-heading md:text-[28px]">
@@ -204,7 +204,7 @@ function ErrorState() {
           </p>
           <a
             href="bantle://"
-            className="press inline-flex h-12 items-center rounded-full bg-canvas px-6 font-display text-[15px] font-semibold text-canvas-fg transition-colors duration-200 ease-out hover:bg-canvas-2"
+            className="press inline-flex h-12 items-center rounded-full bg-canvas px-6 font-display text-[15px] font-semibold text-heading transition-colors duration-200 ease-out hover:bg-canvas-2"
           >
             Open Bantle
           </a>
@@ -222,9 +222,9 @@ function NeutralState() {
         title="Open Bantle to finish verification."
         intro="If you arrived here from a Bantle verification email, open the app to continue. If the link is invalid or expired, request a new verification email in the app."
       />
-      <div className="bg-paper"><article className="container-x max-w-2xl py-14 md:py-20">
+      <div className="bg-canvas"><article className="container-x max-w-2xl py-14 md:py-20">
         <section className="rounded-panel bg-surface p-6 shadow-soft ring-1 ring-edge md:p-8">
-          <p className="mb-3 font-mono text-[10px] uppercase tracking-[0.18em] text-fg-muted">
+          <p className="mb-3 text-[12.5px] font-medium text-accent">
             Next step
           </p>
           <h2 className="mb-3 font-display text-[24px] font-semibold tracking-tight text-heading md:text-[28px]">
@@ -235,7 +235,7 @@ function NeutralState() {
           </p>
           <a
             href="bantle://"
-            className="press inline-flex h-12 items-center rounded-full bg-canvas px-6 font-display text-[15px] font-semibold text-canvas-fg transition-colors duration-200 ease-out hover:bg-canvas-2"
+            className="press inline-flex h-12 items-center rounded-full bg-canvas px-6 font-display text-[15px] font-semibold text-heading transition-colors duration-200 ease-out hover:bg-canvas-2"
           >
             Open Bantle
           </a>

@@ -208,7 +208,7 @@ export function ResetPasswordClient() {
           title="Validating your reset link."
           intro="Just a moment."
         />
-        <div className="bg-paper"><div className="container-x py-14 md:py-20" /></div>
+        <div className="bg-canvas"><div className="container-x py-14 md:py-20" /></div>
       </>
     );
   }
@@ -221,9 +221,9 @@ export function ResetPasswordClient() {
           title="Couldn't reset your password."
           intro="Your reset link may have expired or already been used. Request a new one from the Bantle app to continue."
         />
-        <div className="bg-paper"><article className="container-x max-w-2xl py-14 md:py-20">
+        <div className="bg-canvas"><article className="container-x max-w-2xl py-14 md:py-20">
           <section className="rounded-panel bg-surface p-6 shadow-soft ring-1 ring-edge md:p-8">
-            <p className="mb-3 font-mono text-[10px] uppercase tracking-[0.18em] text-fg-muted">
+            <p className="mb-3 text-[12.5px] font-medium text-accent">
               Next step
             </p>
             <h2 className="mb-3 font-display text-[24px] font-semibold tracking-tight text-heading md:text-[28px]">
@@ -265,7 +265,7 @@ export function ResetPasswordClient() {
           title="Your password has been changed."
           intro="Open the Bantle app on your phone and sign in with your new password."
         />
-        <div className="bg-paper"><article className="container-x max-w-2xl py-14 md:py-20">
+        <div className="bg-canvas"><article className="container-x max-w-2xl py-14 md:py-20">
           <section className="rounded-panel bg-surface p-6 shadow-soft ring-1 ring-edge md:p-8">
             <div className="flex items-center gap-3 mb-4">
               <CheckCircle2 size={24} className="text-accent" />
@@ -295,7 +295,7 @@ export function ResetPasswordClient() {
         title="Set a new password for Bantle."
         intro="Choose a password you haven't used before. After you reset it, sign in fresh on the Bantle app to continue."
       />
-      <div className="bg-paper"><article className="container-x max-w-2xl py-14 md:py-20">
+      <div className="bg-canvas"><article className="container-x max-w-2xl py-14 md:py-20">
         <section className="rounded-panel bg-surface p-6 shadow-soft ring-1 ring-edge md:p-8">
           <div className="flex items-center gap-3 mb-6">
             <Lock size={20} className="text-accent" />
@@ -319,7 +319,7 @@ export function ResetPasswordClient() {
                 onChange={(e) => setPassword(e.target.value)}
                 autoComplete="new-password"
                 placeholder="At least 8 characters, mixed case + number"
-                className="w-full rounded-[14px] border border-edge-2 bg-paper px-4 py-3 text-[15px] text-fg transition-colors placeholder:text-fg-muted/70 focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/35"
+                className="w-full rounded-[14px] border border-edge-2 bg-canvas px-4 py-3 text-[15px] text-fg transition-colors placeholder:text-fg-muted/70 focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/35"
               />
               {passwordError ? (
                 <p className="mt-2 text-[13.5px] font-medium text-negative">
@@ -342,7 +342,7 @@ export function ResetPasswordClient() {
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 autoComplete="new-password"
                 placeholder="Re-enter your new password"
-                className="w-full rounded-[14px] border border-edge-2 bg-paper px-4 py-3 text-[15px] text-fg transition-colors placeholder:text-fg-muted/70 focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/35"
+                className="w-full rounded-[14px] border border-edge-2 bg-canvas px-4 py-3 text-[15px] text-fg transition-colors placeholder:text-fg-muted/70 focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/35"
               />
               {confirmError ? (
                 <p className="mt-2 text-[13.5px] font-medium text-negative">
@@ -355,7 +355,7 @@ export function ResetPasswordClient() {
               type="button"
               onClick={handleSubmit}
               disabled={phase === "submitting"}
-              className="press inline-flex h-12 w-full items-center justify-center rounded-full bg-canvas px-6 font-display text-[15px] font-semibold text-canvas-fg transition-colors duration-200 ease-out hover:bg-canvas-2 disabled:cursor-not-allowed disabled:opacity-60"
+              className="press inline-flex h-12 w-full items-center justify-center rounded-full bg-canvas px-6 font-display text-[15px] font-semibold text-heading transition-colors duration-200 ease-out hover:bg-canvas-2 disabled:cursor-not-allowed disabled:opacity-60"
             >
               {phase === "submitting" ? "Setting password..." : "Set new password"}
             </button>

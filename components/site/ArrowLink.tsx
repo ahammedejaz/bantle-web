@@ -6,26 +6,21 @@ import { cn } from "@/lib/utils";
 export function ArrowLink({
   href,
   children,
-  tone = "light",
   className,
 }: {
   href: string;
   children: React.ReactNode;
-  tone?: "light" | "dark";
   className?: string;
 }) {
   return (
     <Link
       href={href}
       className={cn(
-        "group inline-flex items-center gap-2 text-[15px] font-medium transition-colors duration-150",
-        tone === "light"
-          ? "text-accent hover:text-accent-strong"
-          : "text-mint hover:text-white",
+        "group inline-flex items-center gap-2 text-[15px] font-medium text-accent transition-colors duration-150 hover:text-accent-strong",
         className
       )}
     >
-      <span className="border-b border-current/30 pb-0.5 transition-colors group-hover:border-current">
+      <span className="border-b border-accent/30 pb-0.5 transition-colors group-hover:border-accent-strong">
         {children}
       </span>
       <ArrowRight

@@ -43,10 +43,10 @@ const config: Config = {
         positive: withAlpha("--c-positive"),
         negative: withAlpha("--c-negative"),
 
-        // Marketing surface tokens (scheme-aware inside `.theme-site`).
-        paper: {
-          DEFAULT: withAlpha("--paper"),
-          sub: withAlpha("--paper-sub"),
+        // Marketing surface tokens, scoped to `.theme-site`.
+        canvas: {
+          DEFAULT: withAlpha("--canvas"),
+          2: withAlpha("--canvas-2"),
         },
         surface: {
           DEFAULT: withAlpha("--surface"),
@@ -65,20 +65,6 @@ const config: Config = {
           DEFAULT: withAlpha("--accent"),
           strong: withAlpha("--accent-strong"),
           sub: withAlpha("--accent-sub"),
-        },
-
-        // Deep-green bands. Identical in both colour schemes.
-        canvas: {
-          DEFAULT: withAlpha("--canvas"),
-          2: withAlpha("--canvas-2"),
-          3: withAlpha("--canvas-3"),
-          fg: withAlpha("--canvas-fg"),
-          "fg-muted": withAlpha("--canvas-fg-muted"),
-          edge: withAlpha("--canvas-edge"),
-        },
-        mint: {
-          DEFAULT: withAlpha("--mint"),
-          2: withAlpha("--mint-2"),
         },
       },
       fontFamily: {
@@ -101,19 +87,23 @@ const config: Config = {
         device: "44px",
       },
       letterSpacing: {
-        tightish: "-0.015em",
-        display: "-0.032em",
+        tightish: "-0.02em",
+        display: "-0.038em",
       },
+      // Depth on a near-black ground: every shadow carries an offset and a soft
+      // blur, and raised surfaces add a one-pixel top highlight so they read as
+      // lit rather than merely lighter.
       boxShadow: {
-        soft: "0 1px 2px rgb(0 40 33 / 0.04), 0 8px 24px -12px rgb(0 40 33 / 0.10)",
-        lift: "0 2px 4px rgb(0 40 33 / 0.05), 0 18px 40px -20px rgb(0 40 33 / 0.20)",
-        float: "0 4px 8px rgb(0 40 33 / 0.06), 0 40px 80px -32px rgb(0 40 33 / 0.34)",
-        device: "0 60px 120px -40px rgb(0 20 16 / 0.65), 0 8px 24px -8px rgb(0 20 16 / 0.4)",
-        mint: "0 12px 32px -12px rgb(2 169 136 / 0.55)",
+        soft: "inset 0 1px 0 rgb(255 255 255 / 0.05), 0 1px 2px rgb(0 0 0 / 0.5), 0 16px 40px -24px rgb(0 0 0 / 0.8)",
+        lift: "inset 0 1px 0 rgb(255 255 255 / 0.07), 0 2px 6px rgb(0 0 0 / 0.5), 0 28px 56px -24px rgb(0 0 0 / 0.85)",
+        float: "0 8px 18px rgb(0 0 0 / 0.5), 0 48px 96px -32px rgb(0 0 0 / 0.9)",
+        device: "0 2px 6px rgb(0 0 0 / 0.6), 0 60px 120px -30px rgb(0 0 0 / 0.95)",
+        mint: "0 8px 24px -8px rgb(95 227 168 / 0.45)",
       },
       transitionTimingFunction: {
-        out: "cubic-bezier(0.23, 1, 0.32, 1)",
+        out: "cubic-bezier(0.16, 1, 0.3, 1)",
         "in-out": "cubic-bezier(0.77, 0, 0.175, 1)",
+        drawer: "cubic-bezier(0.32, 0.72, 0, 1)",
       },
     },
   },

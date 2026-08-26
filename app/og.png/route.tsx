@@ -21,8 +21,8 @@ export function GET() {
           flexDirection: "column",
           justifyContent: "space-between",
           padding: "72px",
-          background: "#00251E",
-          color: "#EAF9F2",
+          background: "#060908",
+          color: "#ECF5F1",
           fontFamily: "Helvetica, Arial, sans-serif",
           position: "relative",
         }}
@@ -37,7 +37,7 @@ export function GET() {
             height: "640px",
             borderRadius: "9999px",
             background:
-              "radial-gradient(circle, rgba(122,240,199,0.30) 0%, rgba(122,240,199,0) 70%)",
+              "radial-gradient(circle, rgba(95,227,168,0.26) 0%, rgba(95,227,168,0) 70%)",
             display: "flex",
           }}
         />
@@ -48,7 +48,7 @@ export function GET() {
               width: "16px",
               height: "16px",
               borderRadius: "9999px",
-              background: "#7AF0C7",
+              background: "#5FE3A8",
               display: "flex",
             }}
           />
@@ -79,7 +79,7 @@ export function GET() {
           >
             <div style={{ display: "flex" }}>Split or buy subscriptions</div>
             <div style={{ display: "flex" }}>
-              with&nbsp;<span style={{ color: "#7AF0C7" }}>more trust</span>.
+              with&nbsp;<span style={{ color: "#5FE3A8" }}>more trust</span>.
             </div>
           </div>
           <div
@@ -87,7 +87,7 @@ export function GET() {
               display: "flex",
               fontSize: "28px",
               lineHeight: 1.4,
-              color: "#9ABEB0",
+              color: "#8FA69C",
               maxWidth: "880px",
             }}
           >
@@ -102,13 +102,13 @@ export function GET() {
             justifyContent: "space-between",
             alignItems: "center",
             paddingTop: "28px",
-            borderTop: "1px solid rgba(234,249,242,0.14)",
+            borderTop: "1px solid rgba(236,245,241,0.12)",
             fontSize: "22px",
-            color: "#9ABEB0",
+            color: "#8FA69C",
           }}
         >
           <div style={{ display: "flex" }}>Android and iOS · Live in India</div>
-          <div style={{ display: "flex", color: "#7AF0C7" }}>bantle.in</div>
+          <div style={{ display: "flex", color: "#5FE3A8" }}>bantle.in</div>
         </div>
       </div>
     ),

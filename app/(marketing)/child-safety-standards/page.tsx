@@ -162,7 +162,7 @@ export default function ChildSafetyStandardsPage() {
           </ul>
         </section>
 
-        <section className="rounded-panel bg-paper-sub p-6 ring-1 ring-edge">
+        <section className="rounded-panel bg-canvas-2 p-6 ring-1 ring-edge">
           <h2 className="mt-0">Child safety point of contact</h2>
           <p>For child safety concerns, contact:</p>
           <p>

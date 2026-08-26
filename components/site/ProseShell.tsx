@@ -2,9 +2,10 @@ import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 /**
- * Reading shell for every long-form page (policies, guidelines, walk-throughs).
- * A single measure, a single surface, a single rhythm, so the legal pages feel
- * like part of the product rather than a pasted document.
+ * Reading shell for every long-form page. One measure, one surface, one
+ * rhythm, so the policies feel like part of the product rather than a pasted
+ * document. The measure sits at roughly 70ch, which is where long-form reading
+ * is comfortable.
  */
 export function ProseShell({
   children,
@@ -14,11 +15,11 @@ export function ProseShell({
   className?: string;
 }) {
   return (
-    <div className="bg-paper">
+    <div className="bg-canvas">
       <div className="container-x py-14 md:py-20">
         <article
           className={cn(
-            "prose-bantle mx-auto max-w-[46rem] rounded-panel bg-surface p-6 shadow-soft ring-1 ring-edge sm:p-9 md:p-12",
+            "panel prose-bantle mx-auto max-w-[46rem] p-6 sm:p-9 md:p-12",
             className
           )}
         >

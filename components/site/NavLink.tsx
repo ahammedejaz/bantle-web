@@ -24,15 +24,15 @@ export function NavLink({
         "group relative inline-flex h-9 items-center rounded-full px-3 text-[14.5px] font-medium",
         "transition-colors duration-150 ease-out",
         isActive
-          ? "text-canvas-fg"
-          : "text-canvas-fg-muted hover:text-canvas-fg"
+          ? "text-heading"
+          : "text-fg-muted hover:text-heading"
       )}
     >
       {children}
       <span
         aria-hidden="true"
         className={cn(
-          "pointer-events-none absolute inset-x-3 bottom-1 h-px origin-left bg-mint",
+          "pointer-events-none absolute inset-x-3 bottom-1 h-px origin-left bg-accent",
           "transition-transform duration-200 ease-out",
           isActive ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100"
         )}

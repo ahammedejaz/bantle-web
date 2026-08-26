@@ -161,8 +161,8 @@ components/
 ├── Header.tsx, Footer.tsx, MobileNav.tsx, PageHeader.tsx, BrandMark.tsx
 ├── HeroSection.tsx, StoreBadges.tsx
 ├── site/                         Marketing primitives: Section, SectionHeading,
-│                                 Kicker, ArrowLink, ProseShell, JsonLd,
-│                                 NavLink, ScrollReveal
+│                                 ArrowLink, ProseShell, JsonLd, NavLink,
+│                                 ScrollReveal, DeviceScene, Spotlight
 ├── admin/                        Admin UI (rows, modals, tabs, AdminIdleTimeout, AdminNav, …)
 └── ui/                           button, sheet primitives
 lib/
@@ -313,36 +313,44 @@ the service-role client inside `requireAdmin`-gated routes.
 ## 8. Design rules in force
 
 Two systems live side by side. They share a Tailwind config but never share
-tokens, so a change to one cannot leak into the other.
+tokens, so a change to one cannot leak into the other. The marketing site is
+dark; the admin panel is light and unchanged.
 
 ### Marketing site (`app/(marketing)/*`, `components/*`)
 
-- **Dark frame, light body.** Every page opens on the deep-green canvas
-  (header + hero or `PageHeader`) and closes on it (CTA + footer). The content
-  between them is light. That frame is the site's strongest brand signal.
-- **Surface tokens, not brand-ramp tokens.** Use `paper`, `paper-sub`,
+The site is dark, in one direction, and it is not a dark variant of a light
+page. The palette is lifted from the Bantle mobile app: near-black ground,
+green-tinted raised surfaces, one mint accent. A visitor who installs the app
+should land somewhere they recognise.
+
+- **Surface tokens, not brand-ramp tokens.** Use `canvas`, `canvas-2`,
   `surface`, `surface-2`, `fg`, `fg-muted`, `heading`, `edge`, `edge-2`,
-  `accent`, `accent-sub`, `canvas*`, `mint`. These are CSS variables scoped to
-  the `.theme-site` wrapper on the marketing layout, which is what lets the
-  marketing tree flip to a dark palette without touching admin.
-- **One accent.** Mint/emerald, everywhere. No second accent hue.
+  `accent`, `accent-strong`, `accent-sub`. They are CSS variables scoped to the
+  `.theme-site` wrapper on the marketing layout, which is what keeps them out
+  of admin.
+- **Bands separate by elevation and light, not by colour.** `Section` takes
+  `canvas` or `raised`; everything else is done with a light source, a hairline,
+  or a raised panel.
+- **Raised material is three things, and all three matter:** a shadow with a
+  real offset, a hairline border, and a one-pixel top highlight. The `.panel`
+  class carries all of it. A dark rectangle without the highlight reads as
+  lighter, not as lit.
+- **One accent.** Mint. No second accent hue.
 - **One radius scale.** `rounded-full` for pills and controls, `rounded-panel`
   (20px) for cards and bands, `rounded-device` (44px) for the phone rendering.
-- **Type.** `font-display` (Bricolage Grotesque) for headings and numerals in
-  UI chrome, `font-sans` (Geist) for body, `font-mono` (Geist Mono) for
-  micro-labels and tabular figures. Weights 400/500/600/700 are all in use.
-- **Elevation is tinted.** Use the `soft` / `lift` / `float` / `device` shadow
-  tokens rather than raw `rgba(0,0,0,…)`.
-- **Motion.** Custom curves only (`--ease-out`, `--ease-in-out`). Enter and
-  hover transitions stay under 300ms. Every pressable surface gets `.press`.
-  Scroll reveal is opt-in per element via `data-reveal` plus an optional
-  `--reveal-delay`; the observer lives in `components/site/ScrollReveal.tsx`.
-  All of it is gated behind `prefers-reduced-motion: no-preference` and the
-  `js` class, so reduced-motion users and crawlers get the static layout.
-- **Section rhythm.** No two consecutive sections may share a layout family,
-  and the small tracked-out kicker label is rationed to roughly one per three
-  sections.
-- **Sentence case** for UI text (except the kicker labels).
+- **No kickers.** A small tracked-out uppercase label above a section heading is
+  banned outright, not rationed. The heading carries its own weight. `Section`
+  deliberately exposes no `kicker` prop.
+- **Cards are not the page structure.** Most sections are hairline lists,
+  a connected rail, or a disclosure list. The bento is the one card moment, and
+  its four cells are deliberately different surfaces.
+- **Type.** `font-display` (Bricolage Grotesque) for headings, `font-sans`
+  (Geist) for body, `font-mono` (Geist Mono) for tabular figures and the store
+  badge captions only. Body measure stays near 65ch.
+- **Motion has one authored moment**, not an entrance on every section: the
+  hero device performs a deal once, on first view. Everything else is feedback
+  and continuity. See the thesis comment in `app/globals.css`.
+- **Sentence case** for UI text.
 - **Icons:** Lucide only, `strokeWidth` 1.75-1.9; no emoji as functional icons.
 
 ### Admin panel (`app/admin/*`, `components/admin/*`)
@@ -354,7 +362,8 @@ Unchanged, and matching the Bantle mobile app's flatter in-product system:
   These keep their original values; they are now expressed as CSS variables
   only so that `/opacity` modifiers keep working.
 - **Font weights** limited to `font-normal` (400) and `font-medium` (500), and
-  `font-serif` (Lora) for headings.
+  `font-serif` (Lora) for headings. Lora is loaded with `preload: false`, so
+  marketing pages never fetch it.
 - **Sentence case** for UI text.
 - **Icons:** Lucide only.
 

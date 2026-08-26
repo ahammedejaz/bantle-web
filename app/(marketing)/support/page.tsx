@@ -49,7 +49,7 @@ export default function SupportPage() {
         title="Talk to a real person at Bantle."
         intro="We're a small team — emails come straight to humans, not a triage queue. We aim to reply within two business days."
       />
-      <div className="bg-paper">
+      <div className="bg-canvas">
         <div className="container-x py-14 md:py-20">
           <div className="mx-auto max-w-[46rem]">
         <section className="grid gap-4 sm:grid-cols-2">
@@ -142,7 +142,7 @@ function ContactCard({
       href={`mailto:${email}`}
       className="press group flex flex-col rounded-panel bg-surface p-6 shadow-soft ring-1 ring-edge transition-[box-shadow,border-color] duration-200 ease-out hover:shadow-lift hover:ring-accent/40"
     >
-      <p className="mb-3 font-mono text-[10px] uppercase tracking-[0.18em] text-fg-muted">
+      <p className="mb-3 text-[12.5px] font-medium text-fg-muted">
         {label}
       </p>
       <span className="inline-flex items-center gap-1.5 font-display text-[19px] font-semibold tracking-tight text-heading transition-colors group-hover:text-accent">

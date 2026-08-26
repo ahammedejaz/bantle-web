@@ -25,14 +25,14 @@ export function MobileNav() {
         <button
           type="button"
           aria-label="Open menu"
-          className="press inline-flex h-10 w-10 items-center justify-center rounded-full text-canvas-fg transition-colors hover:bg-canvas-edge/10 md:hidden"
+          className="press inline-flex h-10 w-10 items-center justify-center rounded-full text-heading transition-colors hover:bg-white/[0.06] md:hidden"
         >
           <Menu className="h-5 w-5" strokeWidth={1.75} />
         </button>
       </SheetTrigger>
       <SheetContent side="right" className="flex flex-col overflow-y-auto">
         <SheetTitle className="mb-8">
-          <BrandMark tone="light" />
+          <BrandMark />
         </SheetTitle>
 
         <nav aria-label="Mobile" className="flex flex-col">
@@ -45,13 +45,13 @@ export function MobileNav() {
                 onClick={() => setOpen(false)}
                 aria-current={isActive ? "page" : undefined}
                 className={cn(
-                  "group flex items-center justify-between border-b border-canvas-edge/10 py-3.5 font-display text-[19px] font-medium tracking-tight transition-colors",
-                  isActive ? "text-mint" : "text-canvas-fg"
+                  "group flex items-center justify-between border-b border-edge py-3.5 font-display text-[19px] font-medium tracking-tight transition-colors",
+                  isActive ? "text-accent" : "text-heading"
                 )}
               >
                 {link.label}
                 <ArrowUpRight
-                  className="h-4 w-4 shrink-0 text-canvas-fg-muted/60 transition-transform duration-200 ease-out group-hover:translate-x-0.5"
+                  className="h-4 w-4 shrink-0 text-fg-muted/60 transition-transform duration-200 ease-out group-hover:translate-x-0.5"
                   strokeWidth={1.75}
                 />
               </Link>
@@ -60,7 +60,7 @@ export function MobileNav() {
         </nav>
 
         <div className="mt-8">
-          <p className="mb-3 font-mono text-[10px] uppercase tracking-[0.18em] text-canvas-fg-muted">
+          <p className="mb-3 text-[12.5px] font-medium text-fg-muted">
             Legal
           </p>
           <div className="flex flex-col gap-2.5">
@@ -69,7 +69,7 @@ export function MobileNav() {
                 key={link.href}
                 href={link.href}
                 onClick={() => setOpen(false)}
-                className="text-[14px] text-canvas-fg-muted transition-colors hover:text-canvas-fg"
+                className="text-[14px] text-fg-muted transition-colors hover:text-heading"
               >
                 {link.label}
               </Link>
@@ -78,7 +78,7 @@ export function MobileNav() {
         </div>
 
         <div className="mt-auto pt-10">
-          <StoreBadges tone="light" size="sm" className="sm:flex-col" />
+          <StoreBadges size="sm" className="sm:flex-col" />
         </div>
       </SheetContent>
     </Sheet>

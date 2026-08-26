@@ -7,20 +7,16 @@ const STORE_URLS = {
   ios: "https://apps.apple.com/in/app/id6777968886",
 } as const;
 
-type Tone = "dark" | "light";
 type Size = "sm" | "md";
 
 interface StoreBadgesProps {
   className?: string;
-  /** `dark` sits on light surfaces, `light` sits on the deep-green bands. */
-  tone?: Tone;
   size?: Size;
   align?: "start" | "center";
 }
 
 export function StoreBadges({
   className,
-  tone = "dark",
   size = "md",
   align = "start",
 }: StoreBadgesProps) {
@@ -35,32 +31,18 @@ export function StoreBadges({
         className
       )}
     >
-      <StoreBadge store="play" tone={tone} size={size} />
-      <StoreBadge store="ios" tone={tone} size={size} />
+      <StoreBadge store="play" size={size} />
+      <StoreBadge store="ios" size={size} />
     </div>
   );
 }
-
-const toneClasses: Record<Tone, string> = {
-  dark: "bg-[#0B1512] text-white ring-1 ring-inset ring-white/10 hover:bg-[#16221E]",
-  light:
-    "bg-canvas-fg text-canvas ring-1 ring-inset ring-canvas/10 hover:bg-white",
-};
 
 const sizeClasses: Record<Size, string> = {
   sm: "h-12 min-w-[168px] gap-2.5 px-4",
   md: "h-[56px] min-w-[196px] gap-3 px-5",
 };
 
-function StoreBadge({
-  store,
-  tone,
-  size,
-}: {
-  store: "play" | "ios";
-  tone: Tone;
-  size: Size;
-}) {
+function StoreBadge({ store, size }: { store: "play" | "ios"; size: Size }) {
   const isPlay = store === "play";
   const label = isPlay
     ? "Get Bantle on Google Play"
@@ -75,18 +57,16 @@ function StoreBadge({
       title={label}
       className={cn(
         "press group inline-flex select-none items-center justify-center rounded-[14px]",
-        "transition-colors duration-200 ease-out",
-        toneClasses[tone],
+        "bg-[#F4F7F5] text-canvas ring-1 ring-inset ring-black/10",
+        "transition-[background-color,box-shadow] duration-200 ease-out",
+        "hover:bg-white hover:shadow-lift",
         sizeClasses[size]
       )}
     >
       <span className="shrink-0">{isPlay ? <PlayGlyph /> : <AppleGlyph />}</span>
       <span className="flex flex-col items-start text-left leading-none">
         <span
-          className={cn(
-            "font-mono text-[9.5px] uppercase tracking-[0.16em]",
-            tone === "dark" ? "text-white/60" : "text-canvas/70"
-          )}
+          className="font-mono text-[9.5px] uppercase tracking-[0.16em] text-canvas/70"
         >
           {isPlay ? "Get it on" : "Download on the"}
         </span>

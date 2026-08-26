@@ -43,9 +43,9 @@ const SheetContent = React.forwardRef<
       className={cn(
         "fixed z-50 bg-canvas p-6 transition-transform duration-[420ms] ease-[cubic-bezier(0.32,0.72,0,1)]",
         side === "right" &&
-          "right-0 top-0 h-full w-[88vw] max-w-sm border-l border-canvas-edge/10 data-[state=closed]:translate-x-full data-[state=open]:translate-x-0",
+          "right-0 top-0 h-full w-[88vw] max-w-sm border-l border-edge data-[state=closed]:translate-x-full data-[state=open]:translate-x-0",
         side === "left" &&
-          "left-0 top-0 h-full w-[88vw] max-w-sm border-r border-canvas-edge/10 data-[state=closed]:-translate-x-full data-[state=open]:translate-x-0",
+          "left-0 top-0 h-full w-[88vw] max-w-sm border-r border-edge data-[state=closed]:-translate-x-full data-[state=open]:translate-x-0",
         className
       )}
       {...props}
@@ -53,7 +53,7 @@ const SheetContent = React.forwardRef<
       {children}
       <DialogPrimitive.Close
         aria-label="Close menu"
-        className="press absolute right-4 top-4 rounded-full p-2 text-canvas-fg-muted transition-colors hover:bg-canvas-edge/10 hover:text-canvas-fg"
+        className="press absolute right-4 top-4 rounded-full p-2 text-fg-muted transition-colors hover:bg-white/[0.06] hover:text-heading"
       >
         <X className="h-5 w-5" strokeWidth={1.75} />
       </DialogPrimitive.Close>
@@ -68,7 +68,7 @@ const SheetTitle = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <DialogPrimitive.Title
     ref={ref}
-    className={cn("font-display text-lg text-canvas-fg", className)}
+    className={cn("font-display text-lg text-heading", className)}
     {...props}
   />
 ));
@@ -80,7 +80,7 @@ const SheetDescription = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <DialogPrimitive.Description
     ref={ref}
-    className={cn("text-sm text-canvas-fg-muted", className)}
+    className={cn("text-sm text-fg-muted", className)}
     {...props}
   />
 ));

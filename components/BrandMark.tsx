@@ -2,10 +2,6 @@ import Image from "next/image";
 import { cn } from "@/lib/utils";
 
 interface BrandMarkProps {
-  /** Use on the deep-green bands (header, footer, CTA): renders the light
-   *  wordmark. Otherwise renders the dark wordmark for light surfaces. The
-   *  mint mark reads cleanly on both, so the same image is used either way. */
-  tone?: "light" | "dark";
   size?: "sm" | "md" | "lg";
   /** Set on the sticky header only: that instance is always above the fold. */
   priority?: boolean;
@@ -23,7 +19,6 @@ const sizeClasses = {
 // Marketing-only brand lockup (header, mobile nav, footer). The admin panel
 // uses its own text branding and does not import this component.
 export function BrandMark({
-  tone = "dark",
   size = "md",
   priority = false,
   className,
@@ -42,9 +37,8 @@ export function BrandMark({
       />
       <span
         className={cn(
-          "font-display font-semibold leading-none tracking-display",
-          classes.text,
-          tone === "light" ? "text-canvas-fg" : "text-heading"
+          "font-display font-semibold leading-none tracking-display text-heading",
+          classes.text
         )}
       >
         Bantle

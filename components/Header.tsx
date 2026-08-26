@@ -9,14 +9,14 @@ import { NavLink } from "@/components/site/NavLink";
 // the blur separates them without a hard rule.
 export function Header() {
   return (
-    <header className="sticky top-0 z-40 border-b border-canvas-edge/10 bg-canvas/85 text-canvas-fg backdrop-blur-xl">
+    <header className="sticky top-0 z-40 border-b border-edge bg-canvas/85 text-heading backdrop-blur-xl">
       <div className="container-x flex h-[68px] items-center justify-between gap-6">
         <Link
           href="/"
           aria-label="Bantle home"
           className="press shrink-0 rounded-lg"
         >
-          <BrandMark tone="light" priority />
+          <BrandMark priority />
         </Link>
 
         <nav
@@ -33,7 +33,7 @@ export function Header() {
         <div className="flex items-center gap-2">
           <Link
             href="/#get-the-app"
-            className="press hidden h-10 items-center rounded-full bg-mint px-5 text-[14.5px] font-semibold tracking-tight text-canvas transition-colors duration-200 ease-out hover:bg-white md:inline-flex"
+            className="press hidden h-10 items-center rounded-full bg-accent px-5 text-[14.5px] font-semibold tracking-tight text-canvas transition-colors duration-200 ease-out hover:bg-white md:inline-flex"
           >
             Get the app
           </Link>

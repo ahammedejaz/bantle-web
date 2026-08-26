@@ -12,14 +12,18 @@
       They are expressed as space-separated RGB channels so Tailwind can keep
       applying `/opacity` modifiers (`bg-teal-900/10`, `text-cream/80`, ...).
 
-   2. The marketing surface tokens (paper/surface/fg/edge/accent/canvas/mint).
-      These are scoped to `.theme-site`, which only the marketing route group
-      renders. Dark mode overrides live on that class, so the admin panel is
-      never affected by them.
+   2. The marketing surface tokens, scoped to `.theme-site`, which only the
+      marketing route group renders. The admin panel is outside that wrapper
+      and cannot be affected by them.
+
+   The marketing site is dark, deliberately and in one direction. It is not a
+   dark variant of a light page: the palette is lifted from the Bantle mobile
+   app, which is near-black with a single mint accent. A visitor who installs
+   the app should land somewhere they recognise.
    --------------------------------------------------------------------------- */
 
 :root {
-  /* Legacy brand ramp - values identical to the previous Tailwind config. */
+  /* Legacy brand ramp - values identical to the original Tailwind config. */
   --c-teal-50: 239 253 247;
   --c-teal-100: 230 247 239;
   --c-teal-200: 205 237 225;
@@ -39,90 +43,39 @@
   --c-positive: 0 126 90;
   --c-negative: 186 42 42;
 
-  /* Marketing surface - light. */
-  --paper: 244 247 245;
-  --paper-sub: 236 242 238;
-  --surface: 255 255 255;
-  --surface-2: 247 251 249;
-  --fg: 10 30 26;
-  --fg-muted: 88 102 97;
-  --heading: 0 51 43;
-  --edge: 223 232 227;
-  --edge-2: 203 218 211;
-  --accent: 0 118 84;
-  --accent-strong: 0 91 79;
-  --accent-sub: 232 248 241;
-
-  /* Canvas: the deep-green bands. Constant across colour schemes, because
-     these surfaces are already dark and should read the same either way. */
-  --canvas: 0 37 30;
-  --canvas-2: 0 60 47;
-  --canvas-3: 0 78 62;
-  --canvas-fg: 234 249 242;
-  --canvas-fg-muted: 154 190 176;
-  --canvas-edge: 255 255 255;
-  --mint: 122 240 199;
-  --mint-2: 2 169 136;
-
   /* Motion. Custom curves; the CSS defaults are too weak to read as intentional. */
-  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
 }
 
-/* Dark scheme for the marketing tree.
- *
- * The frame-versus-body relationship is preserved rather than inverted: the
- * canvas bands stay the darkest surface and the body sits one step above them,
- * so the page still reads as a light body inside a dark frame.
- *
- * Declared twice on purpose. The media block honours the system preference
- * unless the document explicitly opts out, and the attribute block lets an
- * explicit `data-theme` win in either direction. */
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .theme-site {
-    --paper: 7 36 31;
-    --paper-sub: 5 30 26;
-    --surface: 11 45 38;
-    --surface-2: 14 53 45;
-    --fg: 232 244 239;
-    --fg-muted: 148 174 165;
-    --heading: 226 251 240;
-    --edge: 27 62 54;
-    --edge-2: 38 84 73;
-    --accent: 92 226 176;
-    --accent-strong: 130 243 202;
-    --accent-sub: 12 48 40;
+.theme-site {
+  color-scheme: dark;
 
-    --canvas: 0 24 20;
-    --canvas-2: 0 40 33;
-    --canvas-3: 0 56 46;
-    --canvas-fg-muted: 150 184 172;
+  /* Ground. Near-black with a green undertone, the way the app reads on an
+     OLED panel. Never pure #000: it flattens every shadow above it. */
+  --canvas: 6 9 8;
+  --canvas-2: 9 15 13;
 
-    /* The shared error red is too dark to read on these surfaces. */
-    --c-negative: 255 141 130;
-  }
-}
+  /* Raised surfaces. Green-tinted rather than grey, so a card reads as part of
+     the brand rather than as a neutral panel dropped onto it. */
+  --surface: 10 28 21;
+  --surface-2: 14 38 29;
 
-:root[data-theme="dark"] .theme-site {
-  --paper: 7 36 31;
-  --paper-sub: 5 30 26;
-  --surface: 11 45 38;
-  --surface-2: 14 53 45;
-  --fg: 232 244 239;
-  --fg-muted: 148 174 165;
-  --heading: 226 251 240;
-  --edge: 27 62 54;
-  --edge-2: 38 84 73;
-  --accent: 92 226 176;
-  --accent-strong: 130 243 202;
-  --accent-sub: 12 48 40;
+  --edge: 26 58 46;
+  --edge-2: 38 82 65;
 
-  --canvas: 0 24 20;
-  --canvas-2: 0 40 33;
-  --canvas-3: 0 56 46;
-  --canvas-fg-muted: 150 184 172;
+  --fg: 236 245 241;
+  --fg-muted: 143 166 156;
+  --heading: 255 255 255;
 
-  --c-negative: 255 141 130;
+  /* One accent, the app's own. */
+  --accent: 95 227 168;
+  --accent-strong: 124 250 207;
+  --accent-sub: 10 40 30;
+
+  /* Error red, lifted so it reads on a near-black ground. */
+  --c-negative: 255 138 128;
 }
 
 @layer base {
@@ -145,7 +98,7 @@
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-display), ui-sans-serif, system-ui, sans-serif;
     font-weight: 600;
-    letter-spacing: -0.02em;
+    letter-spacing: -0.03em;
   }
 
   a {
@@ -159,14 +112,13 @@
     border-radius: 4px;
   }
 
-  /* Marketing tree only: focus ring follows the active surface. */
   .theme-site *:focus-visible {
     outline-color: rgb(var(--accent));
   }
 
   .theme-site ::selection {
-    background-color: rgb(var(--mint) / 0.35);
-    color: rgb(var(--fg));
+    background-color: rgb(var(--accent) / 0.3);
+    color: rgb(var(--heading));
   }
 
   /* Tabular figures for prices, counts and stats. */
@@ -181,11 +133,19 @@
     @apply mx-auto w-full max-w-content px-5 sm:px-6 lg:px-8;
   }
 
-  .container-prose {
-    @apply mx-auto w-full max-w-[46rem] px-5 sm:px-6 lg:px-8;
+  /* Raised material.
+     Three parts, and all three matter: a real shadow with an offset, a hairline
+     border, and a one-pixel top highlight. The highlight is what makes a dark
+     panel read as lit from above instead of as a lighter rectangle. */
+  .panel {
+    @apply rounded-panel border border-edge bg-surface;
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.05),
+      0 1px 2px rgb(0 0 0 / 0.5),
+      0 16px 40px -24px rgb(0 0 0 / 0.8);
   }
 
-  /* Long-form legal / policy typography. Used by every prose page. */
+  /* Long-form legal / policy typography. */
   .prose-bantle p {
     @apply mb-5 text-[15.5px] leading-[1.75] text-fg-muted;
   }
@@ -210,13 +170,13 @@
   }
   .prose-bantle ul > li::before {
     content: "";
-    @apply absolute left-0 top-[0.7em] h-1.5 w-1.5 rounded-full bg-accent/45;
+    @apply absolute left-0 top-[0.7em] h-1.5 w-1.5 rounded-full bg-accent/50;
   }
   .prose-bantle ol {
-    @apply mb-5 list-decimal space-y-2.5 pl-5 text-[15.5px] leading-[1.75] text-fg-muted marker:text-accent/70 marker:font-medium;
+    @apply mb-5 list-decimal space-y-2.5 pl-5 text-[15.5px] leading-[1.75] text-fg-muted marker:font-medium marker:text-accent/70;
   }
   .prose-bantle a {
-    @apply font-medium text-accent decoration-accent/35 underline underline-offset-[3px] transition-colors;
+    @apply font-medium text-accent underline decoration-accent/35 underline-offset-[3px] transition-colors;
   }
   .prose-bantle strong {
     @apply font-semibold text-fg;
@@ -233,11 +193,6 @@
       @apply text-accent-strong decoration-accent;
     }
   }
-
-  /* Hairline that fades at both ends. Used to separate bands without a hard rule. */
-  .rule-fade {
-    @apply h-px w-full bg-gradient-to-r from-transparent via-edge-2 to-transparent;
-  }
 }
 
 @layer utilities {
@@ -248,84 +203,143 @@
     text-wrap: pretty;
   }
 
-  /* Press feedback. Every pressable surface gets it; the scale is deliberately
-     small so it reads as acknowledgement, not as a bounce. */
+  /* Press feedback. Small on purpose: acknowledgement, not a bounce. */
   .press {
-    transition: transform 160ms var(--ease-out);
+    transition: transform 150ms var(--ease-out);
   }
   .press:active {
     transform: scale(0.975);
   }
 
-  /* Fine grain over the deep-green bands. Static raster, no filter, so it
-     costs nothing while scrolling. */
+  /* Fine grain. A static raster, not a filter, so it costs nothing on scroll. */
   .grain::after {
     content: "";
     position: absolute;
     inset: 0;
     pointer-events: none;
-    opacity: 0.5;
-    mix-blend-mode: overlay;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='0.32'/%3E%3C/svg%3E");
+    opacity: 0.4;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='0.28'/%3E%3C/svg%3E");
+  }
+
+  /* Perspective scene for the hero device. */
+  .scene {
+    perspective: 1300px;
+    perspective-origin: 50% 42%;
+  }
+  .scene-3d {
+    transform-style: preserve-3d;
   }
 }
 
 /* ---------------------------------------------------------------------------
    Motion.
 
-   Everything below is gated behind `prefers-reduced-motion: no-preference`,
-   and the scroll-reveal states additionally require the `js` class that the
-   root layout sets. Without JavaScript, or with reduced motion, every element
-   renders in its final, fully visible state.
+   Thesis
+   ------
+   Focal moment: the hero device performs a deal once, on first view. The
+   product's whole claim is that a buyer proposes, the proposal is accepted,
+   and only then does chat open. The device demonstrates that instead of the
+   page asserting it in prose. Everything else is quiet.
+
+   Continuity: disclosure open/close, the mobile drawer, nav state.
+   Feedback: press, hover, focus.
+   Budget: the pointer-driven tilt runs only while a pointer is over the scene
+   and stops once it settles. The deal sequence plays once, never loops. There
+   are no infinite animations anywhere on the page.
+
+   All of it is gated behind `prefers-reduced-motion: no-preference` and the
+   `js` class that the root layout sets before first paint, so a client with
+   scripting disabled, a crawler that does not execute scripts, and a
+   reduced-motion visitor each get a complete, static, fully legible page.
    --------------------------------------------------------------------------- */
 
-@keyframes bantle-float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-8px); }
+@keyframes bantle-rise {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+    filter: blur(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
 }
 
-@keyframes bantle-rise {
-  from { opacity: 0; transform: translateY(18px); }
+@keyframes seq-press {
+  0% { clip-path: inset(0 100% 0 0); opacity: 0.9; }
+  70% { clip-path: inset(0 0 0 0); opacity: 0.9; }
+  100% { clip-path: inset(0 0 0 0); opacity: 0; }
+}
+
+@keyframes seq-lift {
+  from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
-@keyframes bantle-glow {
-  0%, 100% { opacity: 0.55; }
-  50% { opacity: 0.9; }
+@keyframes seq-out {
+  from { opacity: 1; transform: translateY(0); }
+  to { opacity: 0; transform: translateY(-10px); }
+}
+
+@keyframes seq-pop {
+  from { opacity: 0; transform: translate3d(0, 12px, 60px) scale(0.9); }
+  to { opacity: 1; transform: translate3d(0, 0, 60px) scale(1); }
+}
+
+/* The demonstration layers are inert until the sequence runs. Without motion,
+   or without scripting, the device still shows the listing, the price, the
+   verified host and the propose action; only the acted-out part is skipped. */
+[data-seq] {
+  opacity: 0;
+}
+
+/* Without the sequence, the control keeps its resting label and only the
+   accepted notification is shown. Revealing the "sent" label too would stack
+   two strings in the same grid cell. */
+html:not(.js) [data-seq="chat"] {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-seq="chat"] {
+    opacity: 1;
+  }
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .bantle-float {
-    animation: bantle-float 9s ease-in-out infinite;
-  }
-
   .bantle-rise {
-    animation: bantle-rise 0.75s var(--ease-out) both;
+    animation: bantle-rise 0.8s var(--ease-out) both;
     animation-delay: var(--rise-delay, 0ms);
   }
 
-  .bantle-glow {
-    animation: bantle-glow 7s ease-in-out infinite;
-  }
-
+  /* Sibling stagger, used only where a list genuinely appears as a list. */
   .js [data-reveal] {
     opacity: 0;
-    transform: translateY(18px);
+    transform: translateY(16px);
     transition:
-      opacity 0.7s var(--ease-out) var(--reveal-delay, 0ms),
-      transform 0.7s var(--ease-out) var(--reveal-delay, 0ms);
+      opacity 0.65s var(--ease-out) var(--reveal-delay, 0ms),
+      transform 0.65s var(--ease-out) var(--reveal-delay, 0ms);
   }
-
-  .js [data-reveal="fade"] {
-    transform: none;
-  }
-
   .js [data-reveal].is-visible {
     opacity: 1;
     transform: none;
   }
 
-  /* Smooth <details> disclosure where the browser can interpolate to auto. */
+  .js .deal-seq.is-playing [data-seq="press"] {
+    animation: seq-press 0.85s linear 0.75s both;
+  }
+  .js .deal-seq.is-playing [data-seq="sent"] {
+    animation: seq-lift 0.45s var(--ease-out) 1.55s both;
+  }
+  .js .deal-seq.is-playing [data-seq-out] {
+    animation: seq-out 0.35s var(--ease-out) 1.45s both;
+  }
+  .js .deal-seq.is-playing [data-seq="chat"] {
+    animation: seq-pop 0.6s var(--ease-out) 2.35s both;
+  }
+
+  /* Smooth disclosure where the browser can interpolate to auto. */
   @supports (interpolate-size: allow-keywords) {
     .theme-site {
       interpolate-size: allow-keywords;

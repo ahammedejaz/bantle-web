@@ -456,7 +456,7 @@ export default function FAQPage() {
         title="Common questions, answered directly."
         intro="If you don't see your question here, write to us — we read every email and update this page when patterns emerge."
       />
-      <div className="bg-paper">
+      <div className="bg-canvas">
         <div className="container-x py-14 md:py-20">
           <div className="mx-auto grid max-w-[64rem] gap-10 lg:grid-cols-[minmax(0,15rem)_minmax(0,1fr)] lg:gap-16">
             {/* Jump list. Sticky on large screens; a plain index above the
@@ -465,7 +465,7 @@ export default function FAQPage() {
               aria-label="Question categories"
               className="lg:sticky lg:top-28 lg:self-start"
             >
-              <p className="mb-4 font-mono text-[10px] uppercase tracking-[0.18em] text-fg-muted">
+              <p className="mb-4 text-[12.5px] font-medium text-fg-muted">
                 Categories
               </p>
               <ul className="flex flex-wrap gap-2 lg:flex-col lg:gap-1">

@@ -146,23 +146,29 @@ Main directories:
 Two design systems share the Tailwind config. They never share tokens.
 
 **Marketing site** (`app/(marketing)/*`, `components/*`), scoped to the
-`.theme-site` wrapper on the marketing layout:
+`.theme-site` wrapper on the marketing layout. Dark in one direction, with the
+palette taken from the Bantle mobile app:
 
-- Surface tokens are CSS variables and flip with `prefers-color-scheme`:
-  `paper`, `paper-sub`, `surface`, `surface-2`, `fg`, `fg-muted`, `heading`,
-  `edge`, `edge-2`, `accent`, `accent-strong`, `accent-sub`.
-- Deep-green band tokens, identical in both colour schemes: `canvas`,
-  `canvas-2`, `canvas-3`, `canvas-fg`, `canvas-fg-muted`, `canvas-edge`,
-  plus `mint` / `mint-2` for the bright accent.
-- Structure: every page is a dark band (header + hero or `PageHeader`), a light
-  body, and a dark band (CTA + footer).
-- Typography: Bricolage Grotesque (`font-display`), Geist (`font-sans`),
-  Geist Mono (`font-mono`). Weights 400-700.
+- Ground: `canvas` (#060908) and `canvas-2`. Never pure black, which flattens
+  every shadow above it.
+- Raised: `surface`, `surface-2`, both green-tinted rather than grey.
+- Lines: `edge`, `edge-2`. Text: `fg`, `fg-muted`, `heading`.
+- Accent: `accent` (#5FE3A8), `accent-strong`, `accent-sub`. One accent only.
+- `--c-negative` is overridden inside `.theme-site` so the shared error red
+  reads on a near-black ground.
+- Bands separate by elevation and light, not colour. `Section` takes `canvas`
+  or `raised`.
+- `.panel` is the raised material: offset shadow, hairline border, one-pixel
+  top highlight.
+- Typography: Bricolage Grotesque (`font-display`), Geist (`font-sans`), Geist
+  Mono (`font-mono`, tabular figures and store-badge captions only).
 - Radius scale: `rounded-full`, `rounded-panel` (20px), `rounded-device` (44px).
-- Elevation: the `soft` / `lift` / `float` / `device` shadow tokens.
-- Motion: `--ease-out` / `--ease-in-out`, sub-300ms, `.press` on pressables,
-  `data-reveal` for scroll reveal. All gated behind
-  `prefers-reduced-motion: no-preference` and the `js` class.
+- No kicker/eyebrow labels above section headings. `Section` exposes no such
+  prop, on purpose.
+- Motion: one authored moment (the hero deal sequence), plus feedback and
+  continuity. `data-reveal` is for sibling stagger in genuine lists only, not as
+  a per-section entrance. All gated behind `prefers-reduced-motion:
+  no-preference` and the `js` class.
 - Sentence case, Lucide icons only.
 
 **Admin panel** (`app/admin/*`, `components/admin/*`) is unchanged:
@@ -520,6 +526,10 @@ All public pages live in `app/(marketing)/`.
 - `JsonLd` - renders a graph built by `lib/structured-data.ts`.
 - `NavLink` - desktop nav link with current-page state.
 - `ScrollReveal` - one IntersectionObserver for all `data-reveal` elements.
+- `DeviceScene` - the hero's perspective scene: spring-driven pointer tilt,
+  and it arms the deal sequence once when the device enters view.
+- `Spotlight` - one pointer listener for a group of raised surfaces, writing
+  directly onto a dedicated layer inside each card.
 
 `components/PageHeader.tsx`
 
@@ -1295,6 +1305,8 @@ Marketing components:
 - `components/site/JsonLd.tsx`
 - `components/site/NavLink.tsx`
 - `components/site/ScrollReveal.tsx`
+- `components/site/DeviceScene.tsx`
+- `components/site/Spotlight.tsx`
 - `components/PageHeader.tsx`
 - `components/ui/button.tsx`
 - `components/ui/sheet.tsx`
