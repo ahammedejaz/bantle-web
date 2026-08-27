@@ -7,27 +7,28 @@ import {
   breadcrumbNode,
   faqPageNode,
   jsonLd,
+  siteEntityNodes,
 } from "@/lib/structured-data";
 import { ArrowLink } from "@/components/site/ArrowLink";
 import { CONTACT_EMAIL } from "@/lib/constants";
 
 export const metadata = {
-  title: "Frequently asked questions",
+  title: "FAQ: subscription sharing, safety and payments",
   description:
-    "Common questions about Bantle: monthly sharing, one-time access, safety, account management, and why payment happens outside Bantle.",
+    "Common questions about Bantle: sharing a monthly slot, buying remaining access, verification and safety, and why payment happens outside the app.",
   alternates: {
     canonical: "/faq",
   },
   openGraph: {
     ...OG_BASE,
     url: "/faq",
-    title: "Frequently asked questions",
-    description: "Common questions about Bantle: monthly sharing, one-time access, safety, account management, and why payment happens outside Bantle.",
+    title: "FAQ: subscription sharing, safety and payments",
+    description: "Common questions about Bantle: sharing a monthly slot, buying remaining access, verification and safety, and why payment happens outside the app.",
   },
   twitter: {
     ...TWITTER_BASE,
-    title: "Frequently asked questions",
-    description: "Common questions about Bantle: monthly sharing, one-time access, safety, account management, and why payment happens outside Bantle.",
+    title: "FAQ: subscription sharing, safety and payments",
+    description: "Common questions about Bantle: sharing a monthly slot, buying remaining access, verification and safety, and why payment happens outside the app.",
   },
 };
 
@@ -429,12 +430,14 @@ function toPlainText(node: ReactNode): string {
 }
 
 const structuredData = jsonLd([
+  ...siteEntityNodes,
   faqPageNode({
     path: "/faq",
     name: String(metadata.title),
     description: String(metadata.description),
     items: sections.flatMap((section) =>
       section.items.map((item) => ({
+        id: slugify(item.q),
         question: item.q,
         answer: toPlainText(item.a).replace(/\s+/g, " ").trim(),
       }))
@@ -497,12 +500,16 @@ export default function FAQPage() {
                       {section.items.map((item) => (
                         <details
                           key={item.q}
-                          className="disclosure group border-b border-edge first:border-t"
+                          id={slugify(item.q)}
+                          className="disclosure group scroll-mt-28 border-b border-edge first:border-t"
                         >
                           <summary className="flex cursor-pointer list-none items-start justify-between gap-6 py-5">
-                            <span className="font-display text-[17px] font-semibold leading-snug tracking-tight text-heading transition-colors group-hover:text-accent">
+                            {/* A heading, not a span. Heading-based chunkers
+                                and passage retrievers saw five category blobs
+                                where there are twenty-eight distinct answers. */}
+                            <h3 className="font-display text-[17px] font-semibold leading-snug tracking-tight text-heading transition-colors group-hover:text-accent">
                               {item.q}
-                            </span>
+                            </h3>
                             <span
                               aria-hidden="true"
                               className="mt-0.5 inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-accent ring-1 ring-edge-2 transition-transform duration-200 ease-out group-open:rotate-45"

@@ -1,6 +1,8 @@
 import {
   BRAND_NAME,
+  COMPANY_NAME,
   CONTACT_EMAIL,
+  POLICY_EFFECTIVE_DATE_ISO,
   SITE_DESCRIPTION,
   SITE_URL,
 } from "@/lib/constants";
@@ -17,7 +19,9 @@ const body = `# ${BRAND_NAME}
 > ${SITE_DESCRIPTION}
 
 ${BRAND_NAME} is an India-first mobile app (Android and iOS) for coordinating
-subscription access. A host lists either a recurring monthly slot or
+subscription access. It is operated by ${COMPANY_NAME} from Bengaluru,
+Karnataka, India. ("Bantle" is also a German surname; this document is about
+the mobile app and nothing else.) A host lists either a recurring monthly slot or
 fixed-duration access for the validity remaining on their plan. A buyer reviews
 the listed terms, sends a deal request, and chat opens after that request or an
 accepted proposal.
@@ -30,6 +34,14 @@ accepted proposal.
 - Opens chat only after a deal request or an accepted proposal, so buyers propose first.
 - Tracks deal states so both sides can see what was proposed, accepted, closed, or completed.
 - Provides blocks, reports, privacy toggles, and support inside the app.
+
+## Quick facts
+
+- Free to use. Bantle charges no transaction fee, takes no percentage of any arrangement, and shows no ads.
+- Available on Android (Android 9 Pie and above) and iOS.
+- Available in India.
+- Operated by ${COMPANY_NAME}, Bengaluru, Karnataka, India.
+- Contact: ${CONTACT_EMAIL}
 
 ## What Bantle does not do
 
@@ -65,6 +77,8 @@ accepted proposal.
 ## Contact
 
 - ${CONTACT_EMAIL}
+
+Policies last updated ${POLICY_EFFECTIVE_DATE_ISO}.
 `;
 
 export function GET() {

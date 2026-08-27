@@ -5,13 +5,18 @@ import { JsonLd } from "@/components/site/JsonLd";
 import {
   breadcrumbNode,
   jsonLd,
+  siteEntityNodes,
   webPageNode,
 } from "@/lib/structured-data";
 import { ProseShell } from "@/components/site/ProseShell";
-import { CONTACT_EMAIL, POLICY_EFFECTIVE_DATE } from "@/lib/constants";
+import {
+  CONTACT_EMAIL,
+  POLICY_EFFECTIVE_DATE,
+  POLICY_EFFECTIVE_DATE_ISO,
+} from "@/lib/constants";
 
 export const metadata = {
-  title: "Community guidelines",
+  title: "Community guidelines: honest terms, kept deals",
   description:
     "What we expect from every Bantle member: honest listing terms, honoured deals, civil chat, and clear outside-Bantle coordination.",
   alternates: {
@@ -20,22 +25,25 @@ export const metadata = {
   openGraph: {
     ...OG_BASE,
     url: "/community-guidelines",
-    title: "Community guidelines",
+    title: "Community guidelines: honest terms, kept deals",
     description: "What we expect from every Bantle member: honest listing terms, honoured deals, civil chat, and clear outside-Bantle coordination.",
   },
   twitter: {
     ...TWITTER_BASE,
-    title: "Community guidelines",
+    title: "Community guidelines: honest terms, kept deals",
     description: "What we expect from every Bantle member: honest listing terms, honoured deals, civil chat, and clear outside-Bantle coordination.",
   },
 };
 
 const structuredData = jsonLd([
+  ...siteEntityNodes,
   webPageNode({
     path: "/community-guidelines",
     name: String(metadata.title),
     description: String(metadata.description),
     type: "WebPage",
+    // The date this page itself displays. Never a build timestamp.
+    dateModified: POLICY_EFFECTIVE_DATE_ISO,
   }),
   breadcrumbNode([{ name: "Community guidelines", path: "/community-guidelines" }]),
 ]);
@@ -50,7 +58,7 @@ export default function CommunityGuidelinesPage() {
         intro={`Last updated ${POLICY_EFFECTIVE_DATE}. These guidelines sit alongside our terms of service and apply to every Bantle member.`}
       />
       <ProseShell>
-        <section>
+        <section id="1-be-honest" className="scroll-mt-28">
           <h2>1. Be honest</h2>
           <ul>
             <li>
@@ -73,7 +81,7 @@ export default function CommunityGuidelinesPage() {
           </ul>
         </section>
 
-        <section>
+        <section id="2-be-respectful" className="scroll-mt-28">
           <h2>2. Be respectful</h2>
           <ul>
             <li>
@@ -94,7 +102,7 @@ export default function CommunityGuidelinesPage() {
           </ul>
         </section>
 
-        <section>
+        <section id="3-honour-your-deals" className="scroll-mt-28">
           <h2>3. Honour your deals</h2>
           <ul>
             <li>
@@ -116,7 +124,7 @@ export default function CommunityGuidelinesPage() {
           </ul>
         </section>
 
-        <section>
+        <section id="4-keep-it-on-bantle" className="scroll-mt-28">
           <h2>4. Keep it on Bantle</h2>
           <ul>
             <li>
@@ -138,7 +146,7 @@ export default function CommunityGuidelinesPage() {
           </ul>
         </section>
 
-        <section>
+        <section id="5-no-unrelated-offers" className="scroll-mt-28">
           <h2>5. No unrelated offers</h2>
           <ul>
             <li>
@@ -154,7 +162,7 @@ export default function CommunityGuidelinesPage() {
           </ul>
         </section>
 
-        <section>
+        <section id="6-no-illegal-content" className="scroll-mt-28">
           <h2>6. No illegal content</h2>
           <p>
             Child sexual abuse material, content that endangers minors,
@@ -165,7 +173,7 @@ export default function CommunityGuidelinesPage() {
           </p>
         </section>
 
-        <section>
+        <section id="7-report-problems" className="scroll-mt-28">
           <h2>7. Report problems</h2>
           <p>
             If you see behaviour that breaks these guidelines, please use
@@ -177,7 +185,7 @@ export default function CommunityGuidelinesPage() {
           </p>
         </section>
 
-        <section>
+        <section id="8-consequences" className="scroll-mt-28">
           <h2>8. Consequences</h2>
           <p>
             Our default response to first-time, non-serious violations is a
@@ -194,7 +202,7 @@ export default function CommunityGuidelinesPage() {
           </p>
         </section>
 
-        <section>
+        <section id="one-more-thing" className="scroll-mt-28">
           <h2>One more thing</h2>
           <p>
             Bantle works because most people are quietly decent to each

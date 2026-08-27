@@ -68,9 +68,9 @@ export const metadata: Metadata = {
   publisher: BRAND_NAME,
   category: "technology",
   authors: [{ name: BRAND_NAME }],
-  alternates: {
-    canonical: "/",
-  },
+  // Deliberately no root-level `alternates.canonical`. Every page sets its
+  // own, and a root default leaks onto the not-found route, where a canonical
+  // pointing at the homepage reads as a soft 404.
   openGraph: {
     ...OG_BASE,
     url: SITE_URL,
@@ -93,6 +93,11 @@ export const metadata: Metadata = {
       "max-video-preview": -1,
     },
   },
+  // Set GOOGLE_SITE_VERIFICATION in the Vercel project to have Next emit the
+  // Search Console meta tag. Omitted entirely when the variable is unset.
+  verification: process.env.GOOGLE_SITE_VERIFICATION
+    ? { google: process.env.GOOGLE_SITE_VERIFICATION }
+    : undefined,
   manifest: "/manifest.webmanifest",
   formatDetection: {
     telephone: false,
@@ -100,10 +105,10 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#00251E" },
-    { media: "(prefers-color-scheme: dark)", color: "#00251E" },
-  ],
+  // Matches the marketing site's actual ground. It was still the deep green
+  // from the first design pass, so mobile browser chrome disagreed with the
+  // page it framed.
+  themeColor: "#050807",
   colorScheme: "light dark",
 };
 

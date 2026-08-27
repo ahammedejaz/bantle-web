@@ -21,9 +21,8 @@ import {
   breadcrumbNode,
   jsonLd,
   mobileApplicationNode,
-  organizationNode,
+  siteEntityNodes,
   webPageNode,
-  webSiteNode,
 } from "@/lib/structured-data";
 
 export const metadata = {
@@ -55,8 +54,7 @@ const homeFaqs = [
 ];
 
 const structuredData = jsonLd([
-  organizationNode,
-  webSiteNode,
+  ...siteEntityNodes,
   mobileApplicationNode,
   webPageNode({
     path: "/",

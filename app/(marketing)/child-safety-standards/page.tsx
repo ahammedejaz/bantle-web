@@ -5,32 +5,34 @@ import { JsonLd } from "@/components/site/JsonLd";
 import {
   breadcrumbNode,
   jsonLd,
+  siteEntityNodes,
   webPageNode,
 } from "@/lib/structured-data";
 import { ProseShell } from "@/components/site/ProseShell";
 import { CONTACT_EMAIL } from "@/lib/constants";
 
 export const metadata: Metadata = {
-  title: "Bantle Child Safety Standards",
+  title: "Child safety standards: prevention and reporting",
   description:
-    "Bantle’s standards for preventing, reporting, and responding to child sexual abuse and exploitation.",
+    "Bantle's standards for preventing, detecting, reporting and responding to child sexual abuse and exploitation, and how to report a concern.",
   alternates: {
     canonical: "/child-safety-standards",
   },
   openGraph: {
     ...OG_BASE,
     url: "/child-safety-standards",
-    title: "Bantle Child Safety Standards",
-    description: "Bantle’s standards for preventing, reporting, and responding to child sexual abuse and exploitation.",
+    title: "Child safety standards: prevention and reporting",
+    description: "Bantle's standards for preventing, detecting, reporting and responding to child sexual abuse and exploitation, and how to report a concern.",
   },
   twitter: {
     ...TWITTER_BASE,
-    title: "Bantle Child Safety Standards",
-    description: "Bantle’s standards for preventing, reporting, and responding to child sexual abuse and exploitation.",
+    title: "Child safety standards: prevention and reporting",
+    description: "Bantle's standards for preventing, detecting, reporting and responding to child sexual abuse and exploitation, and how to report a concern.",
   },
 };
 
 const structuredData = jsonLd([
+  ...siteEntityNodes,
   webPageNode({
     path: "/child-safety-standards",
     name: String(metadata.title),
@@ -53,7 +55,7 @@ export default function ChildSafetyStandardsPage() {
       />
 
       <ProseShell>
-        <section>
+        <section id="our-commitment" className="scroll-mt-28">
           <h2>Our commitment</h2>
           <p>
             Bantle prohibits any content, behavior, or activity involving
@@ -70,7 +72,7 @@ export default function ChildSafetyStandardsPage() {
           </p>
         </section>
 
-        <section>
+        <section id="adult-only-service" className="scroll-mt-28">
           <h2>Adult-only service</h2>
           <p>
             Bantle is designed for adults 18+. Users who are under 18 are
@@ -84,7 +86,7 @@ export default function ChildSafetyStandardsPage() {
           </p>
         </section>
 
-        <section>
+        <section id="reporting-child-safety-concerns" className="scroll-mt-28">
           <h2>Reporting child safety concerns</h2>
           <p>
             Users can report safety concerns inside the Bantle app using the
@@ -111,7 +113,7 @@ export default function ChildSafetyStandardsPage() {
           </p>
         </section>
 
-        <section>
+        <section id="how-bantle-responds" className="scroll-mt-28">
           <h2>How Bantle responds</h2>
           <p>Bantle reviews reports and may take action including:</p>
           <ul>
@@ -129,7 +131,7 @@ export default function ChildSafetyStandardsPage() {
           </ul>
         </section>
 
-        <section>
+        <section id="csam-and-csae-handling" className="scroll-mt-28">
           <h2>CSAM and CSAE handling</h2>
           <p>
             Bantle does not allow users to share or request CSAM or CSAE
@@ -144,7 +146,7 @@ export default function ChildSafetyStandardsPage() {
           </p>
         </section>
 
-        <section>
+        <section id="in-app-safety-controls" className="scroll-mt-28">
           <h2>In-app safety controls</h2>
           <p>
             Bantle provides safety tools that help users report or limit
@@ -180,7 +182,7 @@ export default function ChildSafetyStandardsPage() {
           </p>
         </section>
 
-        <section>
+        <section id="compliance-with-child-safety-laws" className="scroll-mt-28">
           <h2>Compliance with child safety laws</h2>
           <p>
             Bantle aims to comply with applicable child safety laws and
@@ -190,7 +192,7 @@ export default function ChildSafetyStandardsPage() {
           </p>
         </section>
 
-        <section>
+        <section id="last-updated" className="scroll-mt-28">
           <h2>Last updated</h2>
           <p>June 2026</p>
         </section>

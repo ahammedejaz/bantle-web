@@ -5,37 +5,45 @@ import { JsonLd } from "@/components/site/JsonLd";
 import {
   breadcrumbNode,
   jsonLd,
+  siteEntityNodes,
   webPageNode,
 } from "@/lib/structured-data";
 import { ProseShell } from "@/components/site/ProseShell";
-import { CONTACT_EMAIL, POLICY_EFFECTIVE_DATE } from "@/lib/constants";
+import {
+  CONTACT_EMAIL,
+  POLICY_EFFECTIVE_DATE,
+  POLICY_EFFECTIVE_DATE_ISO,
+} from "@/lib/constants";
 
 export const metadata = {
-  title: "Refund policy",
+  title: "Refund policy: why payments stay outside the app",
   description:
-    "Bantle is free to use and never holds your money. Here's exactly how refunds, disputes and money flow work on Bantle.",
+    "Bantle is free to use and never holds your money. Here is exactly how refunds, disputes and money flow work on Bantle.",
   alternates: {
     canonical: "/refund-policy",
   },
   openGraph: {
     ...OG_BASE,
     url: "/refund-policy",
-    title: "Refund policy",
-    description: "Bantle is free to use and never holds your money. Here's exactly how refunds, disputes and money flow work on Bantle.",
+    title: "Refund policy: why payments stay outside the app",
+    description: "Bantle is free to use and never holds your money. Here is exactly how refunds, disputes and money flow work on Bantle.",
   },
   twitter: {
     ...TWITTER_BASE,
-    title: "Refund policy",
-    description: "Bantle is free to use and never holds your money. Here's exactly how refunds, disputes and money flow work on Bantle.",
+    title: "Refund policy: why payments stay outside the app",
+    description: "Bantle is free to use and never holds your money. Here is exactly how refunds, disputes and money flow work on Bantle.",
   },
 };
 
 const structuredData = jsonLd([
+  ...siteEntityNodes,
   webPageNode({
     path: "/refund-policy",
     name: String(metadata.title),
     description: String(metadata.description),
     type: "WebPage",
+    // The date this page itself displays. Never a build timestamp.
+    dateModified: POLICY_EFFECTIVE_DATE_ISO,
   }),
   breadcrumbNode([{ name: "Refund policy", path: "/refund-policy" }]),
 ]);
@@ -50,7 +58,7 @@ export default function RefundPolicyPage() {
         intro={`Last updated ${POLICY_EFFECTIVE_DATE}.`}
       />
       <ProseShell>
-        <section>
+        <section id="1-bantle-is-free" className="scroll-mt-28">
           <h2>1. Bantle is free</h2>
           <p>
             Posting a listing, browsing the feed, chatting with other
@@ -60,7 +68,7 @@ export default function RefundPolicyPage() {
           </p>
         </section>
 
-        <section>
+        <section id="2-we-do-not-handle-money-between-users" className="scroll-mt-28">
           <h2>2. We do not handle money between users</h2>
           <p>
             Bantle does not collect, process, hold, verify or transmit
@@ -72,7 +80,7 @@ export default function RefundPolicyPage() {
           </p>
         </section>
 
-        <section>
+        <section id="3-how-refund-disputes-are-resolved" className="scroll-mt-28">
           <h2>3. How refund disputes are resolved</h2>
           <p>
             Because every payment is direct between members, refund
@@ -100,7 +108,7 @@ export default function RefundPolicyPage() {
           </ul>
         </section>
 
-        <section>
+        <section id="4-what-bantle-can-and-cannot-do" className="scroll-mt-28">
           <h2>4. What Bantle can and cannot do</h2>
           <p>
             We can take behavioural action — warn, suspend or permanently
@@ -126,7 +134,7 @@ export default function RefundPolicyPage() {
           </p>
         </section>
 
-        <section>
+        <section id="5-if-bantle-ever-introduces-paid-features" className="scroll-mt-28">
           <h2>5. If Bantle ever introduces paid features</h2>
           <p>
             This policy applies to Bantle as it exists today: a free,
@@ -138,7 +146,7 @@ export default function RefundPolicyPage() {
           </p>
         </section>
 
-        <section>
+        <section id="6-contact" className="scroll-mt-28">
           <h2>6. Contact</h2>
           <p>
             For questions about this policy, email{" "}

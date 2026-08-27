@@ -6,12 +6,13 @@ import { JsonLd } from "@/components/site/JsonLd";
 import {
   breadcrumbNode,
   jsonLd,
+  siteEntityNodes,
   webPageNode,
 } from "@/lib/structured-data";
 import { CONTACT_EMAIL, FEEDBACK_EMAIL } from "@/lib/constants";
 
 export const metadata = {
-  title: "Support",
+  title: "Support: get help with an account or a deal",
   description:
     "Reach a real person at Bantle. Support, feedback and press contacts, plus a quick troubleshooting checklist before you write.",
   alternates: {
@@ -20,17 +21,18 @@ export const metadata = {
   openGraph: {
     ...OG_BASE,
     url: "/support",
-    title: "Support",
+    title: "Support: get help with an account or a deal",
     description: "Reach a real person at Bantle. Support, feedback and press contacts, plus a quick troubleshooting checklist before you write.",
   },
   twitter: {
     ...TWITTER_BASE,
-    title: "Support",
+    title: "Support: get help with an account or a deal",
     description: "Reach a real person at Bantle. Support, feedback and press contacts, plus a quick troubleshooting checklist before you write.",
   },
 };
 
 const structuredData = jsonLd([
+  ...siteEntityNodes,
   webPageNode({
     path: "/support",
     name: String(metadata.title),

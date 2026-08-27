@@ -6,31 +6,33 @@ import { JsonLd } from "@/components/site/JsonLd";
 import {
   breadcrumbNode,
   jsonLd,
+  siteEntityNodes,
   webPageNode,
 } from "@/lib/structured-data";
 import { CONTACT_EMAIL } from "@/lib/constants";
 
 export const metadata = {
-  title: "Safety",
+  title: "Safety: verified profiles, badges and real limits",
   description:
-    "How Bantle helps keep monthly sharing and one-time access coordination clear, with payment and access confirmation outside Bantle.",
+    "How Bantle reduces fake accounts with identity verification, trust badges, reporting and blocking, and the limits of what any app can promise.",
   alternates: {
     canonical: "/safety",
   },
   openGraph: {
     ...OG_BASE,
     url: "/safety",
-    title: "Safety",
-    description: "How Bantle helps keep monthly sharing and one-time access coordination clear, with payment and access confirmation outside Bantle.",
+    title: "Safety: verified profiles, badges and real limits",
+    description: "How Bantle reduces fake accounts with identity verification, trust badges, reporting and blocking, and the limits of what any app can promise.",
   },
   twitter: {
     ...TWITTER_BASE,
-    title: "Safety",
-    description: "How Bantle helps keep monthly sharing and one-time access coordination clear, with payment and access confirmation outside Bantle.",
+    title: "Safety: verified profiles, badges and real limits",
+    description: "How Bantle reduces fake accounts with identity verification, trust badges, reporting and blocking, and the limits of what any app can promise.",
   },
 };
 
 const structuredData = jsonLd([
+  ...siteEntityNodes,
   webPageNode({
     path: "/safety",
     name: String(metadata.title),
@@ -50,7 +52,7 @@ export default function SafetyPage() {
         intro="Bantle keeps subscription coordination explicit: email verification, listing terms, chat, blocks, reports, ratings and mandatory deal safety acknowledgements all support safer direct coordination."
       />
       <ProseShell>
-        <section>
+        <section id="trust-starts-with-clear-terms" className="scroll-mt-28">
           <h2>Trust starts with clear terms</h2>
           <p>
             Bantle is designed to make subscription arrangements explicit
@@ -67,7 +69,7 @@ export default function SafetyPage() {
           </p>
         </section>
 
-        <section>
+        <section id="verification-layers" className="scroll-mt-28">
           <h2>Verification layers</h2>
           <ul>
             <li>
@@ -106,7 +108,7 @@ export default function SafetyPage() {
           </ul>
         </section>
 
-        <section>
+        <section id="who-can-list-and-trust-badges" className="scroll-mt-28">
           <h2>Who can list, and trust badges</h2>
           <ul>
             <li>
@@ -139,7 +141,7 @@ export default function SafetyPage() {
           </ul>
         </section>
 
-        <section>
+        <section id="provider-terms-still-apply" className="scroll-mt-28">
           <h2>Provider terms still apply</h2>
           <p>
             Some family, household, or location-based subscription plans may
@@ -157,7 +159,7 @@ export default function SafetyPage() {
           </p>
         </section>
 
-        <section>
+        <section id="what-you-control" className="scroll-mt-28">
           <h2>What you control</h2>
           <ul>
             <li>
@@ -184,7 +186,7 @@ export default function SafetyPage() {
           </ul>
         </section>
 
-        <section>
+        <section id="red-flags-before-coordinating" className="scroll-mt-28">
           <h2>Red flags before coordinating</h2>
           <p>
             Most Bantle arrangements should be simple and explicit. Watch
@@ -223,7 +225,7 @@ export default function SafetyPage() {
           </ul>
         </section>
 
-        <section>
+        <section id="if-something-goes-wrong" className="scroll-mt-28">
           <h2>If something goes wrong</h2>
           <ol>
             <li>
@@ -251,7 +253,7 @@ export default function SafetyPage() {
           </ol>
         </section>
 
-        <section>
+        <section id="important-bantle-is-coordination-only" className="scroll-mt-28">
           <h2>Important: Bantle is coordination only</h2>
           <p>
             Bantle does not hold, route, process, verify or insure your

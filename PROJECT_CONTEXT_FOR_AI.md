@@ -2,7 +2,7 @@
 
 Last updated: 2026-05-25
 Repo path: `/Users/syedejazahammed/Documents/GitHub/bantle-web`
-Production URL: `https://bantle.in`
+Production URL: `https://www.bantle.in` (the apex `bantle.in` 307-redirects to www)
 Mobile repo: `/Users/syedejazahammed/Documents/GitHub/bantle`
 Supabase project id: `fpoviccitrraonvvgont`
 
@@ -18,7 +18,7 @@ Scan scope for this document:
 
 `bantle-web` is a Next.js 16 App Router application with two major surfaces:
 
-1. Public marketing, support, and legal pages for Bantle at `bantle.in`.
+1. Public marketing, support, and legal pages for Bantle at `www.bantle.in`.
 2. A protected admin panel at `/admin/*` for reports, users, listings, deals, and platform catalog management.
 
 Bantle itself is an India-first mobile app for household subscription coordination. The current product positioning is important: Bantle is framed as a tool for roommates, family, and partners who already share a household. It is not meant to be described as a stranger marketplace. Payments happen outside Bantle via UPI. Bantle does not hold money.
@@ -216,7 +216,9 @@ Utility classes in `app/globals.css`:
 
 - `BRAND_NAME = "Bantle"`
 - `TAGLINE = "Share subscription costs."`
-- `SITE_URL = "https://bantle.in"`
+- `SITE_URL = "https://www.bantle.in"` - the canonical host. Must match the
+  host actually served: canonicals, sitemap, `og:url`, `metadataBase` and all
+  schema `@id`s derive from it.
 - `SITE_DESCRIPTION` - household subscription coordination copy.
 - Contact emails:
   - `support@bantle.in`

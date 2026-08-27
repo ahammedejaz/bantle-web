@@ -5,6 +5,7 @@ import { JsonLd } from "@/components/site/JsonLd";
 import {
   breadcrumbNode,
   jsonLd,
+  siteEntityNodes,
   webPageNode,
 } from "@/lib/structured-data";
 import { ProseShell } from "@/components/site/ProseShell";
@@ -14,36 +15,40 @@ import {
   GRIEVANCE_EMAIL,
   GRIEVANCE_OFFICER_NAME,
   POLICY_EFFECTIVE_DATE,
+  POLICY_EFFECTIVE_DATE_ISO,
   POSTAL_ADDRESS,
   PRIVACY_EMAIL,
 } from "@/lib/constants";
 
 export const metadata = {
-  title: "Privacy policy",
+  title: "Privacy policy: what we collect, and what we don't",
   description:
-    "How Bantle collects, uses, shares and protects your information. Written in plain language with India DPDP Act 2023 in mind.",
+    "How Bantle collects, uses, shares and protects your information. Written in plain language with India's DPDP Act 2023 in mind.",
   alternates: {
     canonical: "/privacy",
   },
   openGraph: {
     ...OG_BASE,
     url: "/privacy",
-    title: "Privacy policy",
-    description: "How Bantle collects, uses, shares and protects your information. Written in plain language with India DPDP Act 2023 in mind.",
+    title: "Privacy policy: what we collect, and what we don't",
+    description: "How Bantle collects, uses, shares and protects your information. Written in plain language with India's DPDP Act 2023 in mind.",
   },
   twitter: {
     ...TWITTER_BASE,
-    title: "Privacy policy",
-    description: "How Bantle collects, uses, shares and protects your information. Written in plain language with India DPDP Act 2023 in mind.",
+    title: "Privacy policy: what we collect, and what we don't",
+    description: "How Bantle collects, uses, shares and protects your information. Written in plain language with India's DPDP Act 2023 in mind.",
   },
 };
 
 const structuredData = jsonLd([
+  ...siteEntityNodes,
   webPageNode({
     path: "/privacy",
     name: String(metadata.title),
     description: String(metadata.description),
     type: "WebPage",
+    // The date this page itself displays. Never a build timestamp.
+    dateModified: POLICY_EFFECTIVE_DATE_ISO,
   }),
   breadcrumbNode([{ name: "Privacy policy", path: "/privacy" }]),
 ]);
@@ -58,7 +63,7 @@ export default function PrivacyPage() {
         intro={`Last updated ${POLICY_EFFECTIVE_DATE}. Effective ${POLICY_EFFECTIVE_DATE}.`}
       />
       <ProseShell>
-        <section>
+        <section id="in-short" className="scroll-mt-28">
           <h2>In short</h2>
           <p>
             Bantle is a coordination app for splitting or buying
@@ -74,7 +79,7 @@ export default function PrivacyPage() {
           </p>
         </section>
 
-        <section>
+        <section id="1-who-we-are" className="scroll-mt-28">
           <h2>1. Who we are</h2>
           <p>
             Bantle is operated by {COMPANY_NAME} (&ldquo;Bantle&rdquo;,
@@ -85,7 +90,7 @@ export default function PrivacyPage() {
           </p>
         </section>
 
-        <section>
+        <section id="2-data-we-collect" className="scroll-mt-28">
           <h2>2. Data we collect</h2>
           <h3>Identity data</h3>
           <ul>
@@ -150,7 +155,7 @@ export default function PrivacyPage() {
           </ul>
         </section>
 
-        <section>
+        <section id="3-how-we-use-your-data" className="scroll-mt-28">
           <h2>3. How we use your data</h2>
           <ul>
             <li>To run the service: coordinating plans across household members, supporting chat and monthly settlement flows.</li>
@@ -167,7 +172,7 @@ export default function PrivacyPage() {
           </ul>
         </section>
 
-        <section>
+        <section id="4-third-party-services-we-rely-on" className="scroll-mt-28">
           <h2>4. Third-party services we rely on</h2>
           <p>
             Bantle is built on a small number of carefully chosen vendors.
@@ -205,7 +210,7 @@ export default function PrivacyPage() {
           </ul>
         </section>
 
-        <section>
+        <section id="5-how-we-share-data" className="scroll-mt-28">
           <h2>5. How we share data</h2>
           <p>
             We do not sell your data. Full stop. Beyond that, sharing
@@ -242,7 +247,7 @@ export default function PrivacyPage() {
           </ul>
         </section>
 
-        <section>
+        <section id="6-data-retention" className="scroll-mt-28">
           <h2>6. Data retention</h2>
           <ul>
             <li>
@@ -273,7 +278,7 @@ export default function PrivacyPage() {
           </ul>
         </section>
 
-        <section>
+        <section id="7-your-rights-under-the-dpdp-act-2023" className="scroll-mt-28">
           <h2>7. Your rights under the DPDP Act 2023</h2>
           <p>
             India&apos;s Digital Personal Data Protection Act 2023 gives
@@ -308,7 +313,7 @@ export default function PrivacyPage() {
           </p>
         </section>
 
-        <section>
+        <section id="childrens-privacy" className="scroll-mt-28">
           <h2>8. Children&apos;s privacy</h2>
           <p>
             Bantle is for adults only — you must be 18 or older to use it.
@@ -321,7 +326,7 @@ export default function PrivacyPage() {
           </p>
         </section>
 
-        <section>
+        <section id="9-security" className="scroll-mt-28">
           <h2>9. Security</h2>
           <ul>
             <li>Data is encrypted in transit (TLS) and at rest.</li>
@@ -344,7 +349,7 @@ export default function PrivacyPage() {
           </ul>
         </section>
 
-        <section>
+        <section id="10-international-data-transfers" className="scroll-mt-28">
           <h2>10. International data transfers</h2>
           <p>
             Your data is processed primarily inside Asia Pacific regions.
@@ -355,7 +360,7 @@ export default function PrivacyPage() {
           </p>
         </section>
 
-        <section>
+        <section id="11-changes-to-this-policy" className="scroll-mt-28">
           <h2>11. Changes to this policy</h2>
           <p>
             We may update this policy from time to time. If we make a
@@ -365,7 +370,7 @@ export default function PrivacyPage() {
           </p>
         </section>
 
-        <section>
+        <section id="12-how-to-reach-us" className="scroll-mt-28">
           <h2>12. How to reach us</h2>
           <p>
             For privacy questions, write to{" "}

@@ -6,31 +6,33 @@ import { JsonLd } from "@/components/site/JsonLd";
 import {
   breadcrumbNode,
   jsonLd,
+  siteEntityNodes,
   webPageNode,
 } from "@/lib/structured-data";
 import { CONTACT_EMAIL } from "@/lib/constants";
 
 export const metadata = {
-  title: "About",
+  title: "About: who builds it, and what it refuses to do",
   description:
-    "Bantle is a small, India-first team building a clearer way to coordinate monthly sharing and one-time access for subscriptions.",
+    "Who builds Bantle, how it started, and the principles behind how it works, including what the app deliberately does not do.",
   alternates: {
     canonical: "/about",
   },
   openGraph: {
     ...OG_BASE,
     url: "/about",
-    title: "About",
-    description: "Bantle is a small, India-first team building a clearer way to coordinate monthly sharing and one-time access for subscriptions.",
+    title: "About: who builds it, and what it refuses to do",
+    description: "Who builds Bantle, how it started, and the principles behind how it works, including what the app deliberately does not do.",
   },
   twitter: {
     ...TWITTER_BASE,
-    title: "About",
-    description: "Bantle is a small, India-first team building a clearer way to coordinate monthly sharing and one-time access for subscriptions.",
+    title: "About: who builds it, and what it refuses to do",
+    description: "Who builds Bantle, how it started, and the principles behind how it works, including what the app deliberately does not do.",
   },
 };
 
 const structuredData = jsonLd([
+  ...siteEntityNodes,
   webPageNode({
     path: "/about",
     name: String(metadata.title),
@@ -73,7 +75,7 @@ export default function AboutPage() {
         intro="Bantle exists because subscription coordination usually happens in messy chats. We keep monthly sharing and one-time access terms visible, while payment and access confirmation stay direct between users."
       />
       <ProseShell>
-        <section>
+        <section id="our-story" className="scroll-mt-28">
           <h2>Our story</h2>
           <p>
             Bantle started with a small observation: subscription
@@ -107,7 +109,7 @@ export default function AboutPage() {
           </p>
         </section>
 
-        <section>
+        <section id="what-we-believe" className="scroll-mt-28">
           <h2>What we believe</h2>
           <div className="not-prose mt-7 grid">
             {principles.map((principle) => (
@@ -126,7 +128,7 @@ export default function AboutPage() {
           </div>
         </section>
 
-        <section>
+        <section id="what-we-dont-do" className="scroll-mt-28">
           <h2>What we don&apos;t do</h2>
           <p>
             Knowing what an app refuses to do is often more useful than
@@ -140,7 +142,7 @@ export default function AboutPage() {
           </ul>
         </section>
 
-        <section>
+        <section id="talk-to-us" className="scroll-mt-28">
           <h2>Talk to us</h2>
           <p>
             We&apos;re a small team and we read every email. Product

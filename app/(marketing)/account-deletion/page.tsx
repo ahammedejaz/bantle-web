@@ -5,32 +5,34 @@ import { JsonLd } from "@/components/site/JsonLd";
 import {
   breadcrumbNode,
   jsonLd,
+  siteEntityNodes,
   webPageNode,
 } from "@/lib/structured-data";
 import { ProseShell } from "@/components/site/ProseShell";
 import { CONTACT_EMAIL } from "@/lib/constants";
 
 export const metadata: Metadata = {
-  title: "Bantle Account and Data Deletion",
+  title: "Account and data deletion: how to request it",
   description:
-    "Learn how to request deletion of your Bantle account or specific Bantle data.",
+    "How to request deletion of your Bantle account or specific data, what gets removed, what is retained, and how long each step takes.",
   alternates: {
     canonical: "/account-deletion",
   },
   openGraph: {
     ...OG_BASE,
     url: "/account-deletion",
-    title: "Bantle Account and Data Deletion",
-    description: "Learn how to request deletion of your Bantle account or specific Bantle data.",
+    title: "Account and data deletion: how to request it",
+    description: "How to request deletion of your Bantle account or specific data, what gets removed, what is retained, and how long each step takes.",
   },
   twitter: {
     ...TWITTER_BASE,
-    title: "Bantle Account and Data Deletion",
-    description: "Learn how to request deletion of your Bantle account or specific Bantle data.",
+    title: "Account and data deletion: how to request it",
+    description: "How to request deletion of your Bantle account or specific data, what gets removed, what is retained, and how long each step takes.",
   },
 };
 
 const structuredData = jsonLd([
+  ...siteEntityNodes,
   webPageNode({
     path: "/account-deletion",
     name: String(metadata.title),
@@ -62,7 +64,7 @@ export default function AccountDeletionPage() {
           </p>
         </section>
 
-        <section>
+        <section id="delete-your-bantle-account-in-the-app" className="scroll-mt-28">
           <h2>Delete your Bantle account in the app</h2>
           <ol>
             <li>Open the Bantle app.</li>
@@ -73,7 +75,7 @@ export default function AccountDeletionPage() {
           </ol>
         </section>
 
-        <section>
+        <section id="request-account-deletion-by-email" className="scroll-mt-28">
           <h2>Request account deletion by email</h2>
           <p>
             If you cannot access the app, you can request account deletion
@@ -97,7 +99,7 @@ export default function AccountDeletionPage() {
           </p>
         </section>
 
-        <section>
+        <section id="delete-specific-data-without-deleting-your-account" className="scroll-mt-28">
           <h2>Delete specific data without deleting your account</h2>
           <p>
             You may also request deletion of specific Bantle data without
@@ -138,7 +140,7 @@ export default function AccountDeletionPage() {
           </p>
         </section>
 
-        <section>
+        <section id="what-data-is-deleted-or-anonymized" className="scroll-mt-28">
           <h2>What data is deleted or anonymized</h2>
           <p>
             When an account deletion request is completed, Bantle deletes or
@@ -163,7 +165,7 @@ export default function AccountDeletionPage() {
           </p>
         </section>
 
-        <section>
+        <section id="data-we-may-retain" className="scroll-mt-28">
           <h2>Data we may retain</h2>
           <p>
             Some data may be retained where necessary for legitimate reasons,
@@ -183,7 +185,7 @@ export default function AccountDeletionPage() {
           </p>
         </section>
 
-        <section>
+        <section id="processing-time" className="scroll-mt-28">
           <h2>Processing time</h2>
           <p>
             We aim to process deletion requests within a reasonable time after

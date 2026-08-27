@@ -286,9 +286,32 @@ the service-role client inside `requireAdmin`-gated routes.
 - **Title/tagline** come from `lib/constants.ts` (`BRAND_NAME`, `TAGLINE`)
   and `app/layout.tsx` metadata. Keep OG/Twitter metadata and JSON-LD
   (`@context` + `@graph`) in sync if you change them.
+- **Canonical host.** `SITE_URL` in `lib/constants.ts` is
+  `https://www.bantle.in` and **must match the host the server actually
+  serves**. Canonicals, the sitemap, robots' sitemap line, `og:url`,
+  `metadataBase` and every schema `@id` derive from it, so a mismatch points
+  every canonical URL the site publishes at a redirect. The apex 307-redirects
+  to www; if that ever flips, change this constant in the same commit.
 - **robots/sitemap.** `app/robots.ts` disallows `/admin`, `/verify`,
   `/reset-password`; `app/sitemap.ts` lists public pages only. `verify` and
-  `reset-password` also set `noindex` per page.
+  `reset-password` also set `noindex` per page. Sitemap `lastModified` uses
+  **real content dates, never `new Date()`** — stamping every URL with the
+  build time teaches Google to ignore the site's own lastmod.
+- **Schema `@id`s do not resolve across pages.** Google parses structured data
+  per document, so every route must ship `siteEntityNodes` (Person +
+  Organization + WebSite) alongside its page node. A page that references
+  `#organization` without defining it carries no publisher signal at all.
+- **No `HowTo`, no `aggregateRating`, no `Review`.** HowTo rich results were
+  retired in September 2023 — use `stepListNode` (`ItemList`) instead. Bantle
+  has no first-party ratings, and restating a store's rating on our own domain
+  violates the review-snippet policy.
+- **Titles** are 50–60 characters including the ` | Bantle` the layout template
+  appends, so a page title must not itself begin with "Bantle". Meta
+  descriptions stay under ~155. The homepage title is fixed by founder request
+  and is exempt.
+- **Passage anchors.** Prose `<section>`s carry slug `id`s and FAQ questions are
+  `<h3>` inside `<summary>` with per-question anchors. This is what lets an
+  answer be cited rather than only the page; keep it when editing those pages.
 - **Payment & trust boundary (legal-critical).** Public copy must never
   claim Bantle processes/verifies payments, guarantees access/refunds/deal
   outcomes, or uses "biometric"/"liveness"/"fraud-proof" as a capability.

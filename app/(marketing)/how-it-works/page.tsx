@@ -4,29 +4,30 @@ import { OG_BASE, TWITTER_BASE } from "@/lib/seo";
 import { JsonLd } from "@/components/site/JsonLd";
 import {
   breadcrumbNode,
-  howToNode,
   jsonLd,
+  siteEntityNodes,
+  stepListNode,
   webPageNode,
 } from "@/lib/structured-data";
 import { ProseShell } from "@/components/site/ProseShell";
 
 export const metadata = {
-  title: "How it works",
+  title: "How it works: split or buy a subscription slot",
   description:
-    "How Bantle helps users coordinate monthly sharing and one-time access while payment and access confirmation stay outside Bantle.",
+    "How Bantle works, step by step: list a monthly slot or the access you have left, agree the terms in chat, and pay each other directly outside the app.",
   alternates: {
     canonical: "/how-it-works",
   },
   openGraph: {
     ...OG_BASE,
     url: "/how-it-works",
-    title: "How it works",
-    description: "How Bantle helps users coordinate monthly sharing and one-time access while payment and access confirmation stay outside Bantle.",
+    title: "How it works: split or buy a subscription slot",
+    description: "How Bantle works, step by step: list a monthly slot or the access you have left, agree the terms in chat, and pay each other directly outside the app.",
   },
   twitter: {
     ...TWITTER_BASE,
-    title: "How it works",
-    description: "How Bantle helps users coordinate monthly sharing and one-time access while payment and access confirmation stay outside Bantle.",
+    title: "How it works: split or buy a subscription slot",
+    description: "How Bantle works, step by step: list a monthly slot or the access you have left, agree the terms in chat, and pay each other directly outside the app.",
   },
 };
 
@@ -83,13 +84,14 @@ const steps = [
 ];
 
 const structuredData = jsonLd([
+  ...siteEntityNodes,
   webPageNode({
     path: "/how-it-works",
     name: String(metadata.title),
     description: String(metadata.description),
     type: "WebPage",
   }),
-  howToNode({
+  stepListNode({
     name: "How to split or buy subscription access on Bantle",
     description: String(metadata.description),
     path: "/how-it-works",

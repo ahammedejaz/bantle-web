@@ -9,8 +9,11 @@ export default function manifest(): MetadataRoute.Manifest {
     start_url: "/",
     scope: "/",
     display: "standalone",
-    background_color: "#F4F7F5",
-    theme_color: "#00251E",
+    // Both were left over from the first design pass. The installed app should
+    // open on the same near-black ground the site actually uses, not flash a
+    // light splash before it.
+    background_color: "#050807",
+    theme_color: "#050807",
     lang: "en-IN",
     categories: ["lifestyle", "finance", "social"],
     icons: [

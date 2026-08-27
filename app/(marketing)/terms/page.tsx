@@ -5,6 +5,7 @@ import { JsonLd } from "@/components/site/JsonLd";
 import {
   breadcrumbNode,
   jsonLd,
+  siteEntityNodes,
   webPageNode,
 } from "@/lib/structured-data";
 import { ProseShell } from "@/components/site/ProseShell";
@@ -13,34 +14,41 @@ import {
   JURISDICTION_CITY,
   LEGAL_EMAIL,
 } from "@/lib/constants";
-import { CURRENT_VERSION, EFFECTIVE_DATE_DISPLAY } from "@/lib/tos";
+import {
+  CURRENT_VERSION,
+  EFFECTIVE_DATE,
+  EFFECTIVE_DATE_DISPLAY,
+} from "@/lib/tos";
 
 export const metadata = {
-  title: "Terms of service",
+  title: "Terms of service: the rules for using the app",
   description:
-    "The terms that govern your use of Bantle. We coordinate monthly sharing and one-time access; arrangements and payments happen directly between users.",
+    "The terms that govern your use of Bantle. We coordinate sharing and one-time access; arrangements and payments happen directly between users.",
   alternates: {
     canonical: "/terms",
   },
   openGraph: {
     ...OG_BASE,
     url: "/terms",
-    title: "Terms of service",
-    description: "The terms that govern your use of Bantle. We coordinate monthly sharing and one-time access; arrangements and payments happen directly between users.",
+    title: "Terms of service: the rules for using the app",
+    description: "The terms that govern your use of Bantle. We coordinate sharing and one-time access; arrangements and payments happen directly between users.",
   },
   twitter: {
     ...TWITTER_BASE,
-    title: "Terms of service",
-    description: "The terms that govern your use of Bantle. We coordinate monthly sharing and one-time access; arrangements and payments happen directly between users.",
+    title: "Terms of service: the rules for using the app",
+    description: "The terms that govern your use of Bantle. We coordinate sharing and one-time access; arrangements and payments happen directly between users.",
   },
 };
 
 const structuredData = jsonLd([
+  ...siteEntityNodes,
   webPageNode({
     path: "/terms",
     name: String(metadata.title),
     description: String(metadata.description),
     type: "WebPage",
+    // The date this page itself displays. Never a build timestamp.
+    dateModified: EFFECTIVE_DATE,
   }),
   breadcrumbNode([{ name: "Terms of service", path: "/terms" }]),
 ]);
@@ -55,7 +63,7 @@ export default function TermsPage() {
         intro={`Version ${CURRENT_VERSION}. Effective ${EFFECTIVE_DATE_DISPLAY}. By using Bantle you agree to these terms.`}
       />
       <ProseShell>
-        <section>
+        <section id="1-acceptance-and-eligibility" className="scroll-mt-28">
           <h2>1. Acceptance and eligibility</h2>
           <p>
             By installing, signing in to or otherwise using the Bantle
@@ -75,7 +83,7 @@ export default function TermsPage() {
           </p>
         </section>
 
-        <section>
+        <section id="2-what-bantle-is" className="scroll-mt-28">
           <h2>2. What Bantle is</h2>
           <p>
             Bantle is a coordination tool for subscription access. Users
@@ -114,7 +122,7 @@ export default function TermsPage() {
           </p>
         </section>
 
-        <section>
+        <section id="3-your-attestations" className="scroll-mt-28">
           <h2>3. Your attestations</h2>
           <p>
             By using Bantle to create or join a coordination listing, you
@@ -155,7 +163,7 @@ export default function TermsPage() {
           </p>
         </section>
 
-        <section>
+        <section id="4-your-account" className="scroll-mt-28">
           <h2>4. Your account</h2>
           <ul>
             <li>
@@ -184,7 +192,7 @@ export default function TermsPage() {
           </ul>
         </section>
 
-        <section>
+        <section id="5-user-generated-content" className="scroll-mt-28">
           <h2>5. User-generated content</h2>
           <p>
             Plan details, profile fields, messages, ratings and reports
@@ -218,7 +226,7 @@ export default function TermsPage() {
           </p>
         </section>
 
-        <section>
+        <section id="6-conduct-rules" className="scroll-mt-28">
           <h2>6. Conduct rules</h2>
           <p>The following are not allowed on Bantle:</p>
           <ul>
@@ -276,7 +284,7 @@ export default function TermsPage() {
           </p>
         </section>
 
-        <section>
+        <section id="7-listings-deals-and-direct-coordination" className="scroll-mt-28">
           <h2>7. Listings, deals and direct coordination</h2>
           <p>
             Any coordination plan you create or join through Bantle is an
@@ -305,7 +313,7 @@ export default function TermsPage() {
           </p>
         </section>
 
-        <section>
+        <section id="8-payments" className="scroll-mt-28">
           <h2>8. Payments</h2>
           <p>
             All payments between users happen{" "}
@@ -321,7 +329,7 @@ export default function TermsPage() {
           </p>
         </section>
 
-        <section>
+        <section id="9-subscription-provider-terms" className="scroll-mt-28">
           <h2>9. Subscription provider terms</h2>
           <p>
             Subscription plans are governed by terms set by the
@@ -345,7 +353,7 @@ export default function TermsPage() {
           </p>
         </section>
 
-        <section>
+        <section id="10-privacy-and-data" className="scroll-mt-28">
           <h2>10. Privacy and data</h2>
           <p>
             Our handling of your personal data is described in detail in
@@ -363,7 +371,7 @@ export default function TermsPage() {
           </p>
         </section>
 
-        <section>
+        <section id="11-termination" className="scroll-mt-28">
           <h2>11. Termination</h2>
           <p>
             You may delete your account at any time from inside the App.
@@ -375,7 +383,7 @@ export default function TermsPage() {
           </p>
         </section>
 
-        <section>
+        <section id="12-disclaimers" className="scroll-mt-28">
           <h2>12. Disclaimers</h2>
           <p>
             The Service is provided &ldquo;as is&rdquo; and &ldquo;as
@@ -393,7 +401,7 @@ export default function TermsPage() {
           </p>
         </section>
 
-        <section>
+        <section id="13-limitation-of-liability" className="scroll-mt-28">
           <h2>13. Limitation of liability</h2>
           <p>
             To the maximum extent permitted by applicable Indian law,
@@ -410,7 +418,7 @@ export default function TermsPage() {
           </p>
         </section>
 
-        <section>
+        <section id="14-indemnification" className="scroll-mt-28">
           <h2>14. Indemnification</h2>
           <p>
             You agree to indemnify and hold harmless Bantle, its
@@ -424,7 +432,7 @@ export default function TermsPage() {
           </p>
         </section>
 
-        <section>
+        <section id="15-governing-law-and-dispute-resolution" className="scroll-mt-28">
           <h2>15. Governing law and dispute resolution</h2>
           <p>
             These Terms are governed by the laws of the Republic of
@@ -442,7 +450,7 @@ export default function TermsPage() {
           </p>
         </section>
 
-        <section>
+        <section id="16-changes-to-these-terms" className="scroll-mt-28">
           <h2>16. Changes to these Terms</h2>
           <p>
             We may revise these Terms from time to time. When we make a
@@ -455,7 +463,7 @@ export default function TermsPage() {
           </p>
         </section>
 
-        <section>
+        <section id="17-contact" className="scroll-mt-28">
           <h2>17. Contact</h2>
           <p>
             For legal matters, write to{" "}
