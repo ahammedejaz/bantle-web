@@ -9,87 +9,19 @@ import {
   ClipboardList,
   Flag,
   Handshake,
+  Inbox,
   Layers,
   ListChecks,
   RefreshCw,
   ScrollText,
   ShieldCheck,
+  UserRoundPen,
   Users,
   type LucideIcon,
 } from "lucide-react";
 import { useAdminToast } from "@/components/admin/AdminToastProvider";
+import type { DashboardData } from "@/lib/admin-dashboard-metrics";
 import { cn } from "@/lib/utils";
-
-type DashboardData = {
-  users: {
-    total: number;
-    active: number;
-    deleted: number;
-    temporarily_banned: number;
-    permanently_banned: number;
-    with_push_token: number;
-    new_7d: number;
-    new_30d: number;
-  };
-  reports: {
-    total: number;
-    open: number;
-    resolved: number;
-    dismissed: number;
-    new_7d: number;
-    new_30d: number;
-  };
-  listings: {
-    total: number;
-    active: number;
-    closed: number;
-    archived: number;
-    created_7d: number;
-    created_30d: number;
-  };
-  deals: {
-    total: number;
-    pending: number;
-    active: number;
-    completed: number;
-    cancelled: number;
-    disputed: number;
-    created_7d: number;
-    created_30d: number;
-  };
-  platforms: {
-    total: number;
-    active: number;
-    inactive: number;
-  };
-  broadcasts: {
-    total: number;
-    completed: number;
-    partial_failure: number;
-    failed: number;
-    sent_7d: number;
-    sent_30d: number;
-  };
-  audit: {
-    total_actions: number;
-    actions_7d: number;
-    actions_30d: number;
-    listing_closed_actions: number;
-    deal_terminated_actions: number;
-    broadcast_sent_actions: number;
-    latest_actions: Array<{
-      id: string;
-      action_type: string;
-      target_resource_type: string | null;
-      target_resource_id: string | null;
-      created_at: string;
-      admin: {
-        display_name: string | null;
-        email: string | null;
-      } | null;
-    }>;
-  };
-};
 
 type Metric = {
   label: string;
@@ -100,10 +32,15 @@ type Metric = {
   tone?: "default" | "attention" | "quiet";
 };
 
-export function DashboardClient() {
+export function DashboardClient({
+  initialData,
+}: {
+  /** Server-rendered metrics; null when the server-side fetch failed. */
+  initialData: DashboardData | null;
+}) {
   const toast = useAdminToast();
-  const [data, setData] = useState<DashboardData | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [data, setData] = useState<DashboardData | null>(initialData);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const fetchDashboard = useCallback(async () => {
@@ -132,9 +69,11 @@ export function DashboardClient() {
     }
   }, [toast]);
 
+  // Only fetch on mount when the server could not provide data; the normal
+  // path arrives with metrics already rendered.
   useEffect(() => {
-    void fetchDashboard();
-  }, [fetchDashboard]);
+    if (!initialData) void fetchDashboard();
+  }, [initialData, fetchDashboard]);
 
   if (loading && !data) {
     return <DashboardLoading />;
@@ -161,14 +100,10 @@ export function DashboardClient() {
 
   if (!data) return null;
 
-  const snapshot: Metric[] = [
-    {
-      label: "Eligible users",
-      value: data.users.active,
-      helper: `${fmt(data.users.with_push_token)} with push tokens`,
-      href: "/admin/users",
-      icon: Users,
-    },
+  // The review queues: every number here is a human waiting on an admin
+  // decision, so anything above zero carries the attention tone. This band is
+  // the reason the dashboard exists.
+  const queues: Metric[] = [
     {
       label: "Open reports",
       value: data.reports.open,
@@ -176,6 +111,52 @@ export function DashboardClient() {
       href: "/admin/reports",
       icon: Flag,
       tone: data.reports.open > 0 ? "attention" : "default",
+    },
+    {
+      label: "Identity verifications",
+      value: data.queues.identity_verifications_pending,
+      helper: "Waiting for review",
+      href: "/admin/identity-verifications",
+      icon: ShieldCheck,
+      tone:
+        data.queues.identity_verifications_pending > 0
+          ? "attention"
+          : "default",
+    },
+    {
+      label: "Name change requests",
+      value: data.queues.name_change_requests_pending,
+      helper: "Waiting for review",
+      href: "/admin/name-change-requests",
+      icon: UserRoundPen,
+      tone:
+        data.queues.name_change_requests_pending > 0 ? "attention" : "default",
+    },
+    {
+      label: "Platform requests",
+      value: data.queues.platform_requests_pending,
+      helper: "Waiting for review",
+      href: "/admin/platform-requests",
+      icon: Inbox,
+      tone: data.queues.platform_requests_pending > 0 ? "attention" : "default",
+    },
+    {
+      label: "Disputed deals",
+      value: data.deals.disputed,
+      helper: "Open disputes between users",
+      href: "/admin/deals",
+      icon: AlertTriangle,
+      tone: data.deals.disputed > 0 ? "attention" : "default",
+    },
+  ];
+
+  const snapshot: Metric[] = [
+    {
+      label: "Active users",
+      value: data.users.active,
+      helper: `${fmt(data.users.with_push_token)} with push tokens`,
+      href: "/admin/users",
+      icon: Users,
     },
     {
       label: "Active listings",
@@ -187,7 +168,7 @@ export function DashboardClient() {
     {
       label: "Active deals",
       value: data.deals.active,
-      helper: `${fmt(data.deals.pending)} pending`,
+      helper: `${fmt(data.deals.pending)} pending acceptance`,
       href: "/admin/deals",
       icon: Handshake,
     },
@@ -208,6 +189,7 @@ export function DashboardClient() {
     },
   ];
 
+  const broadcastIssues = data.broadcasts.partial_failure + data.broadcasts.failed;
   const volume: Metric[] = [
     {
       label: "New users",
@@ -233,9 +215,13 @@ export function DashboardClient() {
     {
       label: "Broadcasts sent",
       value: data.broadcasts.sent_7d,
-      helper: `${fmt(data.broadcasts.sent_30d)} in 30 days`,
+      helper:
+        broadcastIssues > 0
+          ? `${fmt(broadcastIssues)} failed or partial, all time`
+          : `${fmt(data.broadcasts.sent_30d)} in 30 days`,
       href: "/admin/broadcasts",
       icon: BellRing,
+      tone: broadcastIssues > 0 ? "quiet" : "default",
     },
   ];
 
@@ -270,6 +256,8 @@ export function DashboardClient() {
     },
   ];
 
+  // Every module in the nav, so this panel and the sidebar never disagree
+  // about what exists.
   const quickLinks = [
     {
       href: "/admin/reports",
@@ -282,6 +270,24 @@ export function DashboardClient() {
       label: "Users",
       helper: `${fmt(data.users.total)} total`,
       icon: Users,
+    },
+    {
+      href: "/admin/identity-verifications",
+      label: "Identity verification",
+      helper: `${fmt(data.queues.identity_verifications_pending)} pending`,
+      icon: ShieldCheck,
+    },
+    {
+      href: "/admin/settings/deal-reputation",
+      label: "Deal reputation",
+      helper: "Settings",
+      icon: ListChecks,
+    },
+    {
+      href: "/admin/name-change-requests",
+      label: "Name changes",
+      helper: `${fmt(data.queues.name_change_requests_pending)} pending`,
+      icon: UserRoundPen,
     },
     {
       href: "/admin/listings",
@@ -313,11 +319,27 @@ export function DashboardClient() {
       helper: `${fmt(data.platforms.total)} configured`,
       icon: Layers,
     },
+    {
+      href: "/admin/platform-requests",
+      label: "Platform requests",
+      helper: `${fmt(data.queues.platform_requests_pending)} pending`,
+      icon: Inbox,
+    },
   ];
+
+  const pendingTotal =
+    data.reports.open +
+    data.queues.identity_verifications_pending +
+    data.queues.name_change_requests_pending +
+    data.queues.platform_requests_pending +
+    data.deals.disputed;
 
   return (
     <div className="space-y-8">
-      <div className="flex justify-end">
+      <div className="flex items-center justify-end gap-3">
+        <span className="text-xs text-ink-muted">
+          Updated {fmtTime(data.generated_at)}
+        </span>
         <button
           type="button"
           onClick={() => void fetchDashboard()}
@@ -333,8 +355,20 @@ export function DashboardClient() {
       </div>
 
       <DashboardSection
-        eyebrow="Operational snapshot"
+        eyebrow="Review queues"
         title="What needs attention now"
+        description={
+          pendingTotal === 0
+            ? "All queues are clear."
+            : `${fmt(pendingTotal)} item${pendingTotal === 1 ? "" : "s"} waiting on an admin decision.`
+        }
+      >
+        <MetricGrid metrics={queues} />
+      </DashboardSection>
+
+      <DashboardSection
+        eyebrow="Operational snapshot"
+        title="State of the platform"
       >
         <MetricGrid metrics={snapshot} />
       </DashboardSection>
@@ -552,6 +586,15 @@ function DashboardLoading() {
 
 function fmt(value: number) {
   return new Intl.NumberFormat("en-IN").format(value);
+}
+
+function fmtTime(value: string) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "just now";
+  return date.toLocaleTimeString(undefined, {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 }
 
 function fmtDate(value: string) {

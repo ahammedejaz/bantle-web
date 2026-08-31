@@ -1319,6 +1319,57 @@ notifications kind CHECK.
 9. Refresh page and confirm no errors.
 10. Confirm non-admin access to `/admin` remains blocked.
 
+### Phase 9.1 — Dashboard review queues and server-rendered metrics (2026-08-31)
+
+**Goal**: Surface the three human review queues added after Phase 9 (identity
+verifications, name change requests, platform requests), which the dashboard
+never learned about, and remove the client-fetch skeleton flash.
+
+**What was done**:
+- Extracted the metric aggregation from `app/admin/api/dashboard/route.ts`
+  into `lib/admin-dashboard-metrics.ts` (verbatim move; the route is now a
+  thin authenticated wrapper with an identical response shape).
+- Added a `queues` group: pending counts for `profile_verifications`,
+  `name_change_requests`, and `platform_requests`, plus a `generated_at`
+  timestamp. Additive only — every pre-existing field is unchanged.
+- The dashboard page (a Server Component that already authenticates) now
+  computes the metrics server-side and passes them as `initialData`, so the
+  first paint carries the numbers with no skeleton. The client keeps its
+  fetch path for the Refresh button, and falls back to fetching on mount if
+  the server-side aggregation ever fails.
+- Restructured the top of `DashboardClient`:
+  - New leading band, "What needs attention now" — Open reports, Identity
+    verifications, Name changes, Platform requests, Disputed deals — each
+    with the amber attention tone when non-zero and a summary line totalling
+    items waiting on an admin decision. Disputed deals was previously
+    computed by the API but rendered nowhere.
+  - The former snapshot band became "State of the platform" (Active users,
+    Active listings, Active deals, Inactive platforms, Recent admin
+    actions). "Eligible users" was renamed "Active users" to match what the
+    query counts.
+  - Broadcast failures (`partial_failure + failed`, also previously
+    fetched-but-unshown) surface as the helper on the Broadcasts volume card.
+  - Quick links now cover every module in the sidebar nav (was 7 of 12),
+    with pending counts on the three queues.
+  - "Updated HH:MM" renders beside Refresh.
+- No visual-language changes: same cards, tones, spacing, and typography.
+  No schema migration. No new mutation surface — everything remains
+  read-only counts.
+
+**Verification**: `tsc`, `eslint`, 28/28 tests, `npm run build` all clean.
+Rendered states (queues pending, all-quiet, mobile) verified through a
+temporary unauthenticated preview harness with a mocked API response; the
+harness was deleted before commit.
+
+**Smoke tests** (for Syed, on the live deployment):
+1. Open `/admin` — metrics should be visible immediately, with no skeleton.
+2. Confirm the "What needs attention now" band lists the five queues, and
+   that any non-zero queue is amber and links to its module.
+3. Confirm the pending counts match the Identity Verification, Name Changes,
+   and Platform Requests pages.
+4. Press Refresh — the "Updated" time should advance.
+5. Confirm quick links list all eleven modules and navigate correctly.
+
 ---
 
 ## 7. Update instructions for Claude Code
