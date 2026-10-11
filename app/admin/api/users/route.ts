@@ -1,3 +1,4 @@
+import { adminPagination } from "@/lib/admin-pagination";
 // GET /admin/api/users — search users.
 // Query params:
 //   q: search term (matches email substring, display_name substring,
@@ -19,8 +20,9 @@ export async function GET(request: NextRequest) {
 
   const params = request.nextUrl.searchParams;
   const q = (params.get("q") ?? "").trim();
-  const page = Math.max(1, parseInt(params.get("page") ?? "1", 10));
-  const offset = (page - 1) * PAGE_SIZE;
+  const pagination = adminPagination(new URLSearchParams({ page: request.nextUrl.searchParams.get("page") ?? "1" }), PAGE_SIZE, PAGE_SIZE);
+  if (!pagination) return NextResponse.json({ error: "Invalid pagination" }, { status: 400 });
+  const { page, offset } = pagination;
 
   let query = supabase
     .from("profiles")

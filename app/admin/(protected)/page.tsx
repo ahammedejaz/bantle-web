@@ -1,3 +1,4 @@
+import { isActiveAdmin, hasAdminAssurance } from "@/lib/admin-access";
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import { createServerClient } from "@supabase/ssr";
@@ -33,18 +34,20 @@ export default async function AdminDashboardPage() {
 
   const {
     data: { user },
+    error: userError,
   } = await userClient.auth.getUser();
 
-  if (!user) redirect("/admin/login");
+  if (userError || !user) redirect("/admin/login");
 
-  const serviceClient = createServiceRoleSupabase();
-  const { data: profile } = await serviceClient
+  const { data: profile } = await userClient
     .from("profiles")
-    .select("display_name, is_admin")
+    .select("display_name,is_admin,deleted_at,permanently_banned,banned_until")
     .eq("id", user.id)
     .maybeSingle();
 
-  if (!profile?.is_admin) redirect("/");
+  if (!profile || !isActiveAdmin(profile)) redirect("/");
+  if (!(await hasAdminAssurance(userClient))) redirect("/admin/mfa");
+  const serviceClient = createServiceRoleSupabase();
 
   // First paint carries the metrics; the client keeps its fetch path for the
   // Refresh button. If aggregation fails here, hand the client null and let

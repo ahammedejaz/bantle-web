@@ -1,3 +1,4 @@
+import { adminPagination } from "@/lib/admin-pagination";
 // GET /admin/api/reports — list user-filed reports with filters.
 // Query params:
 //   status: open | resolved | dismissed | all (default: open)
@@ -20,7 +21,9 @@ export async function GET(request: NextRequest) {
   const params = request.nextUrl.searchParams;
   const status = params.get("status") ?? "pending";
   const category = params.get("category") ?? "all";
-  const page = Math.max(1, parseInt(params.get("page") ?? "1", 10));
+  const pagination = adminPagination(new URLSearchParams({ page: params.get("page") ?? "1" }), PAGE_SIZE, PAGE_SIZE);
+  if (!pagination) return NextResponse.json({ error: "Invalid pagination" }, { status: 400 });
+  const { page } = pagination;
 
   if (!VALID_STATUS_FILTERS.has(status)) {
     return NextResponse.json(

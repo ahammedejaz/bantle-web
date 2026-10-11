@@ -7,7 +7,7 @@ import { dealTermsSummary, dealTermsType } from "@/lib/adminTerms";
 
 export interface DealListItem {
   id: string;
-  listing_id: string;
+  listing_id: string | null;
   host_id: string | null;
   buyer_id: string | null;
   conversation_id: string | null;

@@ -4,7 +4,7 @@ This repository is the **Next.js web app for Bantle**. It serves two very
 different audiences from one codebase:
 
 1. **Public marketing + legal site** (`/`, `/about`, `/faq`, `/privacy`,
-   `/terms`, …) — statically rendered pages plus the App Store / Play
+   `/terms`, …) — dynamically rendered public pages plus the App Store / Play
    Store legal URLs, account-deletion and child-safety pages, and the
    `/verify` and `/reset-password` flows linked from the mobile app.
 2. **Internal admin panel** (`/admin/*`) — a Supabase-authenticated,
@@ -55,7 +55,7 @@ flowchart TD
   Admin --> DB
 ```
 
-The public surface is mostly static and unauthenticated. The admin surface
+The public content is mostly static in substance and unauthenticated; HTML renders per request for CSP nonces. The admin surface
 is fully gated (middleware + server checks) and performs privileged work
 with the service-role key.
 
@@ -78,12 +78,12 @@ Values come from `package.json`.
 
 | Tool | Version | Why |
 | --- | --- | --- |
-| Next.js (App Router) | `^16.2.6` | Framework. Server components by default; route handlers for admin APIs. |
+| Next.js (App Router) | `16.3.8` | Framework. Server components by default; route handlers for admin APIs. |
 | React / React DOM | `^18` | UI library. |
 | TypeScript | `^5` (strict) | Types. |
 | Tailwind CSS | `^3.4.1` | Styling with a custom Bantle token palette (`tailwind.config.ts`). |
-| `@supabase/supabase-js` | `^2.105.4` | DB/auth client. |
-| `@supabase/ssr` | `^0.10.3` | Cookie-based server client for middleware + route handlers. |
+| `@supabase/supabase-js` | `2.117.2` | DB/auth client. |
+| `@supabase/ssr` | `0.10.3` | Cookie-based server client for middleware + route handlers. |
 | `@radix-ui/react-dialog` | `^1.1.15` | Mobile nav sheet + admin dialogs. |
 | `lucide-react` | `^1.14.0` | Icons. |
 | `class-variance-authority`, `clsx`, `tailwind-merge` | — | `cn()` helper + variant styling. |
@@ -175,7 +175,7 @@ lib/
 ├── manual-verification.ts, trust-notifications.ts, name-change-errors.ts
 ├── admin-actions.ts, admin-broadcasts.ts, admin-push.ts, admin-safe-errors.ts
 ├── adminTerms.ts, platform-categories.ts, tos.ts, utils.ts
-middleware.ts                     Gates /admin/* (validated JWT + is_admin)
+proxy.ts                     Gates /admin/* (validated JWT + is_admin)
 next.config.mjs                   Security headers (CSP, X-Frame-Options, Permissions-Policy, …)
 ```
 
@@ -190,7 +190,7 @@ This is the most important section for a new developer. The admin panel has
 
 ```mermaid
 flowchart TD
-  R[Request to /admin/*] --> MW[middleware.ts]
+  R[Request to /admin/*] --> MW[proxy.ts]
   MW -->|not signed in| L[redirect /admin/login]
   MW -->|signed in, not is_admin| H[redirect / — no admin surface]
   MW -->|is_admin| LAY[app/admin/layout.tsx server guard]
@@ -200,10 +200,10 @@ flowchart TD
   RA --> SR[service-role client for privileged work]
 ```
 
-1. **Middleware (`middleware.ts`).** Runs on every `/admin/*` request. Uses
+1. **Middleware (`proxy.ts`).** Runs on every `/admin/*` request. Uses
    the cookie/JWT server client (`admin-supabase-route.ts`) to call
    `auth.getUser()` (validates the JWT with Supabase, not just decode) and
-   checks `profiles.is_admin`. Signed-out → `/admin/login`; non-admin →
+   checks active `profiles.is_admin` plus verified `aal2` assurance. Signed-out → `/admin/login`; non-admin →
    `/` (no admin pixel rendered).
 2. **Server layout (`app/admin/layout.tsx`).** Re-checks `getUser` +
    `is_admin` server-side before rendering admin UI, and mounts
@@ -223,7 +223,7 @@ Other controls:
 
 - **Idle timeout (`components/admin/AdminIdleTimeout.tsx`).** ~30 min idle
   and ~12 h absolute session cap, with a warning, then sign-out. This is
-  client defense-in-depth; the middleware + layout `is_admin` checks remain
+  client defense-in-depth; the middleware + layout `is_admin` and AAL2 checks remain
   the authoritative server gate. Configure server-side session expiry in the
   Supabase dashboard to back it.
 - **Security headers (`next.config.mjs`).** CSP (`default-src 'self'`,
@@ -435,3 +435,34 @@ git diff --check     # no whitespace errors / stray changes
 When touching `/admin/*`: confirm every new API route calls `requireAdmin`
 first, the service-role key never reaches a client component, and you have
 not weakened the middleware/layout `is_admin` checks or the security headers.
+
+
+## October 2026 security remediation
+
+Admin sign-in now requires verified TOTP MFA (`aal2`) before any protected
+page, dashboard read, or admin API can run. `/admin/mfa` allows an active admin
+at `aal1` to enroll an authenticator or challenge an existing factor; it cannot
+read admin data. Pages live under `app/admin/(protected)/` with the same URLs.
+The proxy, protected layout, dashboard, and `requireAdmin` independently check
+active status and signature-verified assurance claims. The matching database
+migration in the mobile repo also requires AAL2 for privileged user RPCs.
+
+**Lost authenticator recovery:** use another enrolled factor if available.
+Otherwise the Supabase project owner must independently verify the administrator,
+review the incident, revoke existing sessions, and remove only the lost factor
+using Supabase Auth admin tools. The admin then signs in and enrolls a new
+factor before entering the panel. Record the recovery in the operations audit.
+Do not disable MFA checks, reset the password as an MFA substitute, or accept an
+email-only recovery claim. Project dashboard access itself should have MFA and
+an owner recovery method stored securely. No recovery secrets are stored here.
+
+Script CSP now uses a fresh per-request nonce and `strict-dynamic`; runtime,
+custom inline scripts and JSON-LD all receive it. HTML is dynamically rendered
+and marked private/no-store to avoid cached nonce mismatches. Inline CSS remains
+allowed for existing React style props; production `unsafe-eval` and script
+`unsafe-inline` are removed. This trades static HTML caching for stronger script
+execution protection.
+
+Listings use the bounded service-only `admin_listing_summary` RPC from the core
+repo. Deploy that migration before this web build. Database AAL2 enforcement
+should follow the web release so current admins have enrollment available.

@@ -1,3 +1,4 @@
+import { adminPagination } from "@/lib/admin-pagination";
 // GET /admin/api/deals — search and filter deals for admin review.
 
 import { type NextRequest, NextResponse } from "next/server";
@@ -41,7 +42,7 @@ type DealTermsSnapshot = {
 
 type DealListRow = {
   id: string;
-  listing_id: string;
+  listing_id: string | null;
   host_id: string | null;
   buyer_id: string | null;
   conversation_id: string | null;
@@ -73,21 +74,9 @@ export async function GET(request: NextRequest) {
   const platform = (params.get("platform") ?? "").trim();
   const status = (params.get("status") ?? "all").trim();
   const role = (params.get("role") ?? "all").trim();
-  const page = Math.max(1, parseInt(params.get("page") ?? "1", 10));
-  const requestedPageSize = parseInt(
-    params.get("page_size") ?? String(DEFAULT_PAGE_SIZE),
-    10,
-  );
-  const pageSize = Math.min(
-    MAX_PAGE_SIZE,
-    Math.max(
-      1,
-      Number.isFinite(requestedPageSize)
-        ? requestedPageSize
-        : DEFAULT_PAGE_SIZE,
-    ),
-  );
-  const offset = (page - 1) * pageSize;
+  const pagination = adminPagination(request.nextUrl.searchParams, DEFAULT_PAGE_SIZE, MAX_PAGE_SIZE);
+  if (!pagination) return NextResponse.json({ error: "Invalid pagination" }, { status: 400 });
+  const { page, pageSize, offset } = pagination;
 
   if (userId && !UUID_RE.test(userId)) {
     return NextResponse.json({ error: "Invalid user_id" }, { status: 400 });

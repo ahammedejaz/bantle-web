@@ -39,7 +39,7 @@ type DealTermsSnapshot = {
 
 type DealDetail = {
   id: string;
-  listing_id: string;
+  listing_id: string | null;
   host_id: string | null;
   buyer_id: string | null;
   conversation_id: string | null;
