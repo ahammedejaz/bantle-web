@@ -36,7 +36,7 @@ interface ListingSummary {
 
 interface DealDetail {
   id: string;
-  listing_id: string;
+  listing_id: string | null;
   host_id: string | null;
   buyer_id: string | null;
   conversation_id: string | null;
@@ -114,9 +114,9 @@ interface DealDetailResponse {
   buyer: ProfileSummary | null;
   conversation: {
     id: string;
-    listing_id: string;
-    host_id: string;
-    buyer_id: string;
+    listing_id: string | null;
+    host_id: string | null;
+    buyer_id: string | null;
     created_at: string | null;
     last_message_at: string | null;
   } | null;

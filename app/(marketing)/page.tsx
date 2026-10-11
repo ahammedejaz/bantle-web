@@ -1,3 +1,4 @@
+import { JsonLd } from "@/components/site/JsonLd";
 import {
   BadgeCheck,
   Building2,
@@ -67,10 +68,7 @@ const structuredData = jsonLd([
 export default function Home() {
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: structuredData }}
-      />
+      <JsonLd data={structuredData} />
       <HeroSection />
       <WhyBantle />
       <HowItWorks />

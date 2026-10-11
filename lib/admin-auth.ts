@@ -12,6 +12,7 @@
 
 import { type NextRequest, NextResponse } from "next/server";
 import { createRouteSupabase } from "./admin-supabase-route";
+import { isActiveAdmin, hasAdminAssurance } from "./admin-access";
 import { createServiceRoleSupabase } from "./admin-supabase-server";
 
 type RequireAdminSuccess = {
@@ -88,16 +89,7 @@ export async function requireAdmin(
     .eq("id", user.id)
     .maybeSingle();
 
-  const activelyBanned = Boolean(
-    profile?.banned_until && new Date(profile.banned_until).getTime() > Date.now(),
-  );
-  if (
-    profileError ||
-    !profile?.is_admin ||
-    profile.deleted_at !== null ||
-    profile.permanently_banned ||
-    activelyBanned
-  ) {
+  if (profileError || !isActiveAdmin(profile)) {
     return {
       error: NextResponse.json(
         { error: "Forbidden" },
@@ -106,8 +98,15 @@ export async function requireAdmin(
     };
   }
 
+  if (!(await hasAdminAssurance(userClient))) {
+    return { error: NextResponse.json(
+      { error: "Multi-factor authentication required.", code: "MFA_REQUIRED" },
+      { status: 403 },
+    ) };
+  }
+
   return {
-    admin: { id: user.id, email: profile.email ?? user.email ?? "" },
+    admin: { id: user.id, email: profile!.email ?? user.email ?? "" },
     userClient,
     supabase: createServiceRoleSupabase(),
   };

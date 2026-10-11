@@ -51,6 +51,7 @@ export function AdminIdleTimeout() {
     } catch {
       // even if the request fails, force the user back to login
     }
+    // eslint-disable-next-line @next/next/no-location-assign-relative-destination -- discard authenticated router cache
     window.location.href = "/admin/login";
   }, []);
 

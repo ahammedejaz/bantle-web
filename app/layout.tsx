@@ -1,3 +1,4 @@
+import { headers } from "next/headers";
 import type { Metadata, Viewport } from "next";
 import { Bricolage_Grotesque, Geist, Geist_Mono, Lora } from "next/font/google";
 import "./globals.css";
@@ -123,9 +124,10 @@ const JS_FLAG =
   "setTimeout(function(){if(!window.__bantleReveal)" +
   "document.documentElement.classList.remove('js')},4000)";
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  const nonce = (await headers()).get("x-nonce") ?? undefined;
   return (
     <html
       lang="en-IN"
@@ -134,7 +136,7 @@ export default function RootLayout({
       className={`${bricolage.variable} ${geist.variable} ${geistMono.variable} ${lora.variable}`}
     >
       <head>
-        <script dangerouslySetInnerHTML={{ __html: JS_FLAG }} />
+        <script nonce={nonce} dangerouslySetInnerHTML={{ __html: JS_FLAG }} />
       </head>
       <body className="bg-cream text-ink">{children}</body>
     </html>

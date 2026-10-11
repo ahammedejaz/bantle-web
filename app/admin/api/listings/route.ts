@@ -1,7 +1,7 @@
 // GET /admin/api/listings — search and filter listings for admin review.
 
 import { type NextRequest, NextResponse } from "next/server";
-import type { SupabaseClient } from "@supabase/supabase-js";
+import { adminPagination } from "@/lib/admin-pagination";
 import { requireAdmin } from "@/lib/admin-auth";
 
 const DEFAULT_PAGE_SIZE = 20;
@@ -71,16 +71,9 @@ export async function GET(request: NextRequest) {
   const platform = (params.get("platform") ?? "").trim();
   const status = (params.get("status") ?? "all").trim();
   const archived = (params.get("archived") ?? "all").trim();
-  const page = Math.max(1, parseInt(params.get("page") ?? "1", 10));
-  const requestedPageSize = parseInt(
-    params.get("page_size") ?? String(DEFAULT_PAGE_SIZE),
-    10,
-  );
-  const pageSize = Math.min(
-    MAX_PAGE_SIZE,
-    Math.max(1, Number.isFinite(requestedPageSize) ? requestedPageSize : DEFAULT_PAGE_SIZE),
-  );
-  const offset = (page - 1) * pageSize;
+  const pagination = adminPagination(params, DEFAULT_PAGE_SIZE, MAX_PAGE_SIZE);
+  if (!pagination) return NextResponse.json({ error: "Invalid pagination" }, { status: 400 });
+  const { page, pageSize, offset } = pagination;
 
   let query = supabase
     .from("listings")
@@ -159,78 +152,26 @@ export async function GET(request: NextRequest) {
 
   const listings = ((data ?? []) as unknown as ListingRow[]).map(normalizeListing);
   const ids = listings.map((l) => l.id);
-  const [slotMap, dealCountMap] = await Promise.all([
-    getSlotsAvailableMap(supabase, ids),
-    getDealCountMap(supabase, ids),
-  ]);
+  const { data: summary, error: summaryError } = ids.length
+    ? await supabase.rpc("admin_listing_summary", { p_listing_ids: ids })
+    : { data: [], error: null };
+  if (summaryError) return NextResponse.json({ error: "Couldn't load listing availability" }, { status: 500 });
+  const summaries = new Map<string, DealCount & { slots_available: number }>(
+    (summary ?? []).map((row: DealCount & { listing_id: string; slots_available: number }) => [row.listing_id, row]),
+  );
 
   return NextResponse.json({
     listings: listings.map((listing) => ({
       ...listing,
-      slots_available: slotMap.get(listing.id) ?? null,
+      slots_available: summaries.get(listing.id)?.slots_available ?? null,
       pending_deal_count:
-        dealCountMap.get(listing.id)?.pending_deal_count ?? 0,
-      active_deal_count: dealCountMap.get(listing.id)?.active_deal_count ?? 0,
+        summaries.get(listing.id)?.pending_deal_count ?? 0,
+      active_deal_count: summaries.get(listing.id)?.active_deal_count ?? 0,
     })),
     total: count ?? 0,
     page,
     page_size: pageSize,
   });
-}
-
-async function getSlotsAvailableMap(
-  supabase: SupabaseClient,
-  ids: string[],
-): Promise<Map<string, number>> {
-  const out = new Map<string, number>();
-  await Promise.all(
-    ids.map(async (id) => {
-      const { data, error } = await supabase.rpc("listing_slots_available", {
-        p_listing_id: id,
-      });
-      if (!error && typeof data === "number") {
-        out.set(id, data);
-      }
-    }),
-  );
-  return out;
-}
-
-async function getDealCountMap(
-  supabase: SupabaseClient,
-  ids: string[],
-): Promise<Map<string, DealCount>> {
-  const out = new Map<string, DealCount>();
-  for (const id of ids) {
-    out.set(id, { pending_deal_count: 0, active_deal_count: 0 });
-  }
-  if (ids.length === 0) return out;
-
-  const { data, error } = await supabase
-    .from("deals")
-    .select("listing_id,status")
-    .in("listing_id", ids)
-    .in("status", ["pending", "active"]);
-
-  if (error) {
-    console.warn("[admin listings list] deal counts failed:", error.message);
-    return out;
-  }
-
-  for (const row of (data ?? []) as Array<{
-    listing_id: string | null;
-    status: string | null;
-  }>) {
-    if (!row.listing_id) continue;
-    const counts = out.get(row.listing_id) ?? {
-      pending_deal_count: 0,
-      active_deal_count: 0,
-    };
-    if (row.status === "pending") counts.pending_deal_count += 1;
-    if (row.status === "active") counts.active_deal_count += 1;
-    out.set(row.listing_id, counts);
-  }
-  return out;
 }
 
 function normalizeListing(row: ListingRow): ListingRow {

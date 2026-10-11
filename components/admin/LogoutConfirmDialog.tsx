@@ -24,6 +24,7 @@ export function LogoutConfirmDialog({
       // Hard navigation so middleware re-evaluates with no session
       // and routes us cleanly to /admin/login. router.push wouldn't
       // re-run middleware in the same browser turn.
+      // eslint-disable-next-line @next/next/no-location-assign-relative-destination -- discard authenticated router cache
       window.location.href = "/admin/login";
     } catch (e) {
       console.error("[logout] failed:", e);

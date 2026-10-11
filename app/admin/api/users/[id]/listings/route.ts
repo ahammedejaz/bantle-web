@@ -1,3 +1,4 @@
+import { adminPagination } from "@/lib/admin-pagination";
 // GET /admin/api/users/[id]/listings — paginated listings owned by user.
 
 import { type NextRequest, NextResponse } from "next/server";
@@ -15,11 +16,9 @@ export async function GET(
 
   const { id } = await params;
   const userId = id;
-  const page = Math.max(
-    1,
-    parseInt(request.nextUrl.searchParams.get("page") ?? "1", 10),
-  );
-  const offset = (page - 1) * PAGE_SIZE;
+  const pagination = adminPagination(new URLSearchParams({ page: request.nextUrl.searchParams.get("page") ?? "1" }), PAGE_SIZE, PAGE_SIZE);
+  if (!pagination) return NextResponse.json({ error: "Invalid pagination" }, { status: 400 });
+  const { page, offset } = pagination;
 
   const { data, error, count } = await supabase
     .from("listings")
